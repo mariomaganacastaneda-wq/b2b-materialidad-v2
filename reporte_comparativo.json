@@ -1,0 +1,83 @@
+{
+  "resumen": {
+    "pdf_2019_total": 21871,
+    "sistema_actual_total": 2273,
+    "potenciales_adiciones": 317,
+    "desactualizados_o_especiales": 1989,
+    "actualizaciones_2026": 25
+  },
+  "ejemplos_adiciones": [
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - bovinos cebús para trabajo, explotación RAMA RAMA CLAVE SUB RAMA SUB RAMA CLAVE CLASE ACTIVIDAD CLASE DE ACTIVIDAD PRODUCTOS 2/ 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - bovinos para jaripeos y rodeos, explotación 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - bovinos para trabajo, explotación 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - bueyes para trabajo, explotación 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - explotación de ganado bovino con diferentes propósitos cuando sea imposible determinar cuál es el principal 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - ganado bovino para deporte, explotación 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "112139",
+      "desc": "Explotación de bovinos para otros propósitos - ganado bovino para esparcimiento, explotación 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "10",
+      "desc": "años), cultivo 11 animales, aprovechamiento forestal, pesca y caza"
+    },
+    {
+      "clave": "311350",
+      "desc": "Elaboración de chocolate y productos de chocolate - barras de chocolate, elaboración"
+    },
+    {
+      "clave": "311350",
+      "desc": "Elaboración de chocolate y productos de chocolate - cacao para la elaboración de chocolates, procesamiento"
+    }
+  ],
+  "ejemplos_faltantes_en_pdf": [
+    {
+      "clave": 11
+    },
+    {
+      "clave": 22
+    },
+    {
+      "clave": 55
+    },
+    {
+      "clave": 56
+    },
+    {
+      "clave": 71
+    },
+    {
+      "clave": 72
+    },
+    {
+      "clave": 93
+    },
+    {
+      "clave": 115
+    },
+    {
+      "clave": 211
+    },
+    {
+      "clave": 212
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+﻿FORMA DE PAGO
+METODO DE PAGO
+CLAVE DEL PRODUCTO
+CANTIDAD
+UNIDAD
+DESCRIPCION
+Precio Unitario
+Total
+Subtotal
+TIPO DE COMPROBANTE
+INGRESO
+Empresa que emite:
+NEOCONSTRUYENDO
+PROMOSERVICIOS
+KUNEM
+Empresas
+601-General de Ley Personas Morales
+603-Personas Morales con Fines no Lucrativos
+605- Sueldos y Salarios e Ingresos Asimilados a Salarios
+607-Régimen de Enajenación o Adquisición de Bienes
+606-Arrendamiento
+608-Demás ingresos
+609-Consolidación
+610-Residentes en el Extranjero sin Establecimiento Permanente en México
+611- Ingresos por Dividendos (socios y accionistas)
+612- Personas Físicas con Actividades Empresariales y Profesionales
+614- Ingresos por intereses
+615-Régimen de los ingresos por obtención de premios
+616- Sin obligaciones fiscales
+620- Sociedades Cooperativas de Producción que optan por diferir sus ingresos
+621- Incorporación Fiscal
+622-Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras
+623- Opcional para Grupos de Sociedades
+624-Coordinados
+625-Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas
+626-Régimen Simplificado de Confianza
+628-Hidrocarburos
+629-De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales
+630-Enajenación de acciones en bolsa de valores
+Regimen fiscal
+G01-ADQUISICION DE MERCANCIAS
+G03-GASTOS EN GENERAL
+I01 -CONSTRUCCIONES
+I02 - MOBILIARIO Y EQUIPO DE OFICINA POR INVERSION
+I03- EQUIPO DE TRANSPORTE
+I04- EQUIPO DE COMPUTO Y ACCESORIOS
+I05- DADOS, TROQUELES, MOLDES, MATRICES Y HERRAMIENTA
+I06- COMUNICACIONES SATELITALES
+I08- OTRA MAQUINARIA Y EQUIPO
+S01- SIN EFECTOS FISCALES
+USO DE CFDI
+01-EFECTIVO
+02- CHEQUE NOMINATIVO
+03- TRANSFERENCIA ELECTRONICA DE FONDOS
+99- POR DEFINIR
+PUE- PAGO EN UNA SOLA EXHIBICION
+PPD-PAGO EN PARCIALIDADES O DIFERIDO
+E48-SERVICIO
+H87- PIEZA
+MTR- METRO
+MTK- MT2
+MTQ-MT3
+LTR-LITRO
+KT-KIT
+SET-JUEGO
+NT- TONELADA
+KGM-KILOGRAMO
+XBX-CAJA
+11-EQUIPOS
+XPK-PAQUETE
+PR-PAR
+DAY-DIA
+ACT-ACTIVIDAD
+LO-LOTE
+TERREL
+- Todos los campos son obligatorios
+RFC   :
+DIRECCION FISCAL:
+REGIMEN FISCAL:
+USO DEL CFD:
+FORMA DE PAGO:
+METODO DE PAGO:
+-se encuentra en el CIF.(Cliente o razon social completa, direccion fiscal y regimen fiscal)
+Cliente (Razon social):
+IVA16%
+KO INTERNATIONAL TRADING
+XSA-SACO
+COMERCIALIZADORA UNIVERSAL LATAM
+LARSON SERVICES
+SERVINTE SERVICIOS INTEGRALES
+E27-DOSIS
+LM-METRO LINEAL
+STN-TONELADA O TONELADA CARGA
+A75-TONELADA DE CARGA
+26-TONELADA REAL
+XRO-ROLLO
+Para mas informacion las claves SAT se encuenta en:
+http://pys.sat.gob.mx/PyS/catPyS.aspx
+DAMO SOLUCIONES EN EMPAQUE Y EMBALAJE 
+DSE2010201T5
+CALLE  PIPILA NO. 142, S/N, COL. GUADALUPE DEL MORAL, ALCALDIA IZTAPALAPA, CDMX, C.P. 09300
+MMC
+Soporte a redes y computadoras año 2025

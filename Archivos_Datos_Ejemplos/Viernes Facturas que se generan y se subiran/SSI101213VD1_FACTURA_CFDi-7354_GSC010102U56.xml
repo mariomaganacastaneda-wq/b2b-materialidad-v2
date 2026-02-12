@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.0" Folio="7354" Fecha="2022-07-14T14:43:13" Sello="iFLRlWKGfTjM0hNep0QsFbTgZfEHlqz8P201706YMrHXZmDJtfiaP0vtR4V4BrnAR8khDypVL9iWa8FDWoosjYiqQ8ud7/Jr2wbNEDagrSekUkbDZ4GxdI2Q7J9E9pD7hbc2g67V5r2gEPfKawyvqfgKXMqGRfRIEx4ZYxi+PvGWBXVsDQBAo+Zf8U/pIb9NzKGlmh79h2XHA4eSPW2FvjjOau0wfTUvSGkUqsh9uOUps88d8FaOLh7XmXFgN574fEdYIWY6744OFmeHSs9VvgCJnEVhduVNnfQpYreH840hGn36n3j92HfHP1fQ0e2fIGOifn/gCLdeGJIHh3V1tQ==" FormaPago="99" NoCertificado="00001000000411584987" Certificado="MIIGoTCCBImgAwIBAgIUMDAwMDEwMDAwMDA0MTE1ODQ5ODcwDQYJKoZIhvcNAQELBQAwggGyMTgwNgYDVQQDDC9BLkMuIGRlbCBTZXJ2aWNpbyBkZSBBZG1pbmlzdHJhY2nDs24gVHJpYnV0YXJpYTEvMC0GA1UECgwmU2VydmljaW8gZGUgQWRtaW5pc3RyYWNpw7NuIFRyaWJ1dGFyaWExODA2BgNVBAsML0FkbWluaXN0cmFjacOzbiBkZSBTZWd1cmlkYWQgZGUgbGEgSW5mb3JtYWNpw7NuMR8wHQYJKoZIhvcNAQkBFhBhY29kc0BzYXQuZ29iLm14MSYwJAYDVQQJDB1Bdi4gSGlkYWxnbyA3NywgQ29sLiBHdWVycmVybzEOMAwGA1UEEQwFMDYzMDAxCzAJBgNVBAYTAk1YMRkwFwYDVQQIDBBEaXN0cml0byBGZWRlcmFsMRQwEgYDVQQHDAtDdWF1aHTDqW1vYzEVMBMGA1UELRMMU0FUOTcwNzAxTk4zMV0wWwYJKoZIhvcNAQkCDE5SZXNwb25zYWJsZTogQWRtaW5pc3RyYWNpw7NuIENlbnRyYWwgZGUgU2VydmljaW9zIFRyaWJ1dGFyaW9zIGFsIENvbnRyaWJ1eWVudGUwHhcNMTgwNzIwMDEwODU4WhcNMjIwNzIwMDEwODU4WjCCAUAxSTBHBgNVBAMTQFNFSURDTyBTRVJWSUNJT1MgREUgSU5HRU5JRVJJQSBZIEFETUlOSVNUUkFDSU9OIElOVEVHUkFMIFNBIERFIEMxSjBIBgNVBCkTQVNFSURDTyBTRVJWSUNJT1MgREUgSU5HRU5JRVJJQSBZIEFETUlOSVNUUkFDSU9OIElOVEVHUkFMIFNBIERFIENWMUkwRwYDVQQKE0BTRUlEQ08gU0VSVklDSU9TIERFIElOR0VOSUVSSUEgWSBBRE1JTklTVFJBQ0lPTiBJTlRFR1JBTCBTQSBERSBDMSUwIwYDVQQtExxTU0kxMDEyMTNWRDEgLyBNQUNTNjQwMzEwQkYxMR4wHAYDVQQFExUgLyBNQUNTNjQwMzEwSERGR1NSMDExFTATBgNVBAsTDFNTSTEwMTIxM1ZEMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJoORFTNbmvvL0SAiUAVhk+KDr+X+vumkbyLtUry6nEgp4iwLu9KEgr8onnZhKZUhuVyJFJGntClOduXJ4Se9rTbffLDxhQz9ComkF4oQIubIuqX7c/7r9urRxZHndoCdBDU8Ck9ufUrH2Sb5+GU6+qLGi9hrBNhmCBCBvmbpCALvsxho89vkLxc0whSpXpalG+k9Ng2DKYXgZOyyj6HCT9Qh6Z2eCVbUkyXMF4FzGUd25G+Ew5mJ2MWwqvi4rzgWIbpdRdZtcs1BcFLZ/raLgu5Ywmwk7MxkxZuLY1DpJ6SBib+Bhu0e6/YKEZIR+eShBDlv7Yujs15SaiyiOGRCh8CAwEAAaMdMBswDAYDVR0TAQH/BAIwADALBgNVHQ8EBAMCBsAwDQYJKoZIhvcNAQELBQADggIBAG/nl3Cl5XcGZFPuEvsC+oIywM4JF3GOyZ2CMSqNVJ+0G8KJYAbmvcPFevSPL4Q1wL8Oog093UIHqkfa5VUkpipOSOoCqcvuVB8udSd0SkOr3GNGN62WvwNCxJyU4CmR2QjfExSE4iSEOzbzxyw/9QYlPAVMmLn37q7hvb+b89gO59sRGg+qNcDem4FaD+VKuAplLlXSLDrJXt7/J9Z4pGrw2dgMTxwKnTg2JkaNm0EzTUOD/WwC3RLBLwA2D/b+esocAa6lepJr6q0juK+y4G/ZhpAhyEreSUPYDhI+qEIBCeLhcSnIUsjoK/0SFF/xRbzjoisPoEx+TaF2oprzYPpm5kbQo1Hlep5uKmUBQ9LRkyuIto2IkTtWfQRvP3wP8ofTdEJR5vRqx4goAhzNccqoaC4qWRY7VeEm+qvJBzsP0H3cOT271mtj4ZXJ5tgr+HbQYswVP6MCfYqQvLuaQ1TvehON/xdFWV1ePYgpdp6rWM17gTEeBXMJUwdpuxCZL3UkBg5VaKWvwPoty8rGWdHGlCWbWQ59fwCT9PZTnS/lqOBUi8GBe+u2QnaV0BNopYs9t6JSXp+q7Z29NFbJGK0dqx6PBnSTKgEX51T3KiqKk8TCFd5OIGa/IC7TJQrd8eXrith09KCxXd/ga78rvRHa6NhVxv+WnsxFjbLwZRH7" CondicionesDePago="90 DIAS" SubTotal="37300.00" Moneda="MXN" TipoCambio="1" Total="43268.00" TipoDeComprobante="I" Exportacion="01" MetodoPago="PPD" LugarExpedicion="03300">
+	<cfdi:Emisor Rfc="SSI101213VD1" Nombre="SEIDCO SERVICIOS DE INGENIERIA Y ADMINISTRACION INTEGRAL" RegimenFiscal="601"/>
+	<cfdi:Receptor Rfc="GSC010102U56" Nombre="GOODYEAR SERVICIOS COMERCIALES" DomicilioFiscalReceptor="01376" RegimenFiscalReceptor="601" UsoCFDI="G03"/>
+	<cfdi:Conceptos>
+		<cfdi:Concepto ClaveProdServ="80141623" Cantidad="4.0000" ClaveUnidad="H87" ObjetoImp="02" Unidad="PZA" Descripcion="DISPENSADOR DE AGUA PRIMO  SMART TOUCH, CARGA INFERIOR 3 TEM" ValorUnitario="9200.00" Importe="36800.00">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="36800.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5888.00"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="80141623" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ENVIO" ValorUnitario="500.00" Importe="500.00">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="500.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="80.00"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+	</cfdi:Conceptos>
+	<cfdi:Impuestos TotalImpuestosTrasladados="5968.00">
+		<cfdi:Traslados>
+			<cfdi:Traslado Base="37300.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5968.00"/>
+		</cfdi:Traslados>
+	</cfdi:Impuestos>
+	<cfdi:Complemento>
+		<tfd:TimbreFiscalDigital Version="1.1" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" SelloSAT="dwudtRNWCIyEi21oaSpRZg9PL6m8//0nSN64tRMoo1vpMI8OC9SAu7NxaLaLRfALDLv+PSBghma++zlYCPLrSPpd7kUhFjIolsFriCxBJzSB8tEeScE2dKM4KVH2c453l5IqLTv+vrmXx3HwC91ZfLMDEUAlNXnNzUvCze6FYe7iiAWL5Q/mrRpESulxSC+XjlL3pA1y/jP8MVyCgZPM8AKuLJuq5dx3d6fwP4JPb+OsyPlgnyOvQkNz/tW29CbB9ohyHPC75i7rIBVttVqNYRF03kz65v/ZfvkIVBCzgM2LHxG8CZs7+s4fM0H8P02K0NHMpYmO2NljiFzbhSybsA==" NoCertificadoSAT="00001000000505142236" UUID="15D15081-85FA-4A50-A84B-E1B9FE981C14" FechaTimbrado="2022-07-14T14:43:19" SelloCFD="iFLRlWKGfTjM0hNep0QsFbTgZfEHlqz8P201706YMrHXZmDJtfiaP0vtR4V4BrnAR8khDypVL9iWa8FDWoosjYiqQ8ud7/Jr2wbNEDagrSekUkbDZ4GxdI2Q7J9E9pD7hbc2g67V5r2gEPfKawyvqfgKXMqGRfRIEx4ZYxi+PvGWBXVsDQBAo+Zf8U/pIb9NzKGlmh79h2XHA4eSPW2FvjjOau0wfTUvSGkUqsh9uOUps88d8FaOLh7XmXFgN574fEdYIWY6744OFmeHSs9VvgCJnEVhduVNnfQpYreH840hGn36n3j92HfHP1fQ0e2fIGOifn/gCLdeGJIHh3V1tQ==" RfcProvCertif="MAS0810247C0" xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital"/>
+	</cfdi:Complemento>
+</cfdi:Comprobante>

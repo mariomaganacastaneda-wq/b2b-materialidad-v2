@@ -1,0 +1,110 @@
+## 1. Arquitectura del Flujo de Validación
+
+El sistema debe procesar cada CFDI entrante a través de un motor de reglas que contraste la información del emisor con el **"Lago de Datos"** de las listas negras.
+
+### Pasos del Proceso Lógico:
+
+* **Extracción del RFC:** El sistema parsea el XML (CFDI 4.0) y extrae el nodo `cfdi:Emisor`, específicamente el atributo `Rfc`.
+* **Consulta al Hash Table Local:** Para optimizar el rendimiento, B2B_Materialidad debe mantener una base de datos indexada (actualizada diariamente vía *web scraping* o descarga masiva del portal SAT/DOF) con los RFC listados.
+* **Evaluación de Estatus:**
+* **Si el RFC no existe:** Se marca como **"Limpio"** y el proceso de pago continúa.
+* **Si el RFC existe:** El sistema identifica el estatus específico.
+
+
+
+---
+
+## 2. Gestión de Alertas y Bloqueos Automáticos
+
+Dependiendo del estatus encontrado, el sistema ejecuta acciones programadas en el ERP o módulo de compras:
+
+| Estatus en Lista | Acción del Sistema | Impacto en Materialidad |
+| --- | --- | --- |
+| **Presunto** | **Alerta Amarilla:** Notificación a Contabilidad y solicitud de evidencias. | Riesgo alto; inicia periodo de 15 días para defensa. |
+| **Definitivo** | **Alerta Roja / Bloqueo:** Impide programación de pago y marca IVA como "No Acreditable". | Facturas sin efectos fiscales; riesgo de delito de defraudación. |
+| **Desvirtuado** | **Liberación:** Elimina restricciones y archiva resolución favorable. | Operación segura; se restablece la confianza comercial. |
+
+---
+
+## 3. Implementación del Microservicio de Vigilancia
+
+La implementación técnica sigue el esquema de **"Sincronización vs. Validación"**:
+
+### A. Sincronizador de Listas (Cron Job)
+
+Servicio ejecutado cada 24 horas para descargar el archivo `.csv` o `.xlsx` oficial del SAT.
+
+* **Transformación:** Convierte datos crudos en una estructura de consulta rápida (ej. Redis o tabla indexada en PostgreSQL).
+* **Detección de Cambios:** Si un proveedor pasa de "Limpio" a "Presunto", se dispara un *trigger* para revisar facturas de los últimos 5 años.
+
+### B. Validador en Tiempo Real (Hook de Carga)
+
+Al momento de subir un XML al portal de B2B_Materialidad:
+
+1. **Validación de Estructura:** XSD del SAT.
+2. **Validación de Vigencia:** Consulta al Web Service del SAT (confirmar que el UUID no esté cancelado).
+3. **Cruce de Lista 69-B:** Validación contra la tabla sincronizada.
+
+---
+
+## 4. El "Botón de Pánico": Expediente de Defensa
+
+Si un proveedor cae en listado **Definitivo**, B2B_Materialidad genera un archivo `.zip` con el **Expediente de Materialidad**:
+
+* XML y PDF de la factura.
+* Contratos con sello de tiempo (**NOM-151**).
+* Bitácoras de servicio y fotos con **GPS** (módulo operativo).
+* Comprobante de pago (**SPEI**) vinculado.
+
+---
+
+## Propuesta de Estructura JSON (API Payload)
+
+Diseñada para ser consumida por un dashboard de cumplimiento:
+
+```json
+{
+  "request_id": "req-987654321",
+  "timestamp": "2026-02-04T18:45:30Z",
+  "cfdi_info": {
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "rfc_emisor": "ABC123456T1A",
+    "razon_social": "Sistemas de Aire Acondicionado S.A. de C.V.",
+    "monto_total": 45600.00,
+    "moneda": "MXN"
+  },
+  "validation_status": {
+    "sat_status": "Vigente",
+    "is_efos": true,
+    "efos_category": "Presunto",
+    "publication_date": "2026-01-15",
+    "dof_url": "https://www.dof.gob.mx/nota_detalle.php?codigo=..."
+  },
+  "risk_assessment": {
+    "risk_level": "CRITICAL",
+    "color_code": "#FF0000",
+    "action_required": "BLOCK_PAYMENT",
+    "message": "El proveedor se encuentra en el listado de presuntos del 69-B. Se requiere documentación de materialidad adicional."
+  },
+  "materiality_check": {
+    "contract_found": true,
+    "nom151_certified": true,
+    "evidence_count": 5,
+    "missing_elements": ["Fotos_GPS_Entrega", "Bitacora_Servicio"]
+  }
+}
+
+```
+
+---
+
+## Lógica de UI Sugerida para el Dashboard
+
+* **Semáforo de Riesgo:** Si `is_efos` es `true`, mostrar un banner persistente.
+* **Acceso Directo al DOF:** Usar `dof_url` para verificación inmediata del contador.
+* **Contador de Evidencia:** Visualizar mediante `evidence_count` una barra de progreso: *"Materialidad al 60% (Faltan 2 documentos)"*.
+* **Acción Directa:** El campo `action_required` desactiva automáticamente botones críticos (ej. "Autorizar Pago").
+
+---
+
+¿Te gustaría que desarrolle el diagrama de flujo técnico para esta arquitectura o prefieres profundizar en la lógica de los *triggers* de revisión histórica?

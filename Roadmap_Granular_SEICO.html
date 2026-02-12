@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Ruta Granular: Proyecto B2B_Materialidad</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        @media print {
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 50px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 40px;
+        }
+
+        .badge {
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .phase-section {
+            margin-bottom: 50px;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .phase-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-right: 20px;
+            opacity: 0.5;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .phase-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            margin-right: 20px;
+            flex-shrink: 0;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .task-checkbox.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .task-checkbox.ongoing::after {
+            content: '...';
+            color: var(--warning);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .task-content {
+            flex-grow: 1;
+        }
+
+        .task-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .task-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .tech-tags {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="badge">Hoja de Ruta Detallada</div>
+            <h1>Plan Maestro B2B_Materialidad</h1>
+            <p class="subtitle">Estrategia de Implementación Técnica y Operativa para Materialidad & Fecha Cierta</p>
+        </header>
+
+        <!-- FASE 1 -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <span class="phase-number">01</span>
+                <span class="phase-title">Cimentación, Inteligencia y Due Diligence</span>
+            </div>
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox checked">✓</div>
+                    <div class="task-content">
+                        <div class="task-title">Auditoría de Requerimientos Legales y Técnicos</div>
+                        <div class="task-desc">Análisis exhaustivo del <span style="font-style: italic;">Artículo 69-B
+                                del CFF</span> y <span style="font-style: italic;">NOM-151</span> aplicados al modelo de
+                            negocio del cliente.</div>
+                        <div class="tech-tags"><span class="tag">Compliance</span><span class="tag">Legal
+                                Research</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox checked">✓</div>
+                    <div class="task-content">
+                        <div class="task-title">Diseño del Arquitectura Multi-tenant Premium</div>
+                        <div class="task-desc">Definición de esquemas relacionales con aislamiento físico a nivel de
+                            base de datos para máxima seguridad.</div>
+                        <div class="tech-tags"><span class="tag">PostgreSQL</span><span class="tag">Supabase</span><span
+                                class="tag">RLS</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Módulo de Captura de Cotizaciones e Inteligencia Documental</div>
+                        <div class="task-desc">Desarrollo del motor de carga de archivos (PDF/JPG) con pre-validación de
+                            integridad y asignación de consecutivos inmutables.</div>
+                        <div class="tech-tags"><span class="tag">Next.js</span><span class="tag">TypeScript</span><span
+                                class="tag">Cloud Storage</span></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- FASE 2 -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <span class="phase-number">02</span>
+                <span class="phase-title">Legal Tech: Formalización con Fecha Cierta</span>
+            </div>
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Integración de Firma Electrónica (Representante vs Cliente)</div>
+                        <div class="task-desc">Implementación del flujo de firmas secuenciales con seguridad de doble
+                            factor (2FA).</div>
+                        <div class="tech-tags"><span class="tag">e.firma integration</span><span class="tag">OTP</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Emisión automática de Constancias de Conservación (NOM-151)</div>
+                        <div class="task-desc">Conexión con PSC para obtención de sellos de tiempo gubernamentales RFC
+                            3161 vinculados al hash de cada contrato.</div>
+                        <div class="tech-tags"><span class="tag">PSC API</span><span
+                                class="tag">Cryptography</span><span class="tag">RFC 3161</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Dashboard de Seguimiento de Estatus Legal</div>
+                        <div class="task-desc">Visualización en tiempo real de contratos pendientes de ratificación con
+                            alertas de caducidad.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- FASE 3 -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <span class="phase-number">03</span>
+                <span class="phase-title">Motor de Vigilancia y Cumplimiento Fiscal</span>
+            </div>
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Implementación del Robot Sincronizador de Listas Negras (69-B)</div>
+                        <div class="task-desc">Desarrollo de un Cron Job que descarga, parsea y cruza diariamente el
+                            listado oficial del SAT/DOF con la base de proveedores.</div>
+                        <div class="tech-tags"><span class="tag">Supabase Edge Functions</span><span class="tag">Cron
+                                Jobs</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Sistema de Alerta Amarilla/Roja y Bloqueo Automático</div>
+                        <div class="task-desc">Lógica de protección que desactiva los botones de "Autorizar Pago" si el
+                            RFC del emisor entra en estatus de Presunto o Definitivo.</div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Consulta de Claves SAT y Validación de Objeto Social</div>
+                        <div class="task-desc">Validación algorítmica de los productos/servicios facturados contra la
+                            capacidad instalada del proveedor documentada.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- FASE 4 -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <span class="phase-number">04</span>
+                <span class="phase-title">Materialidad Operativa y Gestión de CFDIs</span>
+            </div>
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Auditoría de Requisitos Fiscales (Art. 29-A CFF)</div>
+                        <div class="task-desc">Sistematización del parseo XML para validar: RFC, Régimen Capital, Código
+                            Postal (Lugar de Expedición), Uso de CFDI y Objetos de Impuesto.</div>
+                        <div class="tech-tags"><span class="tag">CFDI 4.0 Library</span><span class="tag">Node.js XML
+                                Parser</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Módulo de Recolección de Evidencia Multimedia con GPS</div>
+                        <div class="task-desc">App/Sección web para captura de bitácoras, fotos de entrega y reportes
+                            técnicos con metadatos de georeferenciación.</div>
+                        <div class="tech-tags"><span class="tag">Geolocation API</span><span class="tag">Camera
+                                API</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Validador de XML CFDI 4.0 contra Web Service SAT</div>
+                        <div class="task-desc">Conexión directa para confirmar la vigencia del folio fiscal y asegurar
+                            que no haya sido cancelado maliciosamente.</div>
+                        <div class="tech-tags"><span class="tag">SOAP API</span><span class="tag">SAT WS</span></div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Vinculación Automatizada Contrato-Factura-Evidencia</div>
+                        <div class="task-desc">Motor que entrelaza el sello de tiempo NOM-151 con el UUID del SAT y los
+                            archivos de materialidad para formar el "Expediente Maestro".</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- FASE 5 -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <span class="phase-number">05</span>
+                <span class="phase-title">Cierre, Cobranza y Expediente de Defensa</span>
+            </div>
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Generador de Expediente de Materialidad en un Clic</div>
+                        <div class="task-desc">Exportación masiva de toda la evidencia en un PDF/ZIP estructurado según
+                            los protocolos de auditoría del SAT.</div>
+                        <div class="tech-tags"><span class="tag">PDF Generation</span><span class="tag">JSZip</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Motor de Cálculo de Comisiones Blindado por Pago</div>
+                        <div class="task-desc">Automatización del cálculo de incentivos cruzado contra el comprobante de
+                            pago (SPEI) verificado.</div>
+                    </div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">Integración de Notificaciones de Cobranza (WhatsApp & Email)</div>
+                        <div class="task-desc">Envío automatizado de CFDIs al cliente y alertas de pago recibido al
+                            vendedor.</div>
+                        <div class="tech-tags"><span class="tag">WhatsApp API</span><span class="tag">SendGrid</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 B2B_Materialidad Management Systems | Roadmap de Proyecto Confidencial</p>
+            <p>Aprobado por el Antigravity Planning Team</p>
+        </div>
+    </div>
+
+    <button class="no-print print-btn" onclick="window.print()">Exportar Hoja de Ruta (PDF)</button>
+
+</body>
+
+</html>

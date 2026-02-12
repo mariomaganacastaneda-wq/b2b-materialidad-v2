@@ -1,0 +1,133 @@
+{
+    "name": "SAT Blacklist Sync (69-B)",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "value": 3
+                        }
+                    ]
+                }
+            },
+            "id": "e4f8d1c0-1234-4a5b-9c8d-e4f8d1c01234",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                100,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://www.sat.gob.mx/static/archivos/Listado_Completo_69-B.csv",
+                "responseFormat": "file",
+                "options": {}
+            },
+            "id": "a1b2c3d4-5678-4e9f-8a0b-1c2d3e4f5g6h",
+            "name": "Download SAT CSV",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                300,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "options": {
+                    "delimiter": ",",
+                    "encoding": "windows1252",
+                    "readAsString": true
+                }
+            },
+            "id": "f5e4d3c2-b1a0-4f9e-8d7c-6b5a4a3a2a1a",
+            "name": "Parse CSV",
+            "type": "n8n-nodes-base.extractFromFile",
+            "typeVersion": 1,
+            "position": [
+                500,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "mode": "runOnceForEachItem",
+                "jsCode": "const item = $input.item.json;\n\n// Mapeo de columnas (Asegúrate de que los nombres coincidan con el CSV del SAT)\n// RFC es la columna 1, Nombre la 2, Situación la 3, etc.\n\nreturn {\n  rfc: item['No.'] ? item['RFC'] : null, \n  razon_social: item['Nombre del Contribuyente'],\n  estatus: item['Situación del contribuyente'],\n  fecha_publicacion: item['Fecha de publicación en el DOF'],\n  entidad_federativa: item['Entidad Federativa'],\n  tipo_listado: '69-B',\n  numero_oficio: item['Número de oficio'],\n  last_sync_at: new Date().toISOString()\n};"
+            },
+            "id": "c9b8a7f6-e5d4-4c3b-b2a1-0e9d8c7b6a5f",
+            "name": "Transform Data",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                700,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "table": "sat_blacklist",
+                "columns": "rfc,razon_social,estatus,fecha_publicacion,entidad_federativa,tipo_listado,numero_oficio,last_sync_at",
+                "conflictColumns": "rfc"
+            },
+            "id": "d0e1f2a3-b4c5-4d6e-8f9a-0b1c2d3e4f5g",
+            "name": "Supabase Upsert",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                900,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Download SAT CSV",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Download SAT CSV": {
+            "main": [
+                [
+                    {
+                        "node": "Parse CSV",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse CSV": {
+            "main": [
+                [
+                    {
+                        "node": "Transform Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Transform Data": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase Upsert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

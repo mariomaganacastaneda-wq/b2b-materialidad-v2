@@ -1,0 +1,302 @@
+BEGIN;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431130', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431130', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431130', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431140', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431150', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('431160', '24', 1.0, 'Vínculo sectorial: Comercio al por mayor') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+COMMIT;

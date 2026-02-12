@@ -1,0 +1,112 @@
+[
+  {
+    "id": "e1cd76da-7854-4161-877b-a950632afb79",
+    "name": "SEIDCO SERVICIOS DE INGENIERIA Y ADMINISTRACION INTEGRAL",
+    "rfc": "SSI101213VD1",
+    "created_at": "2026-02-07T00:30:05.057Z",
+    "stats": {
+      "activities": 25,
+      "regimes": 1,
+      "obligations": 7
+    }
+  },
+  {
+    "id": "3366a0cf-eece-4ad0-b45d-ca71760d4556",
+    "name": "M.M.C. ELECTRONICA",
+    "rfc": "MMC930113KT9",
+    "created_at": "2026-02-06T21:19:48.720Z",
+    "stats": {
+      "activities": 7,
+      "regimes": 1,
+      "obligations": 8
+    }
+  },
+  {
+    "id": "73594061-b5d9-4e81-885c-1adaa7d1a551",
+    "name": "NAGA000719U33",
+    "rfc": "NAGA000719U33",
+    "created_at": "2026-02-09T21:53:25.505Z",
+    "stats": {
+      "activities": 6,
+      "regimes": 3,
+      "obligations": 4
+    }
+  },
+  {
+    "id": "172b3fb6-140c-4bb9-92dd-ca714655fb84",
+    "name": "MAGAÑA, VIEYRA, CUEVA Y ASOCIADOS",
+    "rfc": "MVC151216BZ0",
+    "created_at": "2026-02-09T21:53:40.716Z",
+    "stats": {
+      "activities": 5,
+      "regimes": 1,
+      "obligations": 5
+    }
+  },
+  {
+    "id": "4b5a9d1a-bd14-467b-9047-9a423664ccad",
+    "name": "MORS5804129L9",
+    "rfc": "MORS5804129L9",
+    "created_at": "2026-02-09T21:52:56.910Z",
+    "stats": {
+      "activities": 6,
+      "regimes": 2,
+      "obligations": 6
+    }
+  },
+  {
+    "id": "b92f8846-fbe6-4338-b4db-d9a000486463",
+    "name": "SOLUTIONS MIMI",
+    "rfc": "SMI230426MZ7",
+    "created_at": "2026-02-06T21:19:48.720Z",
+    "stats": {
+      "activities": 0,
+      "regimes": 1,
+      "obligations": 2
+    }
+  },
+  {
+    "id": "fee0fcab-2647-48cd-8574-215c7edc0b89",
+    "name": "MEX EPIC",
+    "rfc": "MEP980213UG5",
+    "created_at": "2026-02-06T21:19:48.720Z",
+    "stats": {
+      "activities": 0,
+      "regimes": 1,
+      "obligations": 3
+    }
+  },
+  {
+    "id": "29138620-a4d6-45f4-81dd-89dfcd1d9396",
+    "name": "GALG7607057G1",
+    "rfc": "GALG7607057G1",
+    "created_at": "2026-02-09T21:51:50.183Z",
+    "stats": {
+      "activities": 5,
+      "regimes": 2,
+      "obligations": 4
+    }
+  },
+  {
+    "id": "54520509-b42a-4f82-aa91-4c70c8a13e57",
+    "name": "GPO SEDAUTOS",
+    "rfc": "GSE240425U61",
+    "created_at": "2026-02-09T21:52:04.719Z",
+    "stats": {
+      "activities": 0,
+      "regimes": 1,
+      "obligations": 4
+    }
+  },
+  {
+    "id": "73fb991b-8e5e-4d62-ab08-01168c7c84cb",
+    "name": "ECM2402081M2",
+    "rfc": "ECM2402081M2",
+    "created_at": "2026-02-09T20:29:28.222Z",
+    "stats": {
+      "activities": 0,
+      "regimes": 0,
+      "obligations": 0
+    }
+  }
+]

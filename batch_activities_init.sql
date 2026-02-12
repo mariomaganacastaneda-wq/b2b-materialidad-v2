@@ -1,0 +1,1 @@
+INSERT INTO public.cat_economic_activities (code, name, level) VALUES  ON CONFLICT (code) DO NOTHING;

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.0" Folio="7768" Fecha="2024-02-21T13:16:04" Sello="Br4gGubvX2/IS6gx7zRPa9PEONdVQuC/a50ZVHveOSKhaeOD3h1CLmPaVjdug5XSRIvx2bxKV6xbq0uF0nCsmrlZ0WPoylViX08niUOZQmhVkDgGF0Wq+QV5cd97x0sJDR0+zxGuj2iSvtwoPo5/duUkZTwN37jZ48ZUU2bG71EAh3Wm9NQ7+qtZ7TH1c7iS4yDA24/CguZLJbWrjYF6Ki1/zjxmHmQq/Z4Awl0wLxhhZ8Wo5KCBkDQTRHO8GKuRPkZZXpLcyHoFldMVGX/RzTVbM+ELdYYe2Yhs/9R7Dj7KK4vvqthUz2MX09x5fmrxphmQ1d4ykdrL3Qs6xoILNQ==" FormaPago="99" NoCertificado="00001000000513325791" Certificado="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" CondicionesDePago="CONTADO" SubTotal="2123188.40" Moneda="MXN" TipoCambio="1" Total="2462898.54" TipoDeComprobante="I" Exportacion="01" MetodoPago="PPD" LugarExpedicion="03340">
+	<cfdi:Emisor Rfc="MEP980213UG5" Nombre="MEX EPIC" RegimenFiscal="601"/>
+	<cfdi:Receptor Rfc="BDI230616TE5" Nombre="BLANCHEZ DISTRIBUIDOR" DomicilioFiscalReceptor="04250" RegimenFiscalReceptor="601" UsoCFDI="G03"/>
+	<cfdi:Conceptos>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="APERTURA DE HUECO PARA RECIBIR VENTANAS DE 1.20 X 1.20 MTS EN LÁMINA PINTRO Y PANEL DE CALIDAD IGUAL O SIMILAR DUROCK." ValorUnitario="31702.90" Importe="31702.90">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="31702.90" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5072.464"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE VENTANA PREFABRICADA DE 1.20M X 1.20M DE ALUMINIO COLOR NATURAL, CON VIDRIO TRANSPARENTE DE 6 MM." ValorUnitario="124094.20" Importe="124094.20">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="124094.20" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="19855.072"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SELLADO DE HUECOS CON SILICÓN EN DONDE SE ABRIERON LOS HUECOS PARA LAS VENTANAS ENTRE EL PANEL Y LA LÁMINA PINTRO EN DONDE SE ALBERGARÁN LAS VENTANAS." ValorUnitario="65217.39" Importe="65217.39">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="65217.39" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="10434.7824"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE VENTANA PREFABRICADA DE 20CM X 60CM DE ALUMINIO COLOR NATURAL, QUE INCLUYA MALLA TIPO MOSQUITERO, CON VIDRIO TRANSPARENTE DE 6 MM." ValorUnitario="90579.71" Importe="90579.71">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="90579.71" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="14492.7536"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SELLADO DE HUECOS CON SILICÓN EN DONDE SE ABRIERON LOS HUECOS PARA LAS VENTANAS ENTRE EL PANEL Y LA LÁMINA PINTRO EN DONDE SE ALBERGARÁN LAS VENTANAS." ValorUnitario="27173.91" Importe="27173.91">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="27173.91" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="4347.8256"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE MURO DE TABLAROCA DE 3.70M X 2.44M., INCLUYE: MATERIALES, APLICACIÓN DE PERFACINTA Y READYMIX, ACABADO FINO." ValorUnitario="167572.46" Importe="167572.46">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="167572.46" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="26811.5936"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE ESQUINERO DE TABLAROCA DE 2.20M X 2.44M Y 2.30M X 2.44M. PARA OFICINA. INCLUYE: MATERIALES, APLICACIÓN DE PERFACINTA Y READYMIX, ACABADO FINO." ValorUnitario="122282.61" Importe="122282.61">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="122282.61" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="19565.2176"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE MURO DE TABLAROCA DE 2.20M X 1.20 M. PARA OFICINA DE TITULAR, INCLUYE: MATERIALES, APLICACIÓN DE PERFACINTA Y READYMIX, ACABADO FINO." ValorUnitario="122282.61" Importe="122282.61">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="122282.61" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="19565.2176"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="APLICACIÓN DE PINTURA VINÍLICA EN MUROS CALIDAD IGUAL O SIMILAR A COMEX VINIMEX A DOS MANOS. APROX. 350 M2" ValorUnitario="235507.25" Importe="235507.25">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="235507.25" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="37681.16"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="APLICACIÓN DE PINTURA EN ESMALTE EN PLAFÓN, EN COLOR BLANCO, INCLUYE: MATERIALES, MANO DE OBRA, HERRAMIENTAS Y TODO LO NECESARIO PARA SU CORRECTA APLICACIÓN.  APROX. 200 M2" ValorUnitario="117753.62" Importe="117753.62">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="117753.62" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="18840.5792"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="INSTALACIÓN DE CRISTAL CLARO DE 6MM DE ESPESOR PARA SALA DE JUNTAS DE 1.00M X 2.00M." ValorUnitario="22644.93" Importe="22644.93">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="22644.93" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="3623.1888"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE PUERTA DE TAMBOR DE MADERA DE 1.00M X 2.10M." ValorUnitario="31702.90" Importe="31702.90">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="31702.90" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5072.464"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="INSTALACIÓN DE NODOS DE RED PARA MÓDULOS DE TRABAJO, CERTIFICADO DE 15 AÑOS." ValorUnitario="45289.86" Importe="45289.86">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="45289.86" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="7246.3776"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="FABRICACIÓN DE INSTALACIÓN ELÉCTRICA PARA ALIMENTAR MÓDULOS DE TRABAJO, SALA DE JUNTAS, SALA DE ESPERA Y OFICINAS." ValorUnitario="72463.76" Importe="72463.76">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="72463.76" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="11594.2016"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE LUMINARIA TIPO LED, INCLUYE: MATERIALES, CABLEADO, TUBERÍA DE PARED GRUESA," ValorUnitario="13586.96" Importe="13586.96">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="13586.96" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="2173.9136"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE APAGADORES, INCLUYE: MATERIALES, CABLEADO, TUBERÍA Y TODO LO NECESARIO PARA LA CORRECTA INSTALACIÓN." ValorUnitario="25362.32" Importe="25362.32">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="25362.32" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="4057.9712"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE PUERTA METÁLICA DE 1.20M X 2.10M. ELABORADA CON LÁMINA PINTRO Y POSTES (MATERIAL SIMILAR AL EXISTENTE), INCLUYE: FABRICACIÓN MONTAJE, AJUSTES EN LÁMINA, Y TODO LO NECESARIO PARA SU CORRECTA EJECUCIÓN" ValorUnitario="40760.87" Importe="40760.87">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="40760.87" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="6521.7392"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="REHABILITACIÓN DE LÁMINAS DAÑADAS AL EXTERIOR, INCLUYE: REACOMODO, FIJACIÓN, SELLADO, APLICACIÓN DE PINTURA EN ESMALTE." ValorUnitario="121376.81" Importe="121376.81">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="121376.81" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="19420.2896"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE RAMPA PARA INTERCONECTAR AREAS DE TRABAJO CON SANITARIOS, DE 1.50M DE ANCHO Y 10CM DE ESPESOR, FABRICADO CON VARILLAS DE 3/8 15CM Y CONCRETO F°C 150KG/CM2." ValorUnitario="30797.10" Importe="30797.10">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="30797.10" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="4927.536"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO E INSTALACIÓN DE CHAPA CALIDAD IGUAL O SIMILAR A FANAL EN PUERTA DE ACCESO A LA CASETA QUE SE REHABILITARÁ," ValorUnitario="5434.78" Importe="5434.78">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="5434.78" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="869.5648"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="APLICACIÓN DE IMPERMEABILIZACIÓN A BASE DE UNA IMPREGNACIÓN CALIDAD IGUAL O SIMILAR A HIDROPRIMER Y FESTERMIP DE 4MM DE ESPESOR EN ACABADO COLOR TERRACOTA, APROX. 290 M2" ValorUnitario="501811.59" Importe="501811.59">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="501811.59" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="80289.8544"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE ANDADORES DE CONCRETO DE 1.50M DE ANCHO Y 10CM DE ESPESOR FABRICADO CON VARILLAS DE 3/8 15CM Y CONCRETO F°C 150KG/CM2." ValorUnitario="31702.90" Importe="31702.90">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="31702.90" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5072.464"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="ELABORACIÓN DE ANDADORES PERIMETRALES DE CONCRETO DE 0.50M DE ANCHO Y 10CM DE ESPESOR." ValorUnitario="48913.05" Importe="48913.05">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="48913.05" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="7826.088"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+		<cfdi:Concepto ClaveProdServ="72101500" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="SUMINISTRO Y HABILITACIÓN DE ACOMETIDA Y CENTRO DE CARGA." ValorUnitario="27173.91" Importe="27173.91">
+			<cfdi:Impuestos>
+				<cfdi:Traslados>
+					<cfdi:Traslado Base="27173.91" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="4347.8256"/>
+				</cfdi:Traslados>
+			</cfdi:Impuestos>
+		</cfdi:Concepto>
+	</cfdi:Conceptos>
+	<cfdi:Impuestos TotalImpuestosTrasladados="339710.14">
+		<cfdi:Traslados>
+			<cfdi:Traslado Base="2123188.40" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="339710.14"/>
+		</cfdi:Traslados>
+	</cfdi:Impuestos>
+	<cfdi:Complemento>
+		<tfd:TimbreFiscalDigital Version="1.1" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" SelloSAT="mW4q8GY5G5D4RmTlFPz5YFVXPMOEDvKWaXTkoUmCTj/3V6XS89o+mUIBQW61tkpd9zQlmRxmUphhQ7YMlqsICKr8K8Lhhmqa8x5psdXVhCCv6Sywq6cGxfrfOw/T2hO4Kg4sTMKeh++o+AH6iCNoXwS60zGx08qRSH2rDxdIg600hMgYzC1VHNXWMu9Fs/4ixXfbQITNk/LZ9xLRdegFKg1p7JJHgnY9/FvfwekjTTlyTHg3uTccnVLA0OgqwGSTpW2AYT2N2XUpi7ATEScjDT+VTZQbZNNYe1VnnGbg61k8TZ+sFgCrSrCcgY5rUr0cKRexeJTRyiBsqEAQLPDWQg==" NoCertificadoSAT="00001000000505142236" UUID="6461243F-6E49-477B-A41B-63F6000F4A0E" FechaTimbrado="2024-02-21T13:16:06" SelloCFD="Br4gGubvX2/IS6gx7zRPa9PEONdVQuC/a50ZVHveOSKhaeOD3h1CLmPaVjdug5XSRIvx2bxKV6xbq0uF0nCsmrlZ0WPoylViX08niUOZQmhVkDgGF0Wq+QV5cd97x0sJDR0+zxGuj2iSvtwoPo5/duUkZTwN37jZ48ZUU2bG71EAh3Wm9NQ7+qtZ7TH1c7iS4yDA24/CguZLJbWrjYF6Ki1/zjxmHmQq/Z4Awl0wLxhhZ8Wo5KCBkDQTRHO8GKuRPkZZXpLcyHoFldMVGX/RzTVbM+ELdYYe2Yhs/9R7Dj7KK4vvqthUz2MX09x5fmrxphmQ1d4ykdrL3Qs6xoILNQ==" RfcProvCertif="MAS0810247C0" xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital"/>
+	</cfdi:Complemento>
+</cfdi:Comprobante>

@@ -1,0 +1,51 @@
+# CHECK LIST de Materialidad (2026 en adelante)
+
+## 👤 Cliente
+
+* [ ] **Cotizaciones Comparativas:** Contar con al menos dos o tres opciones para justificar por qué se eligió a ese proveedor.
+* [ ] **Políticas:** Compartir las políticas para que ambos las sepan y firmen.
+* [ ] **Orden de Compra o Contrato de Prestación de Servicios:**
+* Debe ser acorde al monto detallado y los pedidos.
+* Debe incluir firmas.
+* Si se requiere, contar con **Fecha Cierta** (ratificación ante notario o juez).
+
+
+* [ ] **Órdenes de Compra / Pedidos:** Documento que formula la solicitud específica.
+* El cliente define el monto para que la O.C. sea autorizada y recibida.
+* Verificar si el contrato se detalla dentro de la O.C.
+
+
+* [ ] **Evidencia de que se prestó el Servicio:**
+* Bitácoras firmadas por cliente y proveedor.
+* Evidencias definidas por el cliente y compartidas con el proveedor.
+
+
+* [ ] **Pago realizado.**
+* [ ] **Obtener CFDI.**
+
+---
+
+## 🏢 Proveedor
+
+* [ ] **Pago realizado.**
+* [ ] **Complemento de Pago:** De requerirse (marcar `N/A` si no aplica).
+* [ ] **Emisión de CFDI.**
+* [ ] **Clasificación de la operación:**
+* [ ] Bienes.
+* [ ] Servicios.
+* [ ] Arrendamiento.
+* [ ] **Otorgamiento de Derechos:** Uso de marcas, patentes y derechos de autor (Regalías).
+* [ ] **Intereses:** Si se presta dinero a un cliente, los intereses deben facturarse.
+* [ ] **Anticipos:** Entrega de dinero cuando aún no se define el bien o servicio exacto.
+* [ ] **Refacturación de Gastos.**
+
+
+
+---
+
+## 📂 Resguardo de Documentación (Sistema B2B)
+
+* [ ] **Validación RFC:** Validar en listas del SAT (Art. 69 y 69-B).
+* [ ] **Claves SAT:** Definir productos/servicios y documentos obligatorios según el tipo.
+* [ ] **Resguardo de Materialidad:** Almacenar XML, PDF y toda la evidencia documental anterior en el sistema.
+

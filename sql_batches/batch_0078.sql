@@ -1,0 +1,302 @@
+BEGIN;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('114210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115111', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115112', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115112', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115113', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115119', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115210', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('115310', '10', 1.0, 'Vínculo sectorial: Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236111', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+INSERT INTO public.rel_activity_cps_congruence (activity_code, cps_family_code, score, reason) 
+VALUES ('236112', '72', 1.0, 'Vínculo sectorial: Construcción') 
+ON CONFLICT (activity_code, cps_family_code) DO NOTHING;
+COMMIT;
