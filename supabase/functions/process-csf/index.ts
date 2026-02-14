@@ -197,17 +197,46 @@ serve(async (req) => {
 
         // Activities
         if (actividades_economicas && actividades_economicas.length > 0) {
-            console.log(`[FORENSIC] Insertando ${actividades_economicas.length} actividades...`);
-            await supabaseClient.from('organization_activities').delete().eq('organization_id', finalOrgId);
-            const activitiesData = actividades_economicas.map((a: any) => ({
-                organization_id: finalOrgId,
-                activity_order: parseInt(a.orden) || 1,
-                description: a.actividad_economica,
-                activity_code: a.codigo_sat,
-                percentage: parseInt(a.porcentaje) || 0,
-                start_date: parseSpanishDate(a.fecha_inicio)
-            }));
-            const { error: actError } = await supabaseClient.from('organization_activities').insert(activitiesData);
+            // First, map activities and prepare descriptions
+            const preparedActivities = actividades_economicas.map((a: any) => {
+                const rawDesc = a.actividad_economica || "";
+                // Normalización agresiva: remover NBSP, espacios múltiples y trim
+                const cleanDesc = rawDesc
+                    .replace(/\u00A0/g, ' ') // Reemplazar Non-breaking spaces
+                    .replace(/\s+/g, ' ')    // Colapsar múltiples espacios
+                    .trim();
+
+                return {
+                    organization_id: finalOrgId,
+                    activity_order: parseInt(a.orden) || 1,
+                    description: cleanDesc,
+                    activity_code: a.codigo_sat,
+                    percentage: parseInt(a.porcentaje) || 0,
+                    start_date: parseSpanishDate(a.fecha_inicio)
+                };
+            });
+
+            // Smart Mapping: Resolve missing codes by name
+            for (const act of preparedActivities) {
+                if (!act.activity_code && act.description) {
+                    const { data: catMatches } = await supabaseClient
+                        .from('cat_economic_activities')
+                        .select('code')
+                        .ilike('name', act.description)
+                        .order('code', { ascending: false });
+
+                    if (catMatches && catMatches.length > 0) {
+                        // Seleccionamos el código más largo para asegurar especificidad
+                        const bestMatch = catMatches.reduce((a: any, b: any) => a.code.length > b.code.length ? a : b);
+                        console.log(`[FORENSIC] Código resuelto por nombre para "${act.description}": ${bestMatch.code}`);
+                        act.activity_code = bestMatch.code;
+                    } else {
+                        console.log(`[FORENSIC] Intento fallido para: "${act.description}"`);
+                    }
+                }
+            }
+
+            const { error: actError } = await supabaseClient.from('organization_activities').insert(preparedActivities);
             if (actError) console.error(`[FORENSIC] Error en actividades: ${actError.message}`);
         }
 

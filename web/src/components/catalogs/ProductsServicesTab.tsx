@@ -5,9 +5,7 @@ import {
     Search,
     BookOpen,
     Users,
-    AlertCircle,
-    Check,
-    X
+    AlertCircle
 } from 'lucide-react';
 import type { CFDIProductService } from '../../types';
 
@@ -90,15 +88,27 @@ const ProductsServicesTab = () => {
     const fetchRelatedActivities = async (productCode: string) => {
         try {
             setLoadingActivities(prev => ({ ...prev, [productCode]: true }));
+
+            // 1. Obtener la familia (primeros 6 dígitos) del código de producto
+            const familyCode = productCode.substring(0, 6);
+
+            // 2. Buscar actividades vinculadas a esa familia en v3
             const { data, error } = await supabase
-                .from('rel_activity_product')
-                .select('activity_code, matching_score, verification_status, cat_economic_activities(name)')
-                .eq('product_code', productCode)
-                .neq('verification_status', 'rejected')
-                .order('matching_score', { ascending: false });
+                .from('rel_activity_cps_congruence')
+                .select('activity_code, score, reason, cat_economic_activities(name)')
+                .eq('cps_family_code', familyCode)
+                .order('score', { ascending: false });
 
             if (error) throw error;
-            setRelatedActivities(prev => ({ ...prev, [productCode]: data || [] }));
+
+            const results = (data || []).map(d => ({
+                activity_code: d.activity_code,
+                matching_score: d.score,
+                reason: d.reason,
+                cat_economic_activities: d.cat_economic_activities
+            }));
+
+            setRelatedActivities(prev => ({ ...prev, [productCode]: results }));
         } catch (err: any) {
             console.error('Error fetching related activities:', err.message);
         } finally {
@@ -106,25 +116,6 @@ const ProductsServicesTab = () => {
         }
     };
 
-    const handleUpdateMappingStatus = async (productCode: string, activityCode: string, status: 'verified' | 'rejected') => {
-        try {
-            const { error } = await supabase
-                .from('rel_activity_product')
-                .update({
-                    verification_status: status,
-                    matching_score: status === 'verified' ? 1.0 : undefined,
-                    verified_at: status === 'verified' ? new Date().toISOString() : null
-                })
-                .match({ activity_code: activityCode, product_code: productCode });
-
-            if (error) throw error;
-
-            // Refresh the related activities list for this product
-            await fetchRelatedActivities(productCode);
-        } catch (err: any) {
-            console.error('Error updating mapping status:', err.message);
-        }
-    };
 
     const toggleNode = async (code: string, level: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
@@ -290,74 +281,52 @@ const ProductsServicesTab = () => {
                                             <span style={{ textAlign: 'right' }}>Acciones</span>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            {related.map(rel => {
-                                                const score = rel.matching_score * 100;
-                                                const isHighRisk = score < 70;
-                                                const isVerified = rel.verification_status === 'verified';
-
-                                                return (
-                                                    <div
-                                                        key={rel.activity_code}
-                                                        style={{
-                                                            display: 'grid',
-                                                            gridTemplateColumns: '100px 1fr 100px 80px',
-                                                            gap: '12px',
-                                                            padding: '10px 16px',
-                                                            background: isVerified ? 'rgba(16, 185, 129, 0.05)' : isHighRisk ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255,255,255,0.02)',
-                                                            borderRadius: '8px',
-                                                            fontSize: '12px',
-                                                            alignItems: 'center',
-                                                            border: `1px solid ${isVerified ? 'rgba(16, 185, 129, 0.2)' : isHighRisk ? 'rgba(239, 68, 68, 0.2)' : 'transparent'}`,
-                                                            transition: 'all 0.2s ease'
-                                                        }}
-                                                    >
+                                            {related.map(rel => (
+                                                <div
+                                                    key={rel.activity_code}
+                                                    style={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: '100px 1fr 100px',
+                                                        gap: '12px',
+                                                        padding: '10px 16px',
+                                                        background: 'rgba(255,255,255,0.02)',
+                                                        borderRadius: '8px',
+                                                        fontSize: '11px',
+                                                        alignItems: 'center',
+                                                        border: '1px solid rgba(255,255,255,0.05)',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                         <span style={{ color: 'var(--primary-base)', fontWeight: '800', fontFamily: 'monospace' }}>
                                                             {rel.activity_code}
                                                         </span>
-                                                        <span style={{ color: '#e2e8f0', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={rel.cat_economic_activities.name}>
+                                                        <span style={{ fontSize: '9px', color: '#64748b' }}>SCIAN</span>
+                                                    </div>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ color: '#e2e8f0', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={rel.cat_economic_activities.name}>
                                                             {rel.cat_economic_activities.name}
-                                                        </span>
-                                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                            <div style={{
-                                                                fontSize: '10px',
-                                                                padding: '2px 8px',
-                                                                borderRadius: '4px',
-                                                                background: isVerified ? '#10b981' : isHighRisk ? '#ef4444' : '#334155',
-                                                                color: 'white',
-                                                                fontWeight: '700',
-                                                                minWidth: '60px',
-                                                                textAlign: 'center'
-                                                            }}>
-                                                                {isVerified ? '✓' : `${score.toFixed(0)}%`}
-                                                            </div>
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                                            {!isVerified && (
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleUpdateMappingStatus(item.code, rel.activity_code, 'verified');
-                                                                    }}
-                                                                    style={{ padding: '4px', borderRadius: '4px', border: '1px solid #10b981', background: 'transparent', color: '#10b981', cursor: 'pointer', display: 'flex' }}
-                                                                    title="Confirmar"
-                                                                >
-                                                                    <Check size={12} />
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleUpdateMappingStatus(item.code, rel.activity_code, 'rejected');
-                                                                }}
-                                                                style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ef4444', background: 'transparent', color: '#ef4444', cursor: 'pointer', display: 'flex' }}
-                                                                title="Rechazar"
-                                                            >
-                                                                <X size={12} />
-                                                            </button>
+                                                        <div style={{ fontSize: '9px', color: '#94a3b8', fontStyle: 'italic', marginTop: '2px' }} title={rel.reason}>
+                                                            {rel.reason}
                                                         </div>
                                                     </div>
-                                                );
-                                            })}
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{
+                                                            fontSize: '9px',
+                                                            padding: '3px 8px',
+                                                            borderRadius: '6px',
+                                                            background: rel.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+                                                            color: rel.matching_score >= 1.0 ? '#10b981' : 'var(--primary-base)',
+                                                            fontWeight: '800',
+                                                            border: `1px solid ${rel.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'}`,
+                                                            textAlign: 'center'
+                                                        }}>
+                                                            {rel.matching_score >= 1.0 ? 'PRINCIPAL' : `SCORE: ${rel.matching_score.toFixed(2)}`}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 ) : (

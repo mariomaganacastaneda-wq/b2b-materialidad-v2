@@ -4,9 +4,7 @@ import {
     ChevronRight,
     Users,
     BookOpen,
-    Hash,
-    Check,
-    X
+    Hash
 } from 'lucide-react';
 import type { EconomicActivity } from '../../types';
 
@@ -21,39 +19,45 @@ const EconomicActivitiesTab = () => {
     const fetchSuggestedProducts = async (activityCode: string) => {
         try {
             setLoadingProducts(prev => ({ ...prev, [activityCode]: true }));
-            const { data, error } = await supabase
-                .from('rel_activity_product')
-                .select('product_code, matching_score, verification_status, cat_cfdi_productos_servicios(name)')
-                .eq('activity_code', activityCode)
-                .neq('verification_status', 'rejected')
-                .order('matching_score', { ascending: false });
 
-            if (error) throw error;
-            setSuggestedProducts(prev => ({ ...prev, [activityCode]: data || [] }));
+            // 1. Obtener familias CPS mapeadas desde el nuevo mapeo v3
+            const { data: congruenceData, error: congruenceError } = await supabase
+                .from('rel_activity_cps_congruence')
+                .select('cps_family_code, score, reason')
+                .eq('activity_code', activityCode)
+                .order('score', { ascending: false });
+
+            if (congruenceError) throw congruenceError;
+
+            if (congruenceData && congruenceData.length > 0) {
+                // 2. Obtener productos específicos para esas familias (añadiendo '00' para 8 dígitos)
+                const productCodes8Digits = congruenceData.map(c => `${c.cps_family_code}00`);
+                const { data: productsData, error: productsError } = await supabase
+                    .from('cat_cfdi_productos_servicios')
+                    .select('code, name')
+                    .in('code', productCodes8Digits);
+
+                if (productsError) throw productsError;
+
+                // 3. Mapear resultados combinando la información de congruencia
+                const results = productsData?.map(p => {
+                    const family = congruenceData.find(c => p.code === `${c.cps_family_code}00`);
+                    return {
+                        product_code: p.code,
+                        matching_score: family?.score || 0,
+                        reason: family?.reason || '',
+                        cat_cfdi_productos_servicios: { name: p.name }
+                    };
+                }).sort((a, b) => b.matching_score - a.matching_score) || [];
+
+                setSuggestedProducts(prev => ({ ...prev, [activityCode]: results }));
+            } else {
+                setSuggestedProducts(prev => ({ ...prev, [activityCode]: [] }));
+            }
         } catch (err: any) {
             console.error('Error fetching suggested products:', err.message);
         } finally {
             setLoadingProducts(prev => ({ ...prev, [activityCode]: false }));
-        }
-    };
-
-    const handleUpdateMappingStatus = async (activityCode: string, productCode: string, status: 'verified' | 'rejected') => {
-        try {
-            const { error } = await supabase
-                .from('rel_activity_product')
-                .update({
-                    verification_status: status,
-                    matching_score: status === 'verified' ? 1.0 : undefined,
-                    verified_at: status === 'verified' ? new Date().toISOString() : null
-                })
-                .match({ activity_code: activityCode, product_code: productCode });
-
-            if (error) throw error;
-
-            // Refresh the suggested products list for this activity
-            await fetchSuggestedProducts(activityCode);
-        } catch (err: any) {
-            console.error('Error updating mapping status:', err.message);
         }
     };
 
@@ -234,93 +238,53 @@ const EconomicActivitiesTab = () => {
                                         Cargando sugerencias de materialidad...
                                     </div>
                                 ) : suggested.length > 0 ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
-                                        <div style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: '100px 1fr 100px 80px',
-                                            gap: '12px',
-                                            padding: '8px 16px',
-                                            fontSize: '10px',
-                                            fontWeight: '900',
-                                            color: '#64748b',
-                                            textTransform: 'uppercase',
-                                            borderBottom: '1px solid rgba(255,255,255,0.05)'
-                                        }}>
-                                            <span>Clave SAT</span>
-                                            <span>Descripción</span>
-                                            <span style={{ textAlign: 'center' }}>Materialidad</span>
-                                            <span style={{ textAlign: 'right' }}>Acciones</span>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            {suggested.map(prod => {
-                                                const score = prod.matching_score * 100;
-                                                const isHighRisk = score < 70;
-                                                const isVerified = prod.verification_status === 'verified';
-
-                                                return (
-                                                    <div
-                                                        key={prod.product_code}
-                                                        style={{
-                                                            display: 'grid',
-                                                            gridTemplateColumns: '100px 1fr 100px 80px',
-                                                            gap: '12px',
-                                                            padding: '10px 16px',
-                                                            background: isVerified ? 'rgba(16, 185, 129, 0.05)' : isHighRisk ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255,255,255,0.02)',
-                                                            borderRadius: '8px',
-                                                            fontSize: '12px',
-                                                            alignItems: 'center',
-                                                            border: `1px solid ${isVerified ? 'rgba(16, 185, 129, 0.2)' : isHighRisk ? 'rgba(239, 68, 68, 0.2)' : 'transparent'}`,
-                                                            transition: 'all 0.2s ease'
-                                                        }}
-                                                    >
-                                                        <span style={{ color: 'var(--primary-base)', fontWeight: '800', fontFamily: 'monospace' }}>
-                                                            {prod.product_code}
-                                                        </span>
-                                                        <span style={{ color: '#e2e8f0', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={prod.cat_cfdi_productos_servicios.name}>
-                                                            {prod.cat_cfdi_productos_servicios.name}
-                                                        </span>
-                                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                            <div style={{
-                                                                fontSize: '10px',
-                                                                padding: '2px 8px',
-                                                                borderRadius: '4px',
-                                                                background: isVerified ? '#10b981' : isHighRisk ? '#ef4444' : '#334155',
-                                                                color: 'white',
-                                                                fontWeight: '700',
-                                                                minWidth: '60px',
-                                                                textAlign: 'center'
-                                                            }}>
-                                                                {isVerified ? '✓' : `${score.toFixed(0)}%`}
-                                                            </div>
-                                                        </div>
-                                                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                                            {!isVerified && (
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleUpdateMappingStatus(act.code, prod.product_code, 'verified');
-                                                                    }}
-                                                                    style={{ padding: '4px', borderRadius: '4px', border: '1px solid #10b981', background: 'transparent', color: '#10b981', cursor: 'pointer', display: 'flex' }}
-                                                                    title="Confirmar"
-                                                                >
-                                                                    <Check size={12} />
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleUpdateMappingStatus(act.code, prod.product_code, 'rejected');
-                                                                }}
-                                                                style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ef4444', background: 'transparent', color: '#ef4444', cursor: 'pointer', display: 'flex' }}
-                                                                title="Rechazar"
-                                                            >
-                                                                <X size={12} />
-                                                            </button>
-                                                        </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '8px' }}>
+                                        {suggested.map(prod => (
+                                            <div
+                                                key={prod.product_code}
+                                                style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '100px 1fr 100px',
+                                                    gap: '12px',
+                                                    padding: '10px 16px',
+                                                    background: 'rgba(255,255,255,0.02)',
+                                                    borderRadius: '8px',
+                                                    fontSize: '11px',
+                                                    alignItems: 'center',
+                                                    border: '1px solid rgba(255,255,255,0.05)',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <span style={{ color: 'var(--primary-base)', fontWeight: '800', fontFamily: 'monospace' }}>
+                                                        {prod.product_code}
+                                                    </span>
+                                                    <span style={{ fontSize: '9px', color: '#64748b' }}>CPV / SAT</span>
+                                                </div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ color: '#e2e8f0', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={prod.cat_cfdi_productos_servicios.name}>
+                                                        {prod.cat_cfdi_productos_servicios.name}
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
+                                                    <div style={{ fontSize: '9px', color: '#94a3b8', fontStyle: 'italic', marginTop: '2px' }} title={prod.reason}>
+                                                        {prod.reason}
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{
+                                                        fontSize: '9px',
+                                                        padding: '3px 8px',
+                                                        borderRadius: '6px',
+                                                        background: prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+                                                        color: prod.matching_score >= 1.0 ? '#10b981' : 'var(--primary-base)',
+                                                        fontWeight: '800',
+                                                        border: `1px solid ${prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'}`,
+                                                        textAlign: 'center'
+                                                    }}>
+                                                        {prod.matching_score >= 1.0 ? 'PRINCIPAL' : `SCORE: ${prod.matching_score.toFixed(2)}`}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : (
                                     <div style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', padding: '10px', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
@@ -418,10 +382,16 @@ const EconomicActivitiesTab = () => {
                     border-color: var(--primary-base) !important;
                     box-shadow: 0 0 0 4px var(--primary-light) !important;
                 }
+                .fade-in {
+                    animation: fadeIn 0.3s ease-out;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-4px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
             `}</style>
         </div>
     );
 };
-
 
 export default EconomicActivitiesTab;
