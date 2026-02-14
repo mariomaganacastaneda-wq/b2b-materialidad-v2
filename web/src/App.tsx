@@ -33,8 +33,8 @@ import ProformaManager from './components/commercial/ProformaManager';
 import QuotationsPage from './pages/Quotations';
 
 // Supabase Connection
-const SUPABASE_URL = 'https://ywovtkubsanalddsdedi.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_4TZm-phlmGg4Hu-IA_Weqg_IkhwANh1';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://ywovtkubsanalddsdedi.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_4TZm-phlmGg4Hu-IA_Weqg_IkhwANh1';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1189,14 +1189,17 @@ const SettingsPage = ({ orgs, setOrgs, selectedOrg, setSelectedOrg }: any) => {
               </button>
               <button
                 onClick={async () => {
+                  console.log('Intentando guardar cambios para:', editingUser.id, editingUser.role);
                   const { error } = await supabase.from('profiles').update({
                     full_name: editingUser.full_name,
                     role: editingUser.role
                   }).eq('id', editingUser.id);
 
                   if (error) {
+                    console.error('Error al actualizar perfil:', error);
                     alert('Error: ' + error.message);
                   } else {
+                    console.log('Perfil actualizado con éxito');
                     setUsers(users.map((u: any) => u.id === editingUser.id ? { ...u, full_name: editingUser.full_name, role: editingUser.role } : u));
                     setEditingUser(null);
                   }
