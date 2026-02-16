@@ -125,15 +125,6 @@ serve(async (req) => {
                     throw new Error(`Operación cancelada: El documento cargado (emisión: ${emissionDateStr}) es más antiguo que el actual (${existingOrg.csf_emission_date}).`);
                 }
             }
-
-            // VERSIONING: Snapshot current state before update
-            console.log(`[FORENSIC] Guardando versión previa de CSF para Org: ${finalOrgId}`);
-            await supabaseClient.from('organization_csf_history').insert({
-                organization_id: finalOrgId,
-                file_url: existingOrg.csf_file_url,
-                emission_date: existingOrg.csf_emission_date || '1970-01-01',
-                extracted_data: { rfc: existingOrg.rfc, name: existingOrg.name }
-            });
         } else {
             console.log(`[FORENSIC] No se encontró organización existente para RFC: ${rfc}`);
         }
@@ -191,6 +182,15 @@ serve(async (req) => {
             console.log(`[FORENSIC] Actualizando organización (fall-through): ${finalOrgId}`);
             await supabaseClient.from('organizations').update(updateData).eq('id', finalOrgId);
         }
+
+        // --- NEW: Archive this document in history ---
+        console.log(`[FORENSIC] Registrando nuevo documento en el historial para Org: ${finalOrgId}`);
+        await supabaseClient.from('organization_csf_history').insert({
+            organization_id: finalOrgId,
+            file_url: updateData.csf_file_url,
+            emission_date: updateData.csf_emission_date,
+            extracted_data: { rfc: updateData.rfc, name: updateData.name }
+        });
 
         // 5. Granular Synchronization (Activities, Regimes, Obligations)
         console.log(`[FORENSIC] Sincronizando datos granulares para Org: ${finalOrgId}`);

@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 interface ProformaData {
     clientName: string;
@@ -17,122 +17,210 @@ interface ProformaData {
     orgRFC: string;
     orgLogoUrl?: string;
     orgColor?: string;
+    orgSecondaryColor?: string;
+    orgAccentColor?: string;
+    execution_period?: string;
+    proforma_number?: number;
+    total_proformas?: number;
+    consecutive_id?: number;
+    contract_reference?: string;
+    bankAccounts?: { bank: string; clabe?: string; number?: string }[];
 }
 
 export const generateProformaPDF = async (data: ProformaData) => {
-    const doc = new jsPDF();
-    const primaryColor = data.orgColor || '#1e40af';
+    console.log('PDF: Iniciando generación...', data);
+    try {
+        const doc = new jsPDF();
+        const primaryColor = data.orgColor || '#1e40af';
 
-    // Configuración de resolución y márgenes
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.getWidth();
+        // Configuración de resolución y márgenes
+        const margin = 20;
+        const pageWidth = doc.internal.pageSize.getWidth();
 
-    // --- HEADER: LOGO Y DATOS EMISOR ---
-    if (data.orgLogoUrl && data.orgLogoUrl !== 'none') {
-        try {
-            // Intentar cargar imagen si es URL base64 o accesible
-            doc.addImage(data.orgLogoUrl, 'PNG', margin, margin, 40, 40);
-        } catch (e) {
-            console.error('Error loading logo in PDF:', e);
+        // --- HEADER: LOGO Y DATOS EMISOR ---
+        if (data.orgLogoUrl && data.orgLogoUrl !== 'none') {
+            try {
+                // Ajuste proporcional del logo (max ancho 35mm)
+                doc.addImage(data.orgLogoUrl, 'PNG', margin, margin, 35, 35, undefined, 'FAST');
+            } catch (e) {
+                console.error('Error loading logo in PDF:', e);
+            }
         }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.setTextColor(primaryColor);
+        doc.text('Proforma Materialidad Fiscal B2B', pageWidth / 2, 18, { align: 'center' });
+
+        doc.setFontSize(9);
+        doc.setTextColor('#64748b');
+
+        // Folio y Fecha
+        const folioText = data.consecutive_id
+            ? `Folio: #${data.consecutive_id}`
+            : (data.proforma_number && data.total_proformas)
+                ? `Folio Seq: ${data.proforma_number} de ${data.total_proformas}`
+                : `Folio: ${new Date().getTime().toString().slice(-6)}`;
+
+        doc.text(folioText, pageWidth - margin, 26, { align: 'right' });
+        doc.text(`Fecha Emisión: ${new Date().toLocaleDateString()}`, pageWidth - margin, 31, { align: 'right' });
+
+        if (data.execution_period) {
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(primaryColor);
+            doc.text(`Periodo: ${data.execution_period.toUpperCase()}`, pageWidth - margin, 36, { align: 'right' });
+        }
+
+        // Datos Emisor - Centrados verticalmente con el logo (35mm de altura, centro en 37.5)
+        const emisorX = (data.orgLogoUrl && data.orgLogoUrl !== 'none') ? margin + 40 : margin;
+        const orgNameWrap = doc.splitTextToSize(data.orgName, 80);
+
+        // Cálculo de altura para centrado vertical
+        // Línea de nombre (orgNameWrap.length) + RFC + Emisor Autorizado = Total + 2 líneas
+        const totalEmisorLines = orgNameWrap.length + 2;
+        const emisorLineHeight = 5;
+        const emisorTotalHeight = totalEmisorLines * emisorLineHeight;
+        const logoCenterY = margin + (35 / 2);
+        const emisorStartY = logoCenterY - (emisorTotalHeight / 2) + 3; // +3 para compensar el baseline del texto
+
+        doc.setFontSize(11);
+        doc.setTextColor('#1e293b');
+        doc.text(orgNameWrap, emisorX, emisorStartY);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        const yAfterName = emisorStartY + (orgNameWrap.length * emisorLineHeight);
+        doc.text(`RFC: ${data.orgRFC}`, emisorX, yAfterName);
+        doc.text('Emisor Autorizado', emisorX, yAfterName + 5);
+
+        doc.setDrawColor(primaryColor);
+        doc.setLineWidth(0.5);
+        doc.line(margin, 58, pageWidth - margin, 58); // Bajada la línea de 55 a 58
+
+        // --- DATOS DEL CLIENTE ---
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(primaryColor);
+        doc.text('RECEPTOR / CLIENTE', margin, 68); // Bajado de 65
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor('#1e293b');
+        const clientNameWrap = doc.splitTextToSize(data.clientName, 100);
+        doc.text(clientNameWrap, margin, 75);
+
+        doc.setFontSize(10);
+        const yAfterClientName = 75 + (clientNameWrap.length * 5);
+        doc.text(`RFC: ${data.clientRFC}`, margin, yAfterClientName);
+        doc.text(`Régimen: ${data.clientRegime}`, margin, yAfterClientName + 6);
+        doc.text(data.clientAddress, margin, yAfterClientName + 12, { maxWidth: 100 });
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, 68, { align: 'right' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        const activityWrap = doc.splitTextToSize(data.economicActivity, 80);
+        doc.text(activityWrap, pageWidth - margin, 74, { align: 'right' });
+
+        if (data.contract_reference) {
+            const nextY = 74 + (activityWrap.length * 4) + 5;
+            doc.setFont('helvetica', 'bold');
+            doc.text('REFERENCIA CONTRATO:', pageWidth - margin, nextY, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            doc.text(data.contract_reference, pageWidth - margin, nextY + 6, { align: 'right' });
+        }
+
+        // --- TABLA DE CONCEPTOS ---
+        const tableHeaders = [['Clave SAT', 'Descripción', 'Cant.', 'Unidad', 'P. Unitario', 'Importe']];
+        const tableData = data.items.map(item => [
+            item.code,
+            item.description,
+            item.quantity,
+            item.unit,
+            `$${item.unitPrice.toLocaleString()}`,
+            `$${(item.quantity * item.unitPrice).toLocaleString()}`
+        ]);
+
+        autoTable(doc, {
+            startY: 105,
+            head: tableHeaders,
+            body: tableData,
+            theme: 'striped',
+            headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 10, halign: 'center' },
+            columnStyles: {
+                0: { cellWidth: 25, halign: 'center' },
+                1: { cellWidth: 'auto' },
+                2: { cellWidth: 15, halign: 'center' },
+                3: { cellWidth: 20, halign: 'center' },
+                4: { cellWidth: 25, halign: 'right' },
+                5: { cellWidth: 30, halign: 'right' }
+            },
+            styles: { fontSize: 9, cellPadding: 3 }
+        });
+
+        const finalY = (doc as any).lastAutoTable?.finalY || 150;
+        const accentColor = data.orgAccentColor || '#f59e0b';
+        const secondaryColor = data.orgSecondaryColor || '#64748b';
+
+        // --- TOTALES ---
+        const totalsX = pageWidth - margin - 60;
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor('#64748b');
+        doc.text('Subtotal:', totalsX, finalY + 10);
+        doc.setTextColor('#1e293b');
+        doc.text(`$${data.subtotal.toLocaleString()}`, pageWidth - margin, finalY + 10, { align: 'right' });
+
+        doc.setTextColor('#64748b');
+        doc.text('IVA (16%):', totalsX, finalY + 17);
+        doc.setTextColor('#1e293b');
+        doc.text(`$${data.iva.toLocaleString()}`, pageWidth - margin, finalY + 17, { align: 'right' });
+
+        doc.setDrawColor(accentColor);
+        doc.setLineWidth(0.8);
+        doc.line(totalsX, finalY + 22, pageWidth - margin, finalY + 22);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(accentColor);
+        doc.text('TOTAL:', totalsX, finalY + 30);
+        doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, finalY + 30, { align: 'right' });
+
+        // --- FOOTER / NOTAS ---
+        // --- DATOS BANCARIOS ---
+        if (data.bankAccounts && data.bankAccounts.length > 0) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(secondaryColor);
+            doc.text('DATOS PARA TRANSFERENCIA BANCARIA:', margin, finalY + 10);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor('#475569');
+            data.bankAccounts.forEach((acc, i) => {
+                const accText = `${acc.bank}: ${acc.clabe || acc.number}`;
+                doc.text(accText, margin, finalY + 16 + (i * 5));
+            });
+        }
+
+        // --- FOOTER / NOTAS ---
+        doc.setFontSize(8);
+        doc.setTextColor('#94a3b8');
+        const footerY = doc.internal.pageSize.getHeight();
+        doc.text('Este documento es una representación gráfica de una proforma de servicios. No constituye una factura fiscal CFDI.', pageWidth / 2, footerY - 15, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.text('B2B Materialidad - Gestión Forense de Negocios | fiscerta.com', pageWidth / 2, footerY - 8, { align: 'center' });
+
+        // Abrir en nueva pestaña
+        // Abrir en nueva pestaña con respaldo de seguridad
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        const win = window.open(pdfUrl, '_blank');
+        if (!win || win.closed) {
+            // Si el bloqueador de popups lo detiene, intentar descargar como respaldo
+            doc.save(`Proforma_${data.clientName.replace(/\s+/g, '_')}.pdf`);
+            alert('El navegador bloqueó la vista previa. El archivo se ha descargado automáticamente.');
+        }
+    } catch (error) {
+        console.error('CRITICAL ERROR in PDF Generation:', error);
+        alert('Error crítico al generar PDF: ' + (error instanceof Error ? error.message : String(error)));
     }
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.setTextColor(primaryColor);
-    doc.text('PROFORMA DE SERVICIOS', pageWidth - margin, 30, { align: 'right' });
-
-    doc.setFontSize(10);
-    doc.setTextColor('#64748b');
-    doc.text(`Folio: ${new Date().getTime().toString().slice(-6)}`, pageWidth - margin, 38, { align: 'right' });
-    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, pageWidth - margin, 44, { align: 'right' });
-
-    // Datos Emisor
-    doc.setFontSize(12);
-    doc.setTextColor('#1e293b');
-    doc.text(data.orgName, margin + 45, 25);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`RFC: ${data.orgRFC}`, margin + 45, 31);
-    doc.text('Emisor Autorizado', margin + 45, 37);
-
-    doc.setDrawColor(primaryColor);
-    doc.setLineWidth(0.5);
-    doc.line(margin, 55, pageWidth - margin, 55);
-
-    // --- DATOS DEL CLIENTE ---
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(primaryColor);
-    doc.text('RECEPTOR / CLIENTE', margin, 65);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor('#1e293b');
-    doc.setFontSize(11);
-    doc.text(data.clientName, margin, 72);
-    doc.setFontSize(10);
-    doc.text(`RFC: ${data.clientRFC}`, margin, 78);
-    doc.text(`Régimen: ${data.clientRegime}`, margin, 84);
-    doc.text(data.clientAddress, margin, 90, { maxWidth: 100 });
-
-    // Actividad Económica
-    doc.setFont('helvetica', 'bold');
-    doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, 72, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const activityWrap = doc.splitTextToSize(data.economicActivity, 70);
-    doc.text(activityWrap, pageWidth - margin, 78, { align: 'right' });
-
-    // --- TABLA DE CONCEPTOS ---
-    const tableHeaders = [['Clave SAT', 'Descripción', 'Cant.', 'Unidad', 'P. Unitario', 'Importe']];
-    const tableData = data.items.map(item => [
-        item.code,
-        item.description,
-        item.quantity,
-        item.unit,
-        `$${item.unitPrice.toLocaleString()}`,
-        `$${(item.quantity * item.unitPrice).toLocaleString()}`
-    ]);
-
-    (doc as any).autoTable({
-        startY: 105,
-        head: tableHeaders,
-        body: tableData,
-        theme: 'striped',
-        headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 10, halign: 'center' },
-        columnStyles: {
-            0: { cellWidth: 25, halign: 'center' },
-            1: { cellWidth: 'auto' },
-            2: { cellWidth: 15, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
-            4: { cellWidth: 25, halign: 'right' },
-            5: { cellWidth: 30, halign: 'right' }
-        },
-        styles: { fontSize: 9, cellPadding: 3 }
-    });
-
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-
-    // --- TOTALES ---
-    const totalsX = pageWidth - margin - 60;
-    doc.setFont('helvetica', 'normal');
-    doc.text('Subtotal:', totalsX, finalY);
-    doc.text(`$${data.subtotal.toLocaleString()}`, pageWidth - margin, finalY, { align: 'right' });
-
-    doc.text('IVA (16%):', totalsX, finalY + 7);
-    doc.text(`$${data.iva.toLocaleString()}`, pageWidth - margin, finalY + 7, { align: 'right' });
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(primaryColor);
-    doc.text('TOTAL:', totalsX, finalY + 15);
-    doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, finalY + 15, { align: 'right' });
-
-    // --- FOOTER / NOTAS ---
-    doc.setFontSize(8);
-    doc.setTextColor('#94a3b8');
-    doc.text('Este documento es una representación gráfica de una proforma de servicios. No constituye una factura fiscal CFDI.', margin, doc.internal.pageSize.getHeight() - 20);
-    doc.text('B2B Materialidad - Gestión Forense de Negocios', pageWidth - margin, doc.internal.pageSize.getHeight() - 20, { align: 'right' });
-
-    // Abrir en nueva pestaña
-    window.open(doc.output('bloburl'), '_blank');
 };
