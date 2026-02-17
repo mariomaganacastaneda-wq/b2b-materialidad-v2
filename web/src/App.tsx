@@ -31,7 +31,22 @@ import SATCatalogsPage from './pages/SATCatalogs';
 // Initialize Supabase
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Fail-safe initialization
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null as any;
+
+const EnvDiagnostic = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return (
+      <div style={{ padding: '20px', background: '#450a0a', color: '#fecaca', fontSize: '12px', textAlign: 'center' }}>
+        ⚠️ Error de Configuración: Faltan variables VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en Vercel.
+      </div>
+    );
+  }
+  return null;
+};
 
 // Custom Hook para el branding dinámico
 const useTheme = (org: any) => {
@@ -327,6 +342,7 @@ export function App() {
 
   useEffect(() => {
     const syncToken = async () => {
+      if (!supabase) return;
       try {
         const token = await getToken({ template: 'supabase' });
         if (token) {
@@ -345,7 +361,7 @@ export function App() {
   const { user: clerkUser, isLoaded } = useUser();
   useEffect(() => {
     const syncProfile = async () => {
-      if (!isLoaded || !clerkUser) return;
+      if (!isLoaded || !clerkUser || !supabase) return;
 
       try {
         const email = clerkUser.primaryEmailAddress?.emailAddress;
@@ -395,6 +411,7 @@ export function App() {
 
   useEffect(() => {
     const loadInit = async () => {
+      if (!supabase) return;
       const { data } = await supabase.from('organizations').select('*').order('name');
       if (data && data.length > 0) {
         setOrgs(data);
@@ -445,6 +462,7 @@ export function App() {
       </SignedOut>
 
       <SignedIn>
+        <EnvDiagnostic />
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#020617', color: 'white', fontFamily: '"Inter", sans-serif' }}>
           <DiagnosticBar />
 
