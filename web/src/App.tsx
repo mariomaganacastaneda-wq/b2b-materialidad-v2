@@ -118,6 +118,10 @@ const DiagnosticBar = () => {
 
   useEffect(() => {
     const check = async () => {
+      if (!supabase) {
+        setConn('No configurado (Vercel ENV)');
+        return;
+      }
       try {
         const { error } = await supabase.from('organizations').select('id', { count: 'exact', head: true });
         if (error) setConn('Error: ' + error.message);
@@ -223,6 +227,7 @@ const DashboardPage = () => {
   const [compliance, setCompliance] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!supabase) return;
     supabase.from('quotations').select('*').limit(5).then(({ data }: any) => setData(data));
     supabase.from('v_organizations_csf_status').select('*').limit(10).then(({ data }: any) => setCompliance(data || []));
   }, []);
