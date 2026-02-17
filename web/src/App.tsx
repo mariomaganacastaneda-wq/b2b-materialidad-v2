@@ -12,7 +12,7 @@ import {
   FileEdit,
   CheckCircle2
 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase, hasSupabaseConfig } from './lib/supabase';
 import {
   SignedIn,
   SignedOut,
@@ -28,19 +28,11 @@ import MaterialityBoard from './components/commercial/MaterialityBoard';
 import { SettingsPage } from './components/settings/SettingsPage';
 import SATCatalogsPage from './pages/SATCatalogs';
 
-// Initialize Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Fail-safe initialization
-export const supabase = (supabaseUrl && supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null as any;
-
-const EnvDiagnostic = () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+// Branding and Diagnostics
+export const EnvDiagnostic = () => {
+  if (!hasSupabaseConfig) {
     return (
-      <div style={{ padding: '20px', background: '#450a0a', color: '#fecaca', fontSize: '12px', textAlign: 'center' }}>
+      <div style={{ padding: '20px', background: '#450a0a', color: '#fecaca', fontSize: '12px', textAlign: 'center', zIndex: 9999, position: 'relative' }}>
         ⚠️ Error de Configuración: Faltan variables VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en Vercel.
       </div>
     );
@@ -231,8 +223,8 @@ const DashboardPage = () => {
   const [compliance, setCompliance] = useState<any[]>([]);
 
   useEffect(() => {
-    supabase.from('quotations').select('*').limit(5).then(({ data }) => setData(data));
-    supabase.from('v_organizations_csf_status').select('*').limit(10).then(({ data }) => setCompliance(data || []));
+    supabase.from('quotations').select('*').limit(5).then(({ data }: any) => setData(data));
+    supabase.from('v_organizations_csf_status').select('*').limit(10).then(({ data }: any) => setCompliance(data || []));
   }, []);
 
   const getComplianceColor = (status: string) => {

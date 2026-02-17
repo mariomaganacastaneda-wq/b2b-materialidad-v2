@@ -3,8 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase URL and Anon Key must be provided in environment variables');
-}
+// Fail-safe client
+export const supabase = (supabaseUrl && supabaseAnonKey)
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null as any;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const hasSupabaseConfig = !!(supabaseUrl && supabaseAnonKey);

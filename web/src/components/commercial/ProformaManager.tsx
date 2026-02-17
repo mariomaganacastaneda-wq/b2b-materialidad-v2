@@ -102,7 +102,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     .eq('activity_code', activityCode)
                     .limit(10);
 
-                const tokenTags = (tokens || []).map(t => t.keyword.toUpperCase());
+                const tokenTags = (tokens || []).map((t: any) => t.keyword.toUpperCase());
 
                 // 2. Obtener los productos sugeridos para esta actividad para extraer palabras clave adicionales
                 const { data: congruence } = await supabase
@@ -113,7 +113,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
                 let extractedTags: string[] = [];
                 if (congruence) {
-                    const codes = congruence.map(c => `${c.cps_family_code}00`);
+                    const codes = congruence.map((c: any) => `${c.cps_family_code}00`);
                     const { data: products } = await supabase
                         .from('cat_cfdi_productos_servicios')
                         .select('name')
@@ -128,10 +128,10 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 .replace(/[\u0300-\u036f]/g, "")
                                 .replace(/[.,()/]/g, ' ')
                                 .split(/\s+/)
-                        ).filter(w => w.length > 3 && !stopWords.includes(w));
+                        ).filter((w: any) => w.length > 3 && !stopWords.includes(w));
 
                         const freq: { [key: string]: number } = {};
-                        allWords.forEach(w => freq[w] = (freq[w] || 0) + 1);
+                        allWords.forEach((w: any) => freq[w] = (freq[w] || 0) + 1);
 
                         extractedTags = Object.entries(freq)
                             .sort((a, b) => b[1] - a[1])
@@ -176,7 +176,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                         .limit(5);
 
                     if (tokenData && tokenData.length > 0) {
-                        inverseActivityCodes = tokenData.map(t => t.activity_code);
+                        inverseActivityCodes = tokenData.map((t: any) => t.activity_code);
 
                         // Obtener misiones/clases sugeridas para estas actividades detectadas
                         const { data: inverseCongruence } = await supabase
@@ -194,8 +194,8 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 .in('code', familyCodes);
 
                             if (inverseProducts) {
-                                inverseResults = inverseProducts.map(p => {
-                                    const rel = inverseCongruence.find(c => p.code === `${c.cps_family_code}00`);
+                                inverseResults = inverseProducts.map((p: any) => {
+                                    const rel = inverseCongruence.find((c: any) => p.code === `${c.cps_family_code}00`);
                                     return {
                                         code: p.code,
                                         name: p.name,
@@ -220,15 +220,15 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                         .limit(50);
 
                     if (congruenceData && congruenceData.length > 0) {
-                        const productCodes8Digits = congruenceData.map(c => `${c.cps_family_code}00`);
+                        const productCodes8Digits = congruenceData.map((c: any) => `${c.cps_family_code}00`);
                         const { data: products } = await supabase
                             .from('cat_cfdi_productos_servicios')
                             .select('code, name')
                             .in('code', productCodes8Digits);
 
                         if (products) {
-                            finalData = products.map(p => {
-                                const rel = congruenceData.find(c => p.code === `${c.cps_family_code}00`);
+                            finalData = products.map((p: any) => {
+                                const rel = congruenceData.find((c: any) => p.code === `${c.cps_family_code}00`);
                                 return {
                                     code: p.code,
                                     name: p.name,
@@ -243,7 +243,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
                 // Combinar con búsqueda inversa (evitando duplicados)
                 inverseResults.forEach(ir => {
-                    if (!finalData.find(f => f.code === ir.code)) {
+                    if (!finalData.find((f: any) => f.code === ir.code)) {
                         finalData.push(ir);
                     }
                 });
@@ -269,8 +269,8 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     const { data: globalData } = await query.limit(100); // Límite masivo para potencia
                     if (globalData) {
                         const mapped = globalData
-                            .filter(p => !finalData.find(f => f.code === p.code))
-                            .map(p => ({
+                            .filter((p: any) => !finalData.find((f: any) => f.code === p.code))
+                            .map((p: any) => ({
                                 code: p.code,
                                 name: p.name,
                                 source: activeTag ? `Concepto: ${activeTag}` : (search ? 'Catálogo SAT' : 'Búsqueda Semántica')
@@ -279,10 +279,10 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     }
                 }
                 // 3. Mapeo inverso de actividades para contexto (Solo para Global o Conceptos)
-                const globalIndices = finalData.map((d, i) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'Catálogo SAT' || d.source === 'Búsqueda Semántica' ? i : -1).filter(i => i !== -1);
+                const globalIndices = finalData.map((d: any, i: number) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'Catálogo SAT' || d.source === 'Búsqueda Semántica' ? i : -1).filter((i: number) => i !== -1);
 
                 if (globalIndices.length > 0) {
-                    const familyCodes = Array.from(new Set(globalIndices.map(i => finalData[i].code.substring(0, 6))));
+                    const familyCodes = Array.from(new Set(globalIndices.map((i: number) => finalData[i].code.substring(0, 6))));
                     const { data: activityContext } = await supabase
                         .from('rel_activity_cps_congruence')
                         .select('cps_family_code, cat_economic_activities(name)')
