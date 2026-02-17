@@ -31,7 +31,7 @@ const EconomicActivitiesTab = () => {
 
             if (congruenceData && congruenceData.length > 0) {
                 // 2. Obtener productos específicos para esas familias (añadiendo '00' para 8 dígitos)
-                const productCodes8Digits = congruenceData.map(c => `${c.cps_family_code}00`);
+                const productCodes8Digits = congruenceData.map((c: any) => `${c.cps_family_code}00`);
                 const { data: productsData, error: productsError } = await supabase
                     .from('cat_cfdi_productos_servicios')
                     .select('code, name')
@@ -40,15 +40,15 @@ const EconomicActivitiesTab = () => {
                 if (productsError) throw productsError;
 
                 // 3. Mapear resultados combinando la información de congruencia
-                const results = productsData?.map(p => {
-                    const family = congruenceData.find(c => p.code === `${c.cps_family_code}00`);
+                const results = productsData?.map((p: any) => {
+                    const family = congruenceData.find((c: any) => p.code === `${c.cps_family_code}00`);
                     return {
                         product_code: p.code,
                         matching_score: family?.score || 0,
                         reason: family?.reason || '',
                         cat_cfdi_productos_servicios: { name: p.name }
                     };
-                }).sort((a, b) => b.matching_score - a.matching_score) || [];
+                }).sort((a: any, b: any) => b.matching_score - a.matching_score) || [];
 
                 setSuggestedProducts(prev => ({ ...prev, [activityCode]: results }));
             } else {
@@ -75,8 +75,8 @@ const EconomicActivitiesTab = () => {
                 .from('organization_activities')
                 .select('description, organization_id');
 
-            const activitiesWithCounts = (data || []).map(act => {
-                const orgCount = counts?.filter(c => c.description?.toLowerCase() === act.name.toLowerCase()).length || 0;
+            const activitiesWithCounts = (data || []).map((act: any) => {
+                const orgCount = counts?.filter((c: any) => c.description?.toLowerCase() === act.name.toLowerCase()).length || 0;
                 return { ...act, org_count: orgCount };
             });
 

@@ -17,7 +17,7 @@ const Dashboard = () => {
 
                 if (qError || invError) throw qError || invError;
 
-                const total = qData?.reduce((acc, curr) => acc + (Number(curr.amount_total) || 0), 0) || 0;
+                const total = qData?.reduce((acc: number, curr: any) => acc + (Number(curr.amount_total) || 0), 0) || 0;
 
                 setStats({
                     totalAmount: total,

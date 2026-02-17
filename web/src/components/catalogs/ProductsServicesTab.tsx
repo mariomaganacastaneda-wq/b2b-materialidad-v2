@@ -45,7 +45,7 @@ const ProductsServicesTab = () => {
 
             setProducts(prev => {
                 const existingCodes = new Set(prev.map(p => p.code));
-                const newItems = (data || []).filter(item => !existingCodes.has(item.code));
+                const newItems = (data || []).filter((item: any) => !existingCodes.has(item.code));
                 return [...prev, ...newItems];
             });
         } catch (err: any) {
@@ -101,7 +101,7 @@ const ProductsServicesTab = () => {
 
             if (error) throw error;
 
-            const results = (data || []).map(d => ({
+            const results = (data || []).map((d: any) => ({
                 activity_code: d.activity_code,
                 matching_score: d.score,
                 reason: d.reason,

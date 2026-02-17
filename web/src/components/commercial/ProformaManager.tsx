@@ -122,7 +122,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     if (products) {
                         const stopWords = ['comercio', 'por', 'menor', 'mayor', 'servicios', 'articulos', 'para', 'uso', 'clase', 'actividades', 'oficina', 'elaboracion', 'fabricacion', 'venta', 'mantenimiento', 'reparacion', 'alquilada', 'propia', 'excepto', 'otros', 'otras', 'asociados', 'relacionados', 'incluye', 'incluidos', 'industriales', 'trabajos', 'obras', 'diversos', 'especializados', 'general', 'integral', 'servicio'];
 
-                        const allWords = products.flatMap(p =>
+                        const allWords = products.flatMap((p: any) =>
                             p.name.toLowerCase()
                                 .normalize("NFD")
                                 .replace(/[\u0300-\u036f]/g, "")
@@ -187,7 +187,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             .limit(20);
 
                         if (inverseCongruence && inverseCongruence.length > 0) {
-                            const familyCodes = inverseCongruence.map(c => `${c.cps_family_code}00`);
+                            const familyCodes = inverseCongruence.map((c: any) => `${c.cps_family_code}00`);
                             const { data: inverseProducts } = await supabase
                                 .from('cat_cfdi_productos_servicios')
                                 .select('code, name')
