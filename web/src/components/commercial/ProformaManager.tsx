@@ -211,7 +211,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                 }
 
                 // 1. Obtener Congruencia Base (actividad actual)
-                if (activityCode && !search) {
+                if (activityCode) {
                     const { data: congruenceData } = await supabase
                         .from('rel_activity_cps_congruence')
                         .select('cps_family_code, score, reason')
