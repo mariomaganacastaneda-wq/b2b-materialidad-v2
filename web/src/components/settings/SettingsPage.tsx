@@ -77,7 +77,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         economic_activities: [],
         tax_regimes: [],
         tax_obligations: [],
-        csf_history: []
+        csf_history: [],
+        related_products: [] as any[]
     });
 
     useEffect(() => {
@@ -88,11 +89,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 const { data: obl } = await supabase.from('organization_obligations').select('*').eq('organization_id', selectedOrg.id);
                 const { data: hist } = await supabase.from('organization_csf_history').select('*').eq('organization_id', selectedOrg.id).order('emission_date', { ascending: false });
 
+                // Fetch related products for the activities found
+                let products: any[] = [];
+                if (act && act.length > 0) {
+                    const activityCodes = act.map((a: any) => a.activity_code);
+                    const { data: prodData } = await supabase
+                        .from('rel_activity_product')
+                        .select('*, cat_cfdi_productos_servicios(code, name)')
+                        .in('activity_code', activityCodes);
+                    products = prodData || [];
+                }
+
                 setDetailsData({
                     economic_activities: act || [],
                     tax_regimes: reg || [],
                     tax_obligations: obl || [],
-                    csf_history: hist || []
+                    csf_history: hist || [],
+                    related_products: products
                 });
             };
             loadData();
@@ -101,13 +114,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 economic_activities: [],
                 tax_regimes: [],
                 tax_obligations: [],
-                csf_history: []
+                csf_history: [],
+                related_products: []
             });
         }
     }, [selectedOrg?.id, supabase]);
 
     // Merge details into org for CompanyDetails component
-    const orgWithDetails = selectedOrg ? { ...selectedOrg, ...detailsData } : null;
+    const orgWithDetails = selectedOrg
+        ? { ...selectedOrg, ...detailsData }
+        : (isCreatingNew ? { id: 'new', _is_placeholder: true } : null);
 
 
     // Filter Logic

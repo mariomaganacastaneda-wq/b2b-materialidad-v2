@@ -59,7 +59,7 @@ const ProductsServicesTab = () => {
             const { data, error } = await supabase
                 .from('cat_cfdi_productos_servicios')
                 .select('*')
-                .or(`name.ilike.%${term}%,code.ilike.%${term}%`)
+                .or(`name.ilike.%${term}%,code.ilike.%${term}%,similar_words.ilike.%${term}%`)
                 .limit(100);
 
             if (error) throw error;
@@ -349,6 +349,15 @@ const ProductsServicesTab = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                {item.similar_words && (
+                                    <div style={{ padding: '12px', backgroundColor: 'rgba(99, 102, 241, 0.05)', borderRadius: '10px', border: '1px solid rgba(99, 102, 241, 0.1)' }}>
+                                        <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--primary-base)', textTransform: 'uppercase', marginBottom: '4px' }}>Palabras Similares / Búsqueda</div>
+                                        <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.5' }}>
+                                            {item.similar_words}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

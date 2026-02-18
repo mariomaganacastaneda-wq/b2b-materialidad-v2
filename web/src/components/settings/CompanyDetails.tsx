@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import {
     Building2, ChevronUp, ChevronDown, History,
     LayoutGrid, Clock, Upload, Briefcase, FileText, Palette,
-    Pipette, Eye
+    Pipette, Eye, Loader2
 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface CompanyDetailsProps {
     org: any;
@@ -122,6 +123,54 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
     const [obligationsExpanded, setObligationsExpanded] = useState(false);
     const [csfHistoryExpanded, setCsfHistoryExpanded] = useState(false);
     const [regimesExpanded, setRegimesExpanded] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleCSFUpload = async (e: React.ChangeEvent<HTMLInputElement>, mode: 'register' | 'update') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        console.log(`[BulkCSF] Iniciando ${mode} para: ${file.name}`);
+
+        try {
+            const timestamp = Date.now();
+            const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const filePath = `detail_${mode}_${timestamp}_${sanitizedName}`;
+
+            // 1. Storage
+            const { error: uploadError } = await supabase.storage
+                .from('csf')
+                .upload(filePath, file, {
+                    upsert: true,
+                    contentType: 'application/pdf'
+                });
+
+            if (uploadError) throw new Error(`Error de subida: ${uploadError.message}`);
+
+            // 2. Function
+            const { data: extractionRes, error: invokeError } = await supabase.functions.invoke('process-csf', {
+                body: {
+                    filePath,
+                    organizationId: mode === 'update' ? org.id : null,
+                    isCreatingNew: mode === 'register'
+                }
+            });
+
+            if (invokeError || extractionRes?.success === false) {
+                throw new Error(invokeError?.message || extractionRes?.error || 'Error en procesamiento');
+            }
+
+            // Success! Reload or alert
+            alert(`✅ ${mode === 'register' ? 'Empresa registrada' : 'CSF actualizada'} con éxito: ${extractionRes.data?.name || ''}`);
+            window.location.reload(); // Quickest way to refresh the whole state
+
+        } catch (err: any) {
+            console.error(`Error en ${mode}:`, err);
+            alert(`❌ Error: ${err.message}`);
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     // Derived data
     const activities = org?.economic_activities || [];
@@ -206,6 +255,25 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
         )
     }
 
+    if (org?._is_placeholder) {
+        return (
+            <div className="glass-card fade-in" style={{ padding: '60px', textAlign: 'center', border: '2px dashed var(--primary-color)' }}>
+                <Building2 size={48} style={{ margin: '0 auto 20px', color: 'var(--primary-color)' }} />
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '12px' }}>Registro de Nueva Empresa</h3>
+                <p style={{ color: '#94a3b8', fontSize: '14px', maxWidth: '400px', margin: '0 auto 24px' }}>
+                    Para registrar una nueva organización, suba su Constancia de Situación Fiscal (PDF).
+                    El sistema extraerá automáticamente el RFC, nombre, domicilio y actividades.
+                </p>
+
+                <label className="primary-button" style={{ margin: '0 auto', gap: '8px', cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1 }}>
+                    {isUploading ? <Loader2 className="spin" size={20} /> : <Upload size={20} />}
+                    {isUploading ? 'Procesando...' : 'Cargar CSF para Registrar'}
+                    <input type="file" onChange={(e) => handleCSFUpload(e, 'register')} style={{ display: 'none' }} accept="application/pdf" disabled={isUploading} />
+                </label>
+            </div>
+        );
+    }
+
     if (!org) return null;
 
     const validity = getValidityStatus(org.last_csf_update);
@@ -256,10 +324,11 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                             </div>
                         </div>
                     </div>
-                    <button className="primary-button" style={{ gap: '8px' }}>
-                        <Upload size={16} />
-                        Actualizar CSF
-                    </button>
+                    <label className="primary-button" style={{ gap: '8px', cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1 }}>
+                        {isUploading ? <Loader2 className="spin" size={16} /> : <Upload size={16} />}
+                        {isUploading ? 'Procesando...' : 'Actualizar CSF'}
+                        <input type="file" onChange={(e) => handleCSFUpload(e, 'update')} style={{ display: 'none' }} accept="application/pdf" disabled={isUploading} />
+                    </label>
                 </div>
 
                 {/* Roles */}
@@ -545,10 +614,35 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                                         </div>
 
                                         {expandedActivity === a.activity_code && (
-                                            <div style={{ marginTop: '16px', padding: '12px', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 'bold', letterSpacing: '0.05em' }}>CLAVES SAT RELACIONADAS</div>
-                                                    <p style={{ color: '#64748b', fontSize: '11px' }}>Información detallada de productos/servicios SAT regulados.</p>
+                                            <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                                    <div>
+                                                        <div style={{ fontSize: '10px', color: 'var(--primary-base)', fontWeight: 'bold', letterSpacing: '0.05em', textTransform: 'uppercase' }}>CLAVES SAT RELACIONADAS</div>
+                                                        <p style={{ color: '#64748b', fontSize: '11px', margin: '4px 0 0' }}>Productos y servicios vinculados a esta actividad para facturación.</p>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+                                                    {(org.related_products || []).filter((rp: any) => rp.activity_code === a.activity_code).length > 0 ? (
+                                                        (org.related_products || []).filter((rp: any) => rp.activity_code === a.activity_code).map((rp: any) => (
+                                                            <div key={rp.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                                <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--primary-base)', fontFamily: 'monospace', backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                                                    {rp.product_code}
+                                                                </div>
+                                                                <div style={{ fontSize: '12px', color: '#cbd5e1', flex: 1 }}>
+                                                                    {rp.cat_cfdi_productos_servicios?.name || 'Cargando nombre...'}
+                                                                </div>
+                                                                {rp.matching_score > 0.8 && (
+                                                                    <div style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                                                        Alta Precisión
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                                                            No hay claves SAT específicas mapeadas aún para esta actividad.
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         )}

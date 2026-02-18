@@ -223,7 +223,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                         const productCodes8Digits = congruenceData.map((c: any) => `${c.cps_family_code}00`);
                         const { data: products } = await supabase
                             .from('cat_cfdi_productos_servicios')
-                            .select('code, name')
+                            .select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered')
                             .in('code', productCodes8Digits);
 
                         if (products) {
@@ -232,6 +232,9 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 return {
                                     code: p.code,
                                     name: p.name,
+                                    similar_words: p.similar_words,
+                                    has_iva: p.includes_iva_transfered,
+                                    has_ieps: p.includes_ieps_transfered,
                                     reason: rel?.reason || 'Mapeo Sugerido',
                                     score: rel?.score || 0,
                                     source: rel?.score && rel.score >= 1.0 ? 'Actividad Principal' : 'Actividad Relacionada'
@@ -253,13 +256,13 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                 // 2. Mega-Búsqueda Global (Si hay Tag o Búsqueda Manual)
                 const effectiveSearch = activeTag || search;
                 if (effectiveSearch || (finalData.length === 0 && isOpen)) {
-                    let query = supabase.from('cat_cfdi_productos_servicios').select('code, name');
+                    let query = supabase.from('cat_cfdi_productos_servicios').select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered');
 
                     if (/^\d+$/.test(effectiveSearch)) {
                         query = query.ilike('code', `${effectiveSearch}%`);
                     } else if (effectiveSearch) {
-                        // Si hay tag activo, buscamos por esa palabra clave de forma amplia
-                        query = query.ilike('name', `%${effectiveSearch}%`);
+                        // Búsqueda semántica usando el campo similar_words enriquecido
+                        query = query.or(`name.ilike.%${effectiveSearch}%,similar_words.ilike.%${effectiveSearch}%`);
                     } else if (activityDescription) {
                         // Si no hay búsqueda pero sí actividad, usamos los primeros keywords para llenar el vacío
                         const keywords = smartTags.slice(0, 2).join(' ');
@@ -273,6 +276,9 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             .map((p: any) => ({
                                 code: p.code,
                                 name: p.name,
+                                similar_words: p.similar_words,
+                                has_iva: p.includes_iva_transfered,
+                                has_ieps: p.includes_ieps_transfered,
                                 source: activeTag ? `Concepto: ${activeTag}` : (search ? 'Catálogo SAT' : 'Búsqueda Semántica')
                             }));
                         finalData = [...finalData, ...mapped];
@@ -584,8 +590,17 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                             {prod.score !== undefined && (
                                                 <span className="text-[7px] font-black text-slate-300 ml-auto shrink-0">{Math.round(prod.score * 100)}% Match</span>
                                             )}
+                                            <div className="flex gap-1 ml-auto">
+                                                {prod.has_iva && <span className="text-[6px] font-black px-1 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">IVA</span>}
+                                                {prod.has_ieps && <span className="text-[6px] font-black px-1 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100">IEPS</span>}
+                                            </div>
                                         </div>
                                         <p className="text-[10px] text-slate-700 font-bold truncate uppercase tracking-tight group-hover:text-blue-600 transition-colors">{prod.name}</p>
+                                        {prod.similar_words && (
+                                            <p className="text-[8px] text-slate-400 truncate italic">
+                                                <span className="font-bold text-blue-400/50">Similares:</span> {prod.similar_words}
+                                            </p>
+                                        )}
                                         {prod.reason && <p className="text-[8px] text-slate-400 truncate italic">{prod.reason}</p>}
                                     </div>
                                     <Icon name="add_circle" className="text-slate-200 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all text-sm" />
@@ -778,17 +793,19 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         hasQuotation: false,
         hasContract: false,
         advancePayment: false,
-        items: [{ id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0 }],
+        items: [{ id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }],
         isSaving: false,
         saveError: null as string | null,
         saveSuccess: false
     });
 
     const [user, setUser] = useState<any>(null);
+    const [taxRates] = useState({ iva: 0.16, ieps: 0.08 }); // IEPS base 8% (configurable)
 
     const subtotal = formData.items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva;
+    const iva = formData.items.reduce((acc, item) => acc + (item.has_iva ? (item.quantity * item.unitPrice * taxRates.iva) : 0), 0);
+    const ieps = formData.items.reduce((acc, item) => acc + (item.has_ieps ? (item.quantity * item.unitPrice * taxRates.ieps) : 0), 0);
+    const total = subtotal + iva + ieps;
 
     useEffect(() => {
         const loadUser = async () => {
@@ -849,7 +866,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     quantity: parseFloat(item.quantity),
                     unit: item.unit_id,
                     description: item.description,
-                    unitPrice: parseFloat(item.unit_price)
+                    unitPrice: parseFloat(item.unit_price),
+                    has_iva: item.has_iva ?? true,
+                    has_ieps: item.has_ieps ?? false
                 })) : prev.items
             }));
         } catch (err: any) {
@@ -873,6 +892,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 economicActivity: activityDesc,
                 subtotal,
                 iva,
+                ieps,
                 total,
                 orgName: selectedOrg.name,
                 orgRFC: selectedOrg.rfc || '',
@@ -945,6 +965,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 vendor_id: null,
                 amount_subtotal: subtotal,
                 amount_iva: iva,
+                amount_ieps: ieps,
                 amount_total: total,
                 currency: formData.currency,
                 status: 'PENDIENTE',
@@ -996,6 +1017,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 unit_id: item.unit,
                 description: item.description,
                 unit_price: item.unitPrice,
+                has_iva: item.has_iva,
+                has_ieps: item.has_ieps,
                 subtotal: item.quantity * item.unitPrice
             }));
 
@@ -1107,7 +1130,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const addItem = () => {
         setFormData({
             ...formData,
-            items: [...formData.items, { id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0 }]
+            items: [...formData.items, { id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }]
         });
     };
 
@@ -1471,7 +1494,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             code: prod.code,
                                                             description: prod.name,
                                                             unit: suggested,
-                                                            unitPrice: historicalPrice || newItems[idx].unitPrice
+                                                            unitPrice: historicalPrice || newItems[idx].unitPrice,
+                                                            has_iva: prod.has_iva,
+                                                            has_ieps: prod.has_ieps
                                                         };
                                                         setFormData({ ...formData, items: newItems });
                                                     }}
@@ -1514,6 +1539,20 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         e.target.style.height = e.target.scrollHeight + 'px';
                                                     }}
                                                 />
+                                                <div className="flex gap-2 mt-1">
+                                                    <button
+                                                        onClick={() => updateItem(idx, 'has_iva', !item.has_iva)}
+                                                        className={`text-[8px] font-black px-1.5 py-0.5 rounded transition-all border ${item.has_iva ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200 opacity-50'}`}
+                                                    >
+                                                        IVA 16%
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updateItem(idx, 'has_ieps', !item.has_ieps)}
+                                                        className={`text-[8px] font-black px-1.5 py-0.5 rounded transition-all border ${item.has_ieps ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-400 border-slate-200 opacity-50'}`}
+                                                    >
+                                                        IEPS 8%
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td className="px-4 py-2 text-right align-middle">
                                                 <div className="flex items-center justify-end gap-1">

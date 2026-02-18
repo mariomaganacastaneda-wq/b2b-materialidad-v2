@@ -44,6 +44,7 @@ const BulkCSFManager = () => {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             setCurrentFileIndex(i);
+            console.log(`[BulkCSF] [${i + 1}/${files.length}] Procesando: ${file.name}`);
 
             try {
                 // 1. Prepare file path
@@ -52,13 +53,22 @@ const BulkCSFManager = () => {
                 const filePath = `bulk_${timestamp}_${sanitizedName}`;
 
                 // 2. Upload to storage
+                console.log(`[BulkCSF] Subiendo a Storage: ${filePath}...`);
                 const { error: uploadError } = await supabase.storage
                     .from('csf')
-                    .upload(filePath, file, { upsert: true });
+                    .upload(filePath, file, {
+                        upsert: true,
+                        contentType: 'application/pdf'
+                    });
 
-                if (uploadError) throw new Error(`Error de subida: ${uploadError.message}`);
+                if (uploadError) {
+                    console.error(`[BulkCSF] Error en Storage para ${file.name}:`, uploadError);
+                    throw new Error(`Error de subida: ${uploadError.message}`);
+                }
+                console.log(`[BulkCSF] Subida a Storage exitosa`);
 
                 // 3. Invoke Edge Function
+                console.log(`[BulkCSF] Invocando Edge Function 'process-csf' para ${file.name}...`);
                 const { data: extractionRes, error: invokeError } = await supabase.functions.invoke('process-csf', {
                     body: {
                         filePath,
@@ -67,10 +77,17 @@ const BulkCSFManager = () => {
                     }
                 });
 
-                if (invokeError || extractionRes?.success === false) {
-                    throw new Error(invokeError?.message || extractionRes?.error || 'Error en procesamiento');
+                if (invokeError) {
+                    console.error(`[BulkCSF] Error de invocación para ${file.name}:`, invokeError);
+                    throw new Error(invokeError.message);
                 }
 
+                if (extractionRes?.success === false) {
+                    console.error(`[BulkCSF] La función reportó error para ${file.name}:`, extractionRes.error);
+                    throw new Error(extractionRes.error || 'Error en procesamiento');
+                }
+
+                console.log(`[BulkCSF] ✅ Procesamiento exitoso para ${file.name}`);
                 newResults.push({
                     fileName: file.name,
                     success: true,
@@ -79,7 +96,7 @@ const BulkCSFManager = () => {
                 });
 
             } catch (err: any) {
-                console.error(`Error procesando ${file.name}:`, err);
+                console.error(`[BulkCSF] ❌ Fallo en ${file.name}:`, err.message);
                 newResults.push({
                     fileName: file.name,
                     success: false,

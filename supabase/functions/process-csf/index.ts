@@ -130,7 +130,8 @@ serve(async (req) => {
         }
 
         // 4. Prepare Update/Insert Payload
-        const taxpayerType = n8nData.tipo_contribuyente?.toUpperCase() === 'PERSONA_FISICA' || n8nData.tipo_contribuyente?.toUpperCase() === 'persona_fisica'
+        const rawType = (n8nData.tipo_contribuyente || '').toUpperCase();
+        const taxpayerType = rawType.includes('PERSONA_FISICA') || rawType.includes('PERSONA FISICA')
             ? 'PERSONA FÍSICA'
             : 'PERSONA MORAL';
 
@@ -164,6 +165,8 @@ serve(async (req) => {
             csf_emission_date: emissionDateStr || new Date().toISOString().split('T')[0],
             last_csf_update: new Date().toISOString()
         };
+
+        console.log(`[FORENSIC] Payload preparado para RFC ${rfc}. Tipo: ${taxpayerType}`);
 
         if (existingOrg) {
             console.log(`[FORENSIC] Actualizando organización: ${finalOrgId}`);

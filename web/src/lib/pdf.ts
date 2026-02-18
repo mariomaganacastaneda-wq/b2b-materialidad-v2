@@ -12,6 +12,7 @@ interface ProformaData {
     items: any[];
     subtotal: number;
     iva: number;
+    ieps: number;
     total: number;
     orgName: string;
     orgRFC: string;
@@ -174,15 +175,24 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.setTextColor('#1e293b');
         doc.text(`$${data.iva.toLocaleString()}`, pageWidth - margin, finalY + 17, { align: 'right' });
 
+        let currentY = finalY + 17;
+        if (data.ieps > 0) {
+            currentY += 7;
+            doc.setTextColor('#64748b');
+            doc.text('IEPS (8%):', totalsX, currentY);
+            doc.setTextColor('#1e293b');
+            doc.text(`$${data.ieps.toLocaleString()}`, pageWidth - margin, currentY, { align: 'right' });
+        }
+
         doc.setDrawColor(accentColor);
         doc.setLineWidth(0.8);
-        doc.line(totalsX, finalY + 22, pageWidth - margin, finalY + 22);
+        doc.line(totalsX, currentY + 5, pageWidth - margin, currentY + 5);
 
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(14);
         doc.setTextColor(accentColor);
-        doc.text('TOTAL:', totalsX, finalY + 30);
-        doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, finalY + 30, { align: 'right' });
+        doc.text('TOTAL:', totalsX, currentY + 13);
+        doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, currentY + 13, { align: 'right' });
 
         // --- FOOTER / NOTAS ---
         // --- DATOS BANCARIOS ---

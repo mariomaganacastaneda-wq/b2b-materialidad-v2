@@ -1,7 +1,6 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 import dotenv from 'dotenv';
-import axios from 'axios';
 dotenv.config();
 
 const pool = new Pool({
@@ -39,8 +38,12 @@ async function runDiagnostic() {
         console.log("\n--- Verificando conectividad con n8n ---");
         const n8nUrl = "https://n8n-n8n.5gad6x.easypanel.host/healthz";
         try {
-            const n8nRes = await axios.get(n8nUrl, { timeout: 5000 });
-            console.log(`✅ n8n está ONLINE (Status: ${n8nRes.status})`);
+            const response = await fetch(n8nUrl);
+            if (response.ok) {
+                console.log(`✅ n8n está ONLINE (Status: ${response.status})`);
+            } else {
+                console.error(`⚠️ n8n respondió con error: ${response.status}`);
+            }
         } catch (e) {
             console.error(`❌ n8n está OFFLINE o inalcanzable: ${e.message}`);
         }

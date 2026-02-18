@@ -20,6 +20,8 @@ export interface Quotation {
     id: string;
     consecutive_id: number;
     amount_total: number;
+    amount_iva?: number;
+    amount_ieps?: number;
     status: 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA' | 'EXPIRADA';
     created_at: string;
     vendor_id: string;
@@ -46,6 +48,7 @@ export interface CFDIProductService {
     parent_code?: string;
     includes_iva_transfered: boolean;
     includes_ieps_transfered: boolean;
+    similar_words?: string;
     similarity_threshold?: number;
     created_at?: string;
     updated_at?: string;
