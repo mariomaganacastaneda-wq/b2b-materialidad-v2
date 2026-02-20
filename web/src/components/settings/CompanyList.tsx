@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, MinusCircle } from 'lucide-react';
 
 interface CompanyListProps {
     orgs: any[];
@@ -16,6 +16,7 @@ interface CompanyListProps {
         setCsfFilter: (csf: any) => void;
     };
     uniqueActivities: string[];
+    onUnlinkOrg: (orgId: string) => void;
 }
 
 export const CompanyList: React.FC<CompanyListProps> = ({
@@ -24,6 +25,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({
     onSelectOrg,
     filters,
     uniqueActivities,
+    onUnlinkOrg
 }) => {
     const {
         searchTerm,
@@ -113,6 +115,27 @@ export const CompanyList: React.FC<CompanyListProps> = ({
                                 <div style={{ fontSize: '13px', fontWeight: '600', color: selectedOrgId === org.id ? 'white' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{org.name}</div>
                                 <div style={{ fontSize: '11px', color: '#64748b' }}>{org.rfc}</div>
                             </div>
+                            {!org.is_issuer && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onUnlinkOrg(org.id);
+                                    }}
+                                    className="icon-button-danger"
+                                    style={{
+                                        opacity: 0.6,
+                                        padding: '4px',
+                                        borderRadius: '4px',
+                                        border: 'none',
+                                        background: 'transparent',
+                                        cursor: 'pointer',
+                                        color: '#ef4444'
+                                    }}
+                                    title="Remover cliente"
+                                >
+                                    <MinusCircle size={14} />
+                                </button>
+                            )}
                         </div>
                     ))
                 ) : (

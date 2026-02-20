@@ -10,9 +10,10 @@ import {
   ImageIcon,
   BarChart3,
   FileEdit,
-  CheckCircle2
+  CheckCircle2,
+  Shield
 } from 'lucide-react';
-import { supabase, hasSupabaseConfig } from './lib/supabase';
+import { supabase, hasSupabaseConfig, updateSupabaseAuth, setClerkTokenProvider } from './lib/supabase';
 import {
   SignedIn,
   SignedOut,
@@ -27,6 +28,8 @@ import ProformaManager from './components/commercial/ProformaManager';
 import MaterialityBoard from './components/commercial/MaterialityBoard';
 import { SettingsPage } from './components/settings/SettingsPage';
 import SATCatalogsPage from './pages/SATCatalogs';
+import BankAccountsPage from './pages/BankAccounts';
+import { SecurityCenter } from './pages/SecurityCenter';
 
 // Branding and Diagnostics
 export const EnvDiagnostic = () => {
@@ -112,7 +115,7 @@ const useTheme = (org: any) => {
 };
 
 // Diagnostic Header
-const DiagnosticBar = () => {
+export const DiagnosticBar = () => {
   const [conn, setConn] = useState('Probando...');
   const [stats, setStats] = useState({ q: 0, i: 0 });
 
@@ -173,7 +176,7 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   </div>
 );
 
-const InvoicesPage = () => {
+const InvoicesPage = ({ userProfile }: { userProfile: any }) => {
   const { id } = useParams();
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,12 +188,20 @@ const InvoicesPage = () => {
       if (id) {
         query = query.eq('quotation_id', id);
       }
+
+      // Aplicar filtro de suplantación/seguridad si no es ADMIN
+      if (userProfile && userProfile.role !== 'ADMIN') {
+        const { data: userAccess } = await supabase.from('user_organization_access').select('organization_id').eq('profile_id', userProfile.id);
+        const allowedIds = userAccess?.map((a: any) => a.organization_id) || [];
+        query = query.in('issuer_id', allowedIds);
+      }
+
       const { data } = await query;
       setList(data || []);
       setLoading(false);
     };
     fetchInvoices();
-  }, [id]);
+  }, [id, userProfile]);
 
   if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando facturas...</div>;
 
@@ -222,15 +233,26 @@ const InvoicesPage = () => {
   );
 };
 
-const DashboardPage = () => {
+const DashboardPage = ({ userProfile }: { userProfile: any }) => {
   const [data, setData] = useState<any>(null);
   const [compliance, setCompliance] = useState<any[]>([]);
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.from('quotations').select('*').limit(5).then(({ data }: any) => setData(data));
-    supabase.from('v_organizations_csf_status').select('*').limit(10).then(({ data }: any) => setCompliance(data || []));
-  }, []);
+
+    let quoteQuery = supabase.from('quotations').select('*').limit(5);
+    let complianceQuery = supabase.from('v_organizations_csf_status').select('*').limit(10);
+
+    // Si el perfil activo no es ADMIN, filtramos por su ID de perfil (Esto simula RLS para el Admin suplantador)
+    if (userProfile && userProfile.role !== 'ADMIN') {
+      quoteQuery = quoteQuery.eq('profile_id', userProfile.id);
+      // Nota: v_organizations_csf_status ya debería estar filtrada si restringimos la lista de orgs, 
+      // pero por seguridad también podemos filtrar aquí si la vista lo permite.
+    }
+
+    quoteQuery.then(({ data }: any) => setData(data));
+    complianceQuery.then(({ data }: any) => setCompliance(data || []));
+  }, [userProfile]);
 
   const getComplianceColor = (status: string) => {
     switch (status) {
@@ -335,100 +357,333 @@ export function App() {
   const location = useLocation();
   const [orgs, setOrgs] = useState<any[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
-  const { getToken } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
+  // --- SINCRONIZACIÓN DE SESIÓN Y CARGA DE DATOS ---
+  const { user: clerkUser, isLoaded } = useUser();
+  const { getToken, signOut } = useAuth();
+  const [userPermissions, setUserPermissions] = useState<any[]>([]);
+  const [userRolePermissions, setUserRolePermissions] = useState<any[]>([]);
+  const [impersonatedUser, setImpersonatedUser] = useState<any>(null);
+  const [realUserProfile, setRealUserProfile] = useState<any>(null);
+  const [sessionReady, setSessionReady] = useState(false);
 
+  // Exponer para diagnóstico desde consola y botones de emergencia
   useEffect(() => {
-    const syncToken = async () => {
-      if (!supabase) return;
+    (window as any)._GET_TOKEN = getToken;
+    (window as any)._CLERK_USER = clerkUser;
+    (window as any)._SUPABASE = supabase;
+    console.log('App: Global diagnostics exposed');
+  }, [getToken, clerkUser]);
+
+  // Hooking the Clerk JWT getter to the Supabase global fetch interceptor
+  useEffect(() => {
+    setClerkTokenProvider(async () => {
       try {
-        const token = await getToken({ template: 'supabase' });
-        if (token) {
-          // @ts-ignore
-          supabase.realtime.setAuth(token);
-          supabase.auth.setSession({ access_token: token, refresh_token: '' });
-        }
+        return await getToken({ template: 'supabase' });
       } catch (e) {
-        console.error('Clerk-Supabase Auth Sync Error:', e);
+        console.warn('App: Supabase JWT template not found for interceptor, falling back to default token.');
+        return await getToken();
       }
-    };
-    syncToken();
+    });
   }, [getToken]);
 
-  // Hook de sincronización de perfil
-  const { user: clerkUser, isLoaded } = useUser();
   useEffect(() => {
-    const syncProfile = async () => {
-      if (!isLoaded || !clerkUser || !supabase) return;
+    const syncProfileAndLoadData = async () => {
+      if (!isLoaded || !clerkUser || !supabase) {
+        console.log('App: Wait for Clerk/Supabase...', { isLoaded, hasUser: !!clerkUser });
+        return;
+      }
 
       try {
+        console.log('App: Syncing token and performing HARD RESET if needed...');
+
+        // Diagnóstico: Limpiar ruido en el almacenamiento local si hay problemas persistentes
+        if (orgs.length === 0 && sessionReady) {
+          console.warn('App: Diagnostic -> Cleaning Supabase local storage to force refresh');
+          Object.keys(localStorage).forEach(key => {
+            if (key.includes('supabase.auth.token')) localStorage.removeItem(key);
+          });
+        }
+
+        // 0. Sincronizar Token de Clerk con Supabase (Asegurar encabezado Auth)
+        let token: string | null = null;
+        try {
+          token = await getToken({ template: 'supabase' });
+        } catch (tErr) {
+          console.warn('App: Supabase JWT template not found, falling back to default token.');
+          token = await getToken();
+        }
+
+        if (token) {
+          console.log('App: Token acquired, syncing headers and session');
+
+          // 0.1 Inyección Directa de Cabeceras (Bypass de latencia de sesión)
+          updateSupabaseAuth(token);
+
+          // 0.2 Sincronización de Sesión estándar
+          const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+            access_token: token,
+            refresh_token: ''
+          });
+
+          console.log('App: Supabase session status (CLERK_JWT):', {
+            active: !!session,
+            user: session?.user?.id,
+            error: sessionError?.message
+          });
+        } else {
+          console.warn('App: No JWT token "supabase". Falling back to ANON_KEY for visibility.');
+          // Si no hay token de Clerk, nos aseguramos de que Supabase use la anonKey por defecto
+          // @ts-ignore
+          await supabase.auth.signOut(); // Limpiar rastro de sesiones fallidas
+        }
+
         const email = clerkUser.primaryEmailAddress?.emailAddress;
-        if (!email) return;
-
-        // Verificar si existe el perfil
-        const { data: profile, error: fetchError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', clerkUser.id)
-          .single();
-
-        if (fetchError && fetchError.code !== 'PGRST116') {
-          console.error('Error verificando perfil:', fetchError);
+        if (!email) {
+          console.warn('App: User has no email');
           return;
         }
 
-        if (!profile) {
-          console.log('Sincronizando nuevo usuario Clerk -> Supabase:', email);
+        console.log('App: Loading profiles and data...');
 
-          // Obtener una organización por defecto si es necesario
-          const { data: orgs } = await supabase.from('organizations').select('id').limit(1);
-          const defaultOrgId = orgs?.[0]?.id;
+        // 1. Verificar/Sincronizar el perfil REAL (solo si no estamos suplantando o es la primera vez)
+        if (!realUserProfile) {
+          let { data: profile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', clerkUser.id)
+            .single();
 
-          const { error: insertError } = await supabase.from('profiles').insert({
+          if (fetchError && fetchError.code !== 'PGRST116') {
+            console.error('Error verificando perfil real:', fetchError);
+          }
+
+          if (!profile) {
+            const { data: newProfile, error: insertError } = await supabase.from('profiles').insert({
+              id: clerkUser.id,
+              email: email,
+              full_name: clerkUser.fullName || 'Usuario Nuevo',
+              role: null,
+              organization_id: null,
+              notification_prefered_channels: ['EMAIL']
+            }).select().single();
+
+            if (insertError) {
+              console.error('App: CRITICAL ERROR creating profile:', insertError);
+              // Fallback for visual rendering even if DB rejected
+              profile = {
+                id: clerkUser.id,
+                email: email,
+                full_name: clerkUser.fullName || 'Usuario (Sin DB)',
+                role: null
+              };
+            } else {
+              profile = newProfile;
+            }
+          }
+          setRealUserProfile(profile);
+        }
+
+        // 2. Determinar qué perfil mostrar (real o suplantado)
+        const targetUserId = impersonatedUser?.id || clerkUser.id;
+        console.log('App: Fetching active profile for:', targetUserId);
+
+        let { data: activeProfile, error: activeError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', targetUserId)
+          .single();
+
+        if (activeError && activeError.code !== 'PGRST116') {
+          console.error('App: Error loading active profile:', activeError);
+        }
+
+        // Fallback de seguridad definitivo: Si es un admin conocido y NO estamos suplantando, forzamos su rol
+        const hardcodedAdmins = ['user_39fz5fO1nTqgiZdV3oBEevy2FfT', 'user_39ldmMY70oeZqxolww1N55Ptvw6'];
+        const isKnownAdmin = clerkUser && hardcodedAdmins.includes(clerkUser.id);
+
+        if (isKnownAdmin && !impersonatedUser) {
+          console.log('App: [SECURITY_BYPASS] Forcing ADMIN status for known user:', clerkUser.id);
+          activeProfile = activeProfile || {
             id: clerkUser.id,
-            email: email,
-            full_name: clerkUser.fullName || 'Usuario Nuevo',
-            role: 'VENDEDOR', // Rol por defecto
-            organization_id: defaultOrgId,
-            notification_prefered_channels: ['EMAIL']
-          });
+            role: 'ADMIN',
+            full_name: clerkUser.fullName || 'Administrador',
+            email: email
+          };
+          activeProfile.role = 'ADMIN';
+        }
 
-          if (insertError) {
-            console.error('Error creando perfil:', insertError);
+        console.log('App: Final userProfile context:', { id: activeProfile?.id, role: activeProfile?.role });
+        setUserProfile(activeProfile);
+
+        // 3. Cargar Organizaciones (Diagnóstico Extremo)
+        console.log('App: PROBE -> Attempting raw fetch to organizations...');
+
+        // --- DIAGNÓSTICO DE RED DE BAJO NIVEL ---
+        try {
+          const rawResponse = await fetch(`${supabase.supabaseUrl}/rest/v1/organizations?select=*`, {
+            headers: {
+              'apikey': supabase.supabaseKey,
+              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || 'NO_TOKEN'}`
+            }
+          });
+          const rawText = await rawResponse.text();
+          console.log('App: NETWORK_LOW_LEVEL_PROBE:', {
+            status: rawResponse.status,
+            ok: rawResponse.ok,
+            json_sample: rawText.substring(0, 100)
+          });
+          // @ts-ignore
+          window.__RAW_NETWORK_DIAGNOSTIC = { status: rawResponse.status, data: rawText };
+        } catch (netErr) {
+          console.error('App: NETWORK_CRITICAL_FAILURE:', netErr);
+        }
+        // ---------------------------------------
+
+        const { data: orgData, error: orgError } = await supabase.from('organizations').select('*');
+
+        if (orgError) {
+          console.error('App: SUPABASE_FETCH_ERROR:', orgError);
+          // @ts-ignore
+          window.__LAST_ERROR = orgError;
+          // Alerta visual en la barra de diagnóstico
+          // @ts-ignore
+          window.__SUPABASE_ERROR_MSG = orgError.message;
+        }
+
+        // 4. Cargar Permisos específicos
+        const { data: accessData, error: accessError } = await supabase
+          .from('user_organization_access')
+          .select('*')
+          .eq('profile_id', targetUserId);
+
+        if (accessError) console.error('App: Error loading permissions:', accessError);
+        setUserPermissions(accessData || []);
+
+        // 4. Cargar Permisos de ROL (Matriz de Pantallas)
+        if (activeProfile?.role) {
+          const { data: rolePerms, error: rolePermsError } = await supabase
+            .from('role_permissions')
+            .select('*')
+            .eq('role_id', activeProfile.role);
+
+          if (rolePermsError) {
+            console.error('App: Error loading role permissions:', rolePermsError);
+          } else {
+            console.log(`App: Loaded ${rolePerms?.length || 0} role permissions for ${activeProfile.role}`);
+            setUserRolePermissions(rolePerms || []);
           }
         }
+
+        if (orgData && orgData.length > 0) {
+          let filteredOrgs = orgData;
+
+          // Filtrado de seguridad:
+          // Un ADMIN real (no suplantando) siempre ve TODO.
+          // Un usuario normal o un ADMIN suplantando ve solo lo permitido por accessData.
+
+          const isActingAsAdmin = activeProfile?.role === 'ADMIN' && !impersonatedUser;
+
+          if (!isActingAsAdmin) {
+            const allowedIds = accessData?.map((a: any) => a.organization_id) || [];
+            filteredOrgs = orgData.filter((o: any) => allowedIds.includes(o.id));
+            console.log(`App: [SECURITY_FILTER] Mode: ${impersonatedUser ? 'Impersonation' : 'Standard'}. Showing ${filteredOrgs.length}/${orgData.length} orgs.`);
+          } else {
+            console.log(`App: [ADMIN_BYPASS] Showing all ${orgData.length} orgs.`);
+          }
+
+          setOrgs(filteredOrgs);
+
+          // Asegurar que selectedOrg sea válido dentro del set filtrado
+          if (filteredOrgs.length > 0) {
+            const currentIsValid = selectedOrg && filteredOrgs.some((o: any) => o.id === selectedOrg.id);
+            if (!currentIsValid) {
+              setSelectedOrg(filteredOrgs[0]);
+            }
+          } else {
+            setSelectedOrg(null);
+          }
+        }
+
       } catch (err) {
-        console.error('Profil Sync Exception:', err);
+        console.error('Initial Load Exception:', err);
+      } finally {
+        console.log('App: Sync sequence completed');
+        setSessionReady(true);
       }
     };
 
-    syncProfile();
-  }, [clerkUser, isLoaded]);
+    syncProfileAndLoadData();
+  }, [clerkUser, isLoaded, supabase, impersonatedUser, getToken]);
 
   useTheme(selectedOrg);
 
-  useEffect(() => {
-    const loadInit = async () => {
-      if (!supabase) return;
-      const { data } = await supabase.from('organizations').select('*').order('name');
-      if (data && data.length > 0) {
-        setOrgs(data);
-        setSelectedOrg(data[0]);
-      }
-    };
-    loadInit();
-  }, []);
-
   const navItems = [
-    { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { label: 'Materialidad', path: '/materialidad', icon: LayoutDashboard },
-    { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText },
-    { label: 'Proformas', path: '/proformas', icon: FileEdit },
-    { label: 'Facturación', path: '/facturas', icon: FileCheck },
-    { label: 'Catálogos SAT', path: '/catalogos-sat', icon: LayoutGrid },
-    { label: 'Evidencia', path: '/evidencia', icon: ImageIcon },
-    { label: 'Reportes', path: '/reportes', icon: BarChart3 },
-    { label: 'Configuración', path: '/settings', icon: Settings },
+    { label: 'Dashboard', path: '/', icon: LayoutDashboard, screenId: 'dashboard', roles: ['*'] },
+    { label: 'Materialidad', path: '/materialidad', icon: Shield, screenId: 'materialidad', roles: ['ADMIN', 'CONTABLE', 'FACTURACION'] },
+    { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
+    { label: 'Proformas', path: '/proformas', icon: FileEdit, screenId: 'proformas', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'REPRESENTANTE'] },
+    { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
+    { label: 'Bancos', path: '/bancos', icon: FileCheck, screenId: 'bancos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'REPRESENTANTE'] },
+    { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
+    { label: 'Reportes', path: '/reportes', icon: BarChart3, screenId: 'reportes', roles: ['ADMIN', 'CONTABLE', 'REPRESENTANTE'] },
+    { label: 'Catálogos SAT', path: '/catalogos-sat', icon: LayoutGrid, screenId: 'catalogos-sat', roles: ['ADMIN', 'FACTURACION', 'CONTABLE'] },
+    { label: 'Configuración', path: '/settings', icon: Settings, screenIds: ['settings_empresa', 'settings_usuarios', 'settings_roles'], roles: ['ADMIN', 'VENDEDOR', 'CXC', 'CONTABLE'] },
+    { label: 'Seguridad', path: '/security', icon: Shield, screenId: 'security', roles: ['ADMIN'] },
   ];
+
+  const hardcodedAdmins = ['user_39fz5fO1nTqgiZdV3oBEevy2FfT', 'user_39ldmMY70oeZqxolww1N55Ptvw6'];
+  const isActualAdmin = clerkUser && hardcodedAdmins.includes(clerkUser.id) && !impersonatedUser;
+
+  const filteredNavItems = navItems.filter(item => {
+    if (item.roles.includes('*')) return true;
+    if (isActualAdmin) return true;
+
+    // Buscar permiso para esta pantalla específica o lista de pantallas
+    if (item.screenIds) {
+      return item.screenIds.some(id => userRolePermissions.find(p => p.screen_id === id)?.can_view);
+    }
+    const perm = userRolePermissions.find(p => p.screen_id === item.screenId);
+    return perm?.can_view;
+  });
+
+  // Nuclear Protection: Si estamos cargando Clerk, o TENEMOS usuario pero la sesión AÚN NO está lista, BLOQUEAR renderizado.
+  if (!isLoaded || (clerkUser && !sessionReady)) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f172a', color: 'white' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ color: '#94a3b8', fontSize: '18px', fontWeight: 'bold' }}>
+              {!isLoaded ? 'Cargando Autenticación...' : 'Sincronizando con B2B Cloud...'}
+            </p>
+            <p style={{ color: '#64748b', fontSize: '12px', marginTop: '4px' }}>
+              Identidad: {isLoaded ? (clerkUser ? 'Verificada ✅' : 'Esperando usuario...') : 'Cargando Clerk...'}
+            </p>
+            {/* @ts-ignore */}
+            {window.__RAW_NETWORK_DIAGNOSTIC && (
+              <p style={{ color: '#94a3b8', fontSize: '10px', marginTop: '8px', fontFamily: 'monospace', background: '#1e293b', padding: '4px 8px', borderRadius: '4px' }}>
+                Red Supabase: {(window as any).__RAW_NETWORK_DIAGNOSTIC.status} -
+                {(window as any).__RAW_NETWORK_DIAGNOSTIC.data?.includes('[') ? 'Datos OK' : 'Fallo/Vacío'}
+              </p>
+            )}
+            {/* @ts-ignore */}
+            {(window as any).__SUPABASE_ERROR_MSG && (
+              <p style={{ color: '#ef4444', fontSize: '10px', marginTop: '4px' }}>
+                Error SDK: {(window as any).__SUPABASE_ERROR_MSG}
+              </p>
+            )}
+            <button
+              onClick={() => window.location.reload()}
+              style={{ marginTop: '20px', background: 'none', border: '1px solid #334155', color: '#94a3b8', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px' }}
+            >
+              Forzar Recarga Completa
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -459,11 +714,45 @@ export function App() {
       </SignedOut>
 
       <SignedIn>
-        <EnvDiagnostic />
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#020617', color: 'white', fontFamily: '"Inter", sans-serif' }}>
-          <DiagnosticBar />
+          {impersonatedUser && (
+            <div style={{
+              backgroundColor: '#991b1b',
+              color: 'white',
+              padding: '8px 20px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '20px',
+              zIndex: 1000
+            }}>
+              <span>⚠️ MODO SUPLANTACIÓN ACTIVO: Estás viendo el sistema como <strong>{impersonatedUser.full_name}</strong></span>
+              <button
+                onClick={() => setImpersonatedUser(null)}
+                style={{
+                  backgroundColor: 'white',
+                  color: '#991b1b',
+                  border: 'none',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                  cursor: 'pointer',
+                  fontWeight: '800'
+                }}
+              >
+                DETENER SUPLANTACIÓN
+              </button>
+            </div>
+          )}
 
-          <header style={{ height: '70px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', padding: '0 32px', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.8)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}>
+          <header
+            className="notranslate"
+            // @ts-ignore
+            translate="no"
+            style={{ height: '70px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', padding: '0 32px', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.8)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ width: '45px', height: '45px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 0 20px var(--primary-glow)' }}>
                 {selectedOrg?.logo_url ? (
@@ -480,7 +769,9 @@ export function App() {
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>
                     <CurrentUserDetails />
                   </div>
-                  <div style={{ color: '#64748b', fontSize: '12px' }}>{selectedOrg?.name || 'Administrador'}</div>
+                  <div style={{ color: impersonatedUser ? '#ef4444' : '#64748b', fontSize: '12px', fontWeight: impersonatedUser ? 'bold' : 'normal' }}>
+                    {impersonatedUser ? `Suplantando a: ${impersonatedUser.full_name}` : (selectedOrg?.name || 'Administrador')}
+                  </div>
                 </SignedIn>
               </div>
               <SignedIn>
@@ -501,8 +792,13 @@ export function App() {
           </header>
 
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-            <aside style={{ width: '260px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: 'var(--neutro-claro)' }}>
-              {navItems.map(item => (
+            <aside
+              className="notranslate"
+              // @ts-ignore
+              translate="no"
+              style={{ width: '260px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: 'var(--neutro-claro)' }}
+            >
+              {filteredNavItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -526,7 +822,13 @@ export function App() {
               ))}
 
               <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                <button style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', background: 'none', border: 'none', color: '#f87171', padding: '12px 16px', cursor: 'pointer', textAlign: 'left', fontSize: '14px' }}>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    signOut({ redirectUrl: '/' });
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', background: 'none', border: 'none', color: '#f87171', padding: '12px 16px', cursor: 'pointer', textAlign: 'left', fontSize: '14px' }}
+                >
                   <LogOut size={18} />
                   <span>Cerrar Sesión</span>
                 </button>
@@ -558,20 +860,22 @@ export function App() {
                 }} />
               )}
               <Routes>
-                <Route path="/" element={<DashboardPage />} />
+                <Route path="/" element={<DashboardPage userProfile={userProfile} />} />
                 <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones" element={<PlaceholderPage title="Gestor de Cotizaciones" />} />
                 <Route path="/cotizaciones/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/facturas" element={<InvoicesPage />} />
-                <Route path="/facturas/:id" element={<InvoicesPage />} />
+                <Route path="/facturas" element={<InvoicesPage userProfile={userProfile} />} />
+                <Route path="/facturas/:id" element={<InvoicesPage userProfile={userProfile} />} />
                 <Route path="/catalogos-sat" element={<SATCatalogsPage />} />
+                <Route path="/bancos" element={<BankAccountsPage selectedOrg={selectedOrg} />} />
                 <Route path="/evidencia" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
                 <Route path="/evidencia/:id" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
                 <Route path="/reportes" element={<PlaceholderPage title="Generador de Reportes" />} />
-                <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} />} />
+                <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} currentUser={userProfile} userPermissions={userPermissions} userRolePermissions={userRolePermissions} setImpersonatedUser={setImpersonatedUser} realUserProfile={realUserProfile} />} />
+                <Route path="/security" element={<SecurityCenter supabase={supabase} clerkUser={clerkUser} getToken={getToken} impersonatedUser={impersonatedUser} />} />
               </Routes>
             </main>
           </div>
@@ -678,7 +982,7 @@ export function App() {
             * { box-sizing: border-box; }
           `}</style>
         </div>
-      </SignedIn>
+      </SignedIn >
     </>
   );
 }

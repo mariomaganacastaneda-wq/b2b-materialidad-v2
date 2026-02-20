@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Building2, ChevronUp, ChevronDown, History,
     LayoutGrid, Clock, Upload, Briefcase, FileText, Palette,
-    Pipette, Eye, Loader2
+    Pipette, Eye, Loader2, Phone, Mail, User
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -115,14 +115,88 @@ const getValidityStatus = (lastUpdate: string) => {
     return { label: 'Vigente', color: '#10b981' };
 };
 
+/**
+ * Componente para manejar la autorización administrativa de una emisora.
+ * Extraído para cumplir con las reglas de Hooks de React.
+ */
+const AdminCompanyPrivileges: React.FC<{ org: any; onUpdateDetail: (field: string, value: any) => void }> = ({ org, onUpdateDetail }) => {
+    const [isAdmin, setIsAdmin] = React.useState(false);
+
+    React.useEffect(() => {
+        const checkAdmin = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                setIsAdmin(profile?.role === 'ADMIN');
+            }
+        };
+        checkAdmin();
+    }, []);
+
+    if (!isAdmin) {
+        // Vista de solo lectura para no-admins
+        return (
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#64748b', backgroundColor: org.is_client ? 'rgba(16, 185, 129, 0.05)' : 'transparent', padding: '4px 8px', borderRadius: '4px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: org.is_client ? '#10b981' : '#334155' }} />
+                    <span>{org.is_client ? 'Cliente Activo' : 'No es Cliente'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#64748b', backgroundColor: org.is_issuer ? 'rgba(99, 102, 241, 0.05)' : 'transparent', padding: '4px 8px', borderRadius: '4px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: org.is_issuer ? 'var(--primary-base)' : '#334155' }} />
+                    <span>{org.is_issuer ? 'Empresa Emisora' : 'No es Emisora'}</span>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', width: '100%' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', cursor: 'pointer', padding: '8px 12px', backgroundColor: org.is_client ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.02)', borderRadius: '8px', border: org.is_client ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
+                <input type="checkbox" checked={!!org.is_client} onChange={(e) => onUpdateDetail('is_client', e.target.checked)} style={{ accentColor: '#10b981' }} />
+                <span>Cliente Activo</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', cursor: 'pointer', padding: '8px 12px', backgroundColor: org.is_issuer ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255,255,255,0.02)', borderRadius: '8px', border: org.is_issuer ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s', opacity: org.is_approved_issuer ? 1 : 0.7 }}>
+                <input type="checkbox" checked={!!org.is_issuer} onChange={(e) => onUpdateDetail('is_issuer', e.target.checked)} style={{ accentColor: 'var(--primary-base)' }} />
+                <span>Empresa Emisora</span>
+            </label>
+
+            {/* Autorización Administrativa de Emisora */}
+            <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '12px',
+                cursor: 'pointer',
+                padding: '8px 12px',
+                backgroundColor: org.is_approved_issuer ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255,255,255,0.05)',
+                borderRadius: '8px',
+                border: org.is_approved_issuer ? '1px solid #f59e0b' : '1px solid #334155',
+                transition: 'all 0.2s',
+                marginLeft: 'auto'
+            }}>
+                <input
+                    type="checkbox"
+                    checked={!!org.is_approved_issuer}
+                    onChange={(e) => onUpdateDetail('is_approved_issuer', e.target.checked)}
+                    style={{ accentColor: '#f59e0b' }}
+                />
+                <span style={{ color: org.is_approved_issuer ? '#fbbf24' : '#94a3b8', fontWeight: 'bold' }}>
+                    {org.is_approved_issuer ? '🔒 EMISORA AUTORIZADA' : '🔓 AUTORIZAR EMISORA'}
+                </span>
+            </label>
+        </div>
+    );
+};
+
 export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingNew, onUpdateDetail }) => {
     const [basicInfoExpanded, setBasicInfoExpanded] = useState(true);
     const [visualMgmtExpanded, setVisualMgmtExpanded] = useState(false);
-    const [activitiesExpanded, setActivitiesExpanded] = useState(false);
+    const [activitiesExpanded, setActivitiesExpanded] = useState(true);
     const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
-    const [obligationsExpanded, setObligationsExpanded] = useState(false);
+    const [obligationsExpanded, setObligationsExpanded] = useState(true);
     const [csfHistoryExpanded, setCsfHistoryExpanded] = useState(false);
-    const [regimesExpanded, setRegimesExpanded] = useState(false);
+    const [contactExpanded, setContactExpanded] = useState(true);
+    const [regimesExpanded, setRegimesExpanded] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
 
     const handleCSFUpload = async (e: React.ChangeEvent<HTMLInputElement>, mode: 'register' | 'update') => {
@@ -331,16 +405,9 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                     </label>
                 </div>
 
-                {/* Roles */}
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', cursor: 'pointer', padding: '8px 12px', backgroundColor: org.is_customer ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.02)', borderRadius: '8px', border: org.is_customer ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
-                        <input type="checkbox" checked={!!org.is_customer} onChange={(e) => onUpdateDetail('is_customer', e.target.checked)} style={{ accentColor: '#10b981' }} />
-                        <span>Cliente Activo</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', cursor: 'pointer', padding: '8px 12px', backgroundColor: org.is_issuer ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255,255,255,0.02)', borderRadius: '8px', border: org.is_issuer ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)', transition: 'all 0.2s' }}>
-                        <input type="checkbox" checked={!!org.is_issuer} onChange={(e) => onUpdateDetail('is_issuer', e.target.checked)} style={{ accentColor: 'var(--primary-base)' }} />
-                        <span>Emisora / Prestadora</span>
-                    </label>
+                {/* Privilegios Administrativos Consolidados */}
+                <div style={{ display: 'flex', width: '100%' }}>
+                    <AdminCompanyPrivileges org={org} onUpdateDetail={onUpdateDetail} />
                 </div>
             </div>
 
@@ -389,6 +456,82 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                                         <div style={{ color: '#cbd5e1' }}>{org.colony}</div>
                                         <div style={{ color: '#cbd5e1' }}>{org.municipality}, {org.state}</div>
                                         <div style={{ color: 'var(--primary-base)', fontWeight: 'bold', marginTop: '4px' }}>CP: {org.tax_domicile?.replace('CP: ', '')}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Datos de Contacto */}
+                <div className="glass-card" style={{ padding: '0', overflow: 'hidden', border: contactExpanded ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)' }}>
+                    <div
+                        onClick={() => setContactExpanded(!contactExpanded)}
+                        style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.02)' }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ color: 'var(--primary-base)' }}><User size={18} /></div>
+                            <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: 0 }}>Datos de Contacto</h4>
+                        </div>
+                        {contactExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </div>
+
+                    {contactExpanded && (
+                        <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                                {/* Nombre y Email */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <div className="input-group">
+                                        <label style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <User size={12} /> Nombre del Contacto
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={org.contact_name || ''}
+                                            onChange={(e) => onUpdateDetail('contact_name', e.target.value)}
+                                            placeholder="Ej. Juan Pérez"
+                                            style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', padding: '10px', borderRadius: '8px', color: 'white', fontSize: '13px' }}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Mail size={12} /> Correo Electrónico de Contacto
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={org.contact_email || ''}
+                                            onChange={(e) => onUpdateDetail('contact_email', e.target.value)}
+                                            placeholder="contacto@empresa.com"
+                                            style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', padding: '10px', borderRadius: '8px', color: 'white', fontSize: '13px' }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Teléfonos */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <div className="input-group">
+                                        <label style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Phone size={12} /> Teléfono de Oficina
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={org.office_phone || ''}
+                                            onChange={(e) => onUpdateDetail('office_phone', e.target.value)}
+                                            placeholder="+52 (55) 1234 5678"
+                                            style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', padding: '10px', borderRadius: '8px', color: 'white', fontSize: '13px' }}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Phone size={12} /> Teléfono Celular
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={org.mobile_phone || ''}
+                                            onChange={(e) => onUpdateDetail('mobile_phone', e.target.value)}
+                                            placeholder="+52 (55) 9876 5432"
+                                            style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', padding: '10px', borderRadius: '8px', color: 'white', fontSize: '13px' }}
+                                        />
                                     </div>
                                 </div>
                             </div>

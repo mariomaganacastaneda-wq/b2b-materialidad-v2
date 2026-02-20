@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CompanyList } from './CompanyList';
 import { CompanyDetails } from './CompanyDetails';
 import { UserDirectory } from './UserDirectory';
+import { RoleManager } from './RoleManager';
 import BulkCSFManager from '../catalogs/BulkCSFManager';
 
 interface SettingsPageProps {
@@ -10,6 +11,11 @@ interface SettingsPageProps {
     selectedOrg: any;
     setSelectedOrg: (org: any) => void;
     supabase: any;
+    currentUser: any;
+    userPermissions?: any[];
+    setImpersonatedUser?: (user: any) => void;
+    realUserProfile?: any;
+    userRolePermissions?: any[];
 }
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({
@@ -17,10 +23,15 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     setOrgs,
     selectedOrg,
     setSelectedOrg,
-    supabase
+    supabase,
+    currentUser,
+    userPermissions = [],
+    userRolePermissions = [],
+    setImpersonatedUser,
+    realUserProfile
 }) => {
     // --- STATE ---
-    const [activeTab, setActiveTab] = useState<'empresa' | 'usuarios'>('empresa');
+    const [activeTab, setActiveTab] = useState<'empresa' | 'usuarios' | 'roles'>('empresa');
     const [subTab, setSubTab] = useState<'clientes' | 'emisoras' | 'lote'>('clientes');
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [users, setUsers] = useState<any[]>([]);
@@ -34,6 +45,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     // Data State
     const [uniqueActivities, setUniqueActivities] = useState<string[]>([]);
     const [orgActivitiesMap, setOrgActivitiesMap] = useState<{ [key: string]: string[] }>({});
+
+    // Permission Checking Logic
+    const isAdmin = currentUser?.role === 'ADMIN';
+    const canViewTab = (tabId: string) => {
+        if (isAdmin) return true;
+        const perm = userRolePermissions.find((p: any) => p.screen_id === `settings_${tabId}`);
+        return perm?.can_view || false;
+    };
+
+    // Auto-select first available tab if current is denied
+    useEffect(() => {
+        if (!canViewTab(activeTab)) {
+            if (canViewTab('empresa')) setActiveTab('empresa');
+            else if (canViewTab('usuarios')) setActiveTab('usuarios');
+            else if (canViewTab('roles')) setActiveTab('roles');
+        }
+    }, [userRolePermissions, currentUser, activeTab]);
 
     // --- EFFECTS ---
 
@@ -125,19 +153,42 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         ? { ...selectedOrg, ...detailsData }
         : (isCreatingNew ? { id: 'new', _is_placeholder: true } : null);
 
+    // DEBUG: Ver qué datos reales tiene la empresa seleccionada
+    useEffect(() => {
+        if (selectedOrg) {
+            console.log('--- SELECCIÓN DE EMPRESA ---', {
+                id: selectedOrg.id,
+                nombre: selectedOrg.name,
+                actividades: detailsData.economic_activities.length,
+                regimenes: detailsData.tax_regimes.length
+            });
+        }
+    }, [selectedOrg?.id, detailsData]);
+
 
     // Filter Logic
     const filteredOrgs = (orgs || []).filter((o: any) => {
-        // Tab filter
-        if (subTab === 'clientes' && o.is_issuer) return false; // This logic might be: show only clients? 
-        // Original logic: `subTab === 'clientes' ? true : o.is_issuer` -> If subtab client, show all? No, probably show clients.
-        // Re-reading original: `.filter((o: any) => subTab === 'clientes' ? true : o.is_issuer)`
-        // This meant: if tab is clients, return true (show all? or maybe 'clientes' was default view). 
-        // Actually usually 'clientes' tab shows clients, 'emisoras' shows issuers.
-        // Let's implement standard logic:
-        if (subTab === 'emisoras' && !o.is_issuer) return false;
-        // If subTab is 'clientes', maybe we want to exclude issuers if they are mutually exclusive? 
-        // Original code was ambiguous, let's assume 'emisoras' filters for is_issuer=true.
+        const userRole = currentUser?.role?.toUpperCase();
+        const isAdmin = userRole === 'ADMIN';
+
+        // Log de diagnóstico para el primer elemento (solo para debug)
+        if (orgs.length > 0 && o.id === orgs[0].id) {
+            console.log('SettingsPage Filter Debug:', {
+                userRole,
+                isAdmin,
+                subTab,
+                org_is_issuer: o.is_issuer,
+                permissionsCount: userPermissions?.length
+            });
+        }
+
+        // Filtro estricto de acceso (incluso para Admins, para que funcione el ocultamiento)
+        const permission = userPermissions?.find((p: any) => p.organization_id === o.id);
+        if (!permission) return false;
+
+        // La visualización en "emisoras" o "clientes" ahora depende ÚNICAMENTE del permiso en el perfil de usuario.
+        if (subTab === 'emisoras' && !permission.can_manage_quotations) return false;
+        if (subTab === 'clientes' && !permission.can_manage_payments) return false;
 
         const searchMatch = !searchTerm ||
             o.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,10 +209,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     });
 
     // Handlers
-    const handleUpdateDetail = async (fieldOrObject: string | Record<string, any>, value?: any) => {
+    const pendingUpdates = useRef<any>({});
+    const debounceTimer = useRef<any>(null);
+
+    const handleUpdateDetail = (fieldOrObject: string | Record<string, any>, value?: any) => {
         if (!selectedOrg) return;
 
-        let updatePayload: any = {};
+        // 1. Calcular el nuevo estado local (Optimistic Update)
+        let localUpdate: any = {};
         let finalThemeConfig = { ...(selectedOrg.theme_config || {}) };
         let hasThemeUpdates = false;
 
@@ -171,9 +226,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 const subField = field.split('.')[1];
                 finalThemeConfig[subField] = value;
                 hasThemeUpdates = true;
-                updatePayload = { theme_config: finalThemeConfig };
+                localUpdate = { theme_config: finalThemeConfig };
             } else {
-                updatePayload = { [field]: value };
+                localUpdate = { [field]: value };
             }
         } else {
             // Es un objeto de múltiples actualizaciones
@@ -183,28 +238,68 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     finalThemeConfig[subField] = val;
                     hasThemeUpdates = true;
                 } else {
-                    updatePayload[field] = val;
+                    localUpdate[field] = val;
                 }
             });
             if (hasThemeUpdates) {
-                updatePayload.theme_config = finalThemeConfig;
+                localUpdate.theme_config = finalThemeConfig;
             }
         }
 
-        const { error } = await supabase.from('organizations').update(updatePayload).eq('id', selectedOrg.id);
+        // Actualizar UI inmediatamente para respuesta instantánea
+        const updatedOrg = {
+            ...selectedOrg,
+            ...localUpdate,
+            theme_config: hasThemeUpdates ? finalThemeConfig : selectedOrg.theme_config
+        };
 
-        if (!error) {
-            const updatedOrg = {
-                ...selectedOrg,
-                ...updatePayload,
-                theme_config: hasThemeUpdates ? finalThemeConfig : selectedOrg.theme_config
-            };
+        setSelectedOrg(updatedOrg);
+        setOrgs(orgs.map(o => o.id === updatedOrg.id ? updatedOrg : o));
 
-            setSelectedOrg(updatedOrg);
-            setOrgs(orgs.map(o => o.id === updatedOrg.id ? updatedOrg : o));
-        } else {
-            console.error('Error updating organization:', error);
-            alert('Error al actualizar: ' + error.message);
+        // 2. Acumular cambios para el guardado persistente
+        pendingUpdates.current = { ...pendingUpdates.current, ...localUpdate };
+
+        // 3. Debounce el guardado real en Supabase para evitar condiciones de carrera
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+        debounceTimer.current = setTimeout(async () => {
+            const payload = { ...pendingUpdates.current };
+            pendingUpdates.current = {}; // Limpiamos el buffer antes de la petición para capturar cambios nuevos durante el await
+
+            // Diagnóstico de sesión
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                console.warn('SettingsPage: Intento de guardado sin sesión activa de Supabase.');
+            }
+
+            const { error } = await supabase.from('organizations').update(payload).eq('id', selectedOrg.id);
+
+            if (error) {
+                console.error('Error synchronizing organization:', error);
+                // Si falla, mostramos alerta para que el usuario sepa que la persistencia falló
+                alert('Error de sincronización: ' + error.message);
+            }
+        }, 1000);
+    };
+    const handleUnlinkClient = async (orgId: string) => {
+        if (!confirm('¿Estás seguro de remover este cliente? Ya no aparecerá en tu lista.')) return;
+
+        try {
+            const { error } = await supabase.functions.invoke('manage-user-access', {
+                body: {
+                    profile_id: currentUser.id,
+                    organization_id: orgId,
+                    action: 'delete'
+                }
+            });
+
+            if (error) throw error;
+
+            // Refrescar toda la pantalla porque la DB cambió
+            window.location.reload();
+        } catch (err: any) {
+            console.error('Error unlinking client:', err);
+            alert('Error al remover cliente: ' + err.message);
         }
     };
 
@@ -225,11 +320,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px' }}>Configuración del Sistema</h1>
 
             <div style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>
-                <button onClick={() => { setActiveTab('empresa'); setIsCreatingNew(false); }} className={`tab-button ${activeTab === 'empresa' ? 'active' : ''}`}>Empresas</button>
-                <button onClick={() => setActiveTab('usuarios')} className={`tab-button ${activeTab === 'usuarios' ? 'active' : ''}`}>Usuarios</button>
+                {canViewTab('empresa') && (
+                    <button onClick={() => { setActiveTab('empresa'); setIsCreatingNew(false); }} className={`tab-button ${activeTab === 'empresa' ? 'active' : ''}`}>Empresas</button>
+                )}
+                {canViewTab('usuarios') && (
+                    <button onClick={() => setActiveTab('usuarios')} className={`tab-button ${activeTab === 'usuarios' ? 'active' : ''}`}>Usuarios</button>
+                )}
+                {canViewTab('roles') && (
+                    <button onClick={() => setActiveTab('roles')} className={`tab-button ${activeTab === 'roles' ? 'active' : ''}`}>Roles</button>
+                )}
             </div>
 
-            {activeTab === 'empresa' && (
+            {activeTab === 'empresa' && canViewTab('empresa') && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <div style={{ display: 'flex', gap: '15px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '10px' }}>
                         <button
@@ -270,6 +372,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                     csfFilter, setCsfFilter
                                 }}
                                 uniqueActivities={uniqueActivities}
+                                onUnlinkOrg={handleUnlinkClient}
                             />
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -284,11 +387,21 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 </div>
             )}
 
-            {activeTab === 'usuarios' && (
+            {activeTab === 'usuarios' && canViewTab('usuarios') && (
                 <UserDirectory
                     users={users}
                     setUsers={setUsers}
                     supabase={supabase}
+                    currentUser={currentUser}
+                    setImpersonatedUser={setImpersonatedUser}
+                    realUserProfile={realUserProfile}
+                />
+            )}
+
+            {activeTab === 'roles' && canViewTab('roles') && (
+                <RoleManager
+                    supabase={supabase}
+                    currentUser={currentUser}
                 />
             )}
         </div>

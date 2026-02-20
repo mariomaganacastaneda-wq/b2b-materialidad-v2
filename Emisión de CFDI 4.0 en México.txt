@@ -1,0 +1,125 @@
+# Arquitectura Técnica, Normativa y Desarrollo de Software para la Emisión de CFDI 4.0 en México
+
+## 1. Introducción al Ecosistema de Facturación Electrónica
+
+La digitalización fiscal en México, regida por el **Anexo 20 de la Resolución Miscelánea Fiscal (RMF)**, ha evolucionado de un modelo de recepción pasiva a un esquema de **validación activa en tiempo real**. Desde abril de 2023, la versión **CFDI 4.0** es el único estándar válido, exigiendo a los desarrolladores la integración de:
+
+* Motores de validación criptográfica.
+* Interoperabilidad asíncrona vía APIs (SOAP/REST).
+* Sincronización con catálogos gubernamentales dinámicos.
+
+---
+
+## 2. Requerimientos Fiscales y Estructurales
+
+El sistema debe actuar como un validador de identidad fiscal para evitar el rechazo computacional por parte del SAT.
+
+### 2.1 Requisitos de la Entidad Emisora
+
+* **RFC:** Debe estar activo y fuera de las "listas negras" (Art. 69-B CFF).
+* **Certificado de Sello Digital (CSD):** El software debe gestionar archivos `.key` y `.cer`, monitoreando su vigencia para evitar interrupciones.
+* **Régimen y Lugar de Expedición:** Mapeo estricto contra catálogos XSD.
+
+### 2.2 Validación del Receptor (Cliente)
+
+La versión 4.0 introdujo cuatro reglas críticas de *string matching*:
+
+1. **Nombre/Razón Social:** Obligatorio, en mayúsculas y **sin el régimen societario** (ej. omitir "S.A. de C.V.").
+2. **Código Postal:** Debe coincidir exactamente con la Constancia de Situación Fiscal.
+3. **Régimen Fiscal:** Validación de compatibilidad con el tipo de persona (física/moral).
+4. **Uso de CFDI:** Debe ser semánticamente compatible con el régimen del receptor.
+
+### 2.3 Actualizaciones RMF 2026
+
+* **Cancelaciones:** Manejo de estados asíncronos complejos.
+* **Validaciones Dinámicas:** Inserción obligatoria de datos específicos (ej. miligramos de nicotina en tabacos) según la clave de producto.
+* **Auditoría:** Obligación de almacenamiento inmutable del XML (único archivo con validez legal).
+
+---
+
+## 3. Arquitectura de Sistemas y Ciclo de Vida del CFDI
+
+La generación de una factura sigue un flujo **B2B2G (Business-to-Business-to-Government)**:
+
+1. **Extracción y Estructuración:** El ERP recolecta datos y genera el XML.
+2. **Sellado Local:** Se genera la "Cadena Original", se aplica **SHA-256** y se encripta con la llave privada del emisor.
+3. **Transmisión al PAC:** Envío vía HTTP (SOAP/REST) al Proveedor Autorizado de Certificación.
+4. **Timbrado:** El PAC valida y añade el **UUID** (Folio Fiscal).
+5. **Distribución:** El sistema local persiste el XML, genera el PDF y envía ambos al cliente.
+
+> **Nota sobre PACs:** Es vital implementar patrones de **Circuit Breaker** y **Exponential Backoff** para gestionar caídas en la red de los proveedores o del SAT.
+
+---
+
+## 4. Construcción Sintáctica del XML (Estándar XSD)
+
+La serialización debe cumplir con el esquema oficial del SAT. A continuación, la jerarquía principal:
+
+| Estructura Nodo | Propósito Arquitectónico | Requisito de Procesamiento |
+| --- | --- | --- |
+| `<cfdi:Comprobante>` | Raíz del documento. | Redondeo numérico estricto según moneda. |
+| `<cfdi:Emisor>` | Identidad del emisor. | Validación de RégimenFiscal (3 dígitos). |
+| `<cfdi:Receptor>` | Identidad del cliente. | Limpieza de *strings* y eliminación de sufijos societarios. |
+| `<cfdi:Conceptos>` | Ítems transaccionales. | Inclusión del atributo "Objeto de Impuesto". |
+| `<cfdi:Impuestos>` | Agregación de gravámenes. | Precisión de punto flotante (evitar tipos `float` simples). |
+
+---
+
+## 5. El Motor Criptográfico: SHA-256 y OpenSSL
+
+El sellado garantiza la inmutabilidad. Se compone de dos fases técnicas:
+
+### 5.1 Generación de Cadena Original
+
+Se utiliza una transformación **XSLT** para estandarizar el XML en un *string* plano separado por tuberías (`|`). Es crítico asegurar la codificación **UTF-8** para evitar errores en caracteres especiales.
+
+### 5.2 Firma Digital con OpenSSL
+
+Puesto que las llaves del SAT vienen en formato binario (`DER`), el software debe convertirlas a `PEM` para procesarlas.
+
+**Comandos OpenSSL Recomendados:**
+
+1. **Conversión:** `openssl pkcs8 -inform DER -in llave.key -out llave.pem`
+2. **Firma:** `openssl dgst -sha256 -sign llave.pem -out firma.bin cadena.txt`
+3. **Base64:** `openssl enc -base64 -in firma.bin -out sello.txt`
+
+---
+
+## 6. Representación Impresa (PDF) y Código QR
+
+El PDF debe contener elementos obligatorios para ser considerado una representación válida:
+
+* **UUID** y números de serie de los certificados (Emisor y SAT).
+* **Leyenda obligatoria:** "Este documento es una representación impresa de un CFDI".
+* **Código QR:** Debe apuntar a la URL de verificación oficial:
+`https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id={UUID}&re={RFC_Emisor}&rr={RFC_Receptor}&tt={Total}&fe={Sello}`
+
+---
+
+## 7. El Paradigma de las Addendas
+
+Las **Addendas** son nodos `<cfdi:Addenda>` utilizados para información comercial B2B (logística, inventarios) que no tienen validez fiscal.
+
+**Regla de Oro en Desarrollo:**
+
+> La Addenda debe inyectarse **después** del timbrado (*Post-Stamping*). Si se modifica el XML antes de enviarlo al PAC, el sello digital se invalidará y el documento será rechazado.
+
+---
+
+## 8. Librerías y Recursos Open Source
+
+Para acelerar el *Time-to-Market*, se recomienda el uso de herramientas probadas:
+
+* **C# / .NET:** `sw-tools-net` para manejo de sellado y estructuras.
+* **Python:** `python-satcfdi`, motor completo para validación de catálogos y comunicación con PACs.
+* **PHP:** Integración mediante `Guzzle HTTP` para microservicios SOAP/REST.
+
+---
+
+## 9. Conclusiones Operativas
+
+El desarrollo de software para CFDI 4.0 en 2026 exige una arquitectura **escalable y flexible**. El código debe estar diseñado para absorber cambios anuales en la RMF sin comprometer la integridad de las operaciones comerciales, tratando al sistema no solo como un generador de archivos, sino como un **nodo auditor delegado** de la autoridad fiscal.
+
+---
+
+**¿Deseas que profundice en algún fragmento de código específico para Python o C#, o prefieres que revisemos la lógica de integración con un PAC en particular?**

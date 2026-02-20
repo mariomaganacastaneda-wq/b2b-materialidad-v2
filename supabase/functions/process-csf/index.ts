@@ -6,7 +6,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const N8N_WEBHOOK_URL = "https://n8n-n8n.5gad6x.easypanel.host/webhook/91a70a2d-ca61-4997-b2dc-a1810c955d3a";
+const N8N_WEBHOOK_URL = "https://n8n-n8n.5gad6x.easypanel.host/webhook/67460662-b08f-4da4-872a-44955e806aa8";
 
 function parseSpanishDate(dateStr: string | null): string | null {
     if (!dateStr) return null;
@@ -200,6 +200,10 @@ serve(async (req) => {
 
         // Activities
         if (actividades_economicas && actividades_economicas.length > 0) {
+            console.log(`[FORENSIC] Reemplazando actividades económicas para Org: ${finalOrgId}`);
+            // Borrar existentes para evitar duplicados en re-cargas
+            await supabaseClient.from('organization_activities').delete().eq('organization_id', finalOrgId);
+
             // First, map activities and prepare descriptions
             const preparedActivities = actividades_economicas.map((a: any) => {
                 const rawDesc = a.actividad_economica || "";
@@ -247,12 +251,32 @@ serve(async (req) => {
         if (regimenes && regimenes.length > 0) {
             console.log(`[FORENSIC] Insertando ${regimenes.length} regímenes...`);
             await supabaseClient.from('organization_regimes').delete().eq('organization_id', finalOrgId);
-            const regimesData = regimenes.map((r: any) => ({
-                organization_id: finalOrgId,
-                regime_name: r.regimen,
-                start_date: parseSpanishDate(r.fecha_inicio),
-                end_date: parseSpanishDate(r.fecha_fin)
+
+            // Map names to codes if missing
+            const regimesData = await Promise.all(regimenes.map(async (r: any) => {
+                const rawName = r.regimen || r.regime || "";
+                let code = r.codigo_sat || r.code || r.regime_code;
+
+                if (!code && rawName) {
+                    // Try to find the code by name in our catalog
+                    const { data: catReg } = await supabaseClient
+                        .from('cat_cfdi_regimenes')
+                        .select('code')
+                        .ilike('name', `%${rawName}%`)
+                        .maybeSingle();
+
+                    if (catReg) code = catReg.code;
+                }
+
+                return {
+                    organization_id: finalOrgId,
+                    regime_name: rawName,
+                    regime_code: code,
+                    start_date: parseSpanishDate(r.fecha_inicio),
+                    end_date: parseSpanishDate(r.fecha_fin)
+                };
             }));
+
             const { error: regError } = await supabaseClient.from('organization_regimes').insert(regimesData);
             if (regError) console.error(`[FORENSIC] Error en regímenes: ${regError.message}`);
         }

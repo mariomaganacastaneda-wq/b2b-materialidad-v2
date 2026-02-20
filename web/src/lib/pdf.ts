@@ -37,6 +37,27 @@ export const generateProformaPDF = async (data: ProformaData) => {
         // Configuración de resolución y márgenes
         const margin = 20;
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // --- WATERMARK (FONDO) ---
+        if (data.orgLogoUrl && data.orgLogoUrl !== 'none') {
+            try {
+                // Configurar transparencia para la marca de agua
+                doc.saveGraphicsState();
+                doc.setGState(new (doc as any).GState({ opacity: 0.1 })); // 10% de opacidad
+
+                const watermarkSize = 120; // 120mm de tamaño
+                const watermarkX = (pageWidth - watermarkSize) / 2;
+                const watermarkY = (pageHeight - watermarkSize) / 2;
+
+                doc.addImage(data.orgLogoUrl, 'PNG', watermarkX, watermarkY, watermarkSize, watermarkSize, undefined, 'FAST');
+
+                doc.restoreGraphicsState();
+            } catch (e) {
+                console.error('Error adding watermark to PDF:', e);
+            }
+        }
+
 
         // --- HEADER: LOGO Y DATOS EMISOR ---
         if (data.orgLogoUrl && data.orgLogoUrl !== 'none') {

@@ -100,3 +100,28 @@ export interface SystemVersion {
     rollback_script?: string;
     created_at: string;
 }
+
+export interface OrgBankAccount {
+    id: string;
+    organization_id: string;
+    bank_name: string;
+    account_number: string;
+    holder_name: string;
+    currency: 'MXN' | 'USD';
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface QuotationPayment {
+    id: string;
+    quotation_id: string;
+    bank_account_id?: string;
+    amount: number;
+    payment_date: string;
+    payment_method: string;
+    reference?: string;
+    evidence_url?: string;
+    status: 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO';
+    notes?: string;
+    created_at: string;
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "code": "Versión",
+    "name": "Revisión"
+  },
+  {
+    "code": "c_FormaPago",
+    "name": "Descripción"
+  },
+  {
+    "code": 1,
+    "name": "Efectivo"
+  },
+  {
+    "code": 2,
+    "name": "Cheque nominativo"
+  },
+  {
+    "code": 3,
+    "name": "Transferencia electrónica de fondos"
+  },
+  {
+    "code": 4,
+    "name": "Tarjeta de crédito"
+  },
+  {
+    "code": 5,
+    "name": "Monedero electrónico"
+  },
+  {
+    "code": 6,
+    "name": "Dinero electrónico"
+  },
+  {
+    "code": 8,
+    "name": "Vales de despensa"
+  },
+  {
+    "code": 12,
+    "name": "Dación en pago"
+  },
+  {
+    "code": 13,
+    "name": "Pago por subrogación"
+  },
+  {
+    "code": 14,
+    "name": "Pago por consignación"
+  },
+  {
+    "code": 15,
+    "name": "Condonación"
+  },
+  {
+    "code": 17,
+    "name": "Compensación"
+  },
+  {
+    "code": 23,
+    "name": "Novación"
+  },
+  {
+    "code": 24,
+    "name": "Confusión"
+  },
+  {
+    "code": 25,
+    "name": "Remisión de deuda"
+  },
+  {
+    "code": 26,
+    "name": "Prescripción o caducidad"
+  },
+  {
+    "code": 27,
+    "name": "A satisfacción del acreedor"
+  },
+  {
+    "code": 28,
+    "name": "Tarjeta de débito"
+  },
+  {
+    "code": 29,
+    "name": "Tarjeta de servicios"
+  },
+  {
+    "code": 30,
+    "name": "Aplicación de anticipos"
+  },
+  {
+    "code": 31,
+    "name": "Intermediario pagos"
+  },
+  {
+    "code": 99,
+    "name": "Por definir"
+  }
+]
