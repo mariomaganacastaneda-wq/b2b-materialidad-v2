@@ -154,7 +154,7 @@ const OrgAccessList: React.FC<{ profileId: string; supabase: any }> = ({ profile
                 };
             });
 
-            const { data: functionData, error: functionError } = await supabase.functions.invoke('manage-user-access', {
+            const { error: functionError } = await supabase.functions.invoke('manage-user-access', {
                 body: {
                     profile_id: profileId,
                     access_data: upsertData
@@ -162,7 +162,6 @@ const OrgAccessList: React.FC<{ profileId: string; supabase: any }> = ({ profile
             });
 
             if (functionError) throw functionError;
-            const resultData = functionData?.data;
 
             // 2. Refrescar datos con token sincronizado
             const { data: freshData, error: refreshError } = await supabase
