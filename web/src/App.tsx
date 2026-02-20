@@ -30,6 +30,7 @@ import { SettingsPage } from './components/settings/SettingsPage';
 import SATCatalogsPage from './pages/SATCatalogs';
 import BankAccountsPage from './pages/BankAccounts';
 import { SecurityCenter } from './pages/SecurityCenter';
+import { PurchaseOrders } from './pages/PurchaseOrders';
 
 // Branding and Diagnostics
 export const EnvDiagnostic = () => {
@@ -622,6 +623,7 @@ export function App() {
     { label: 'Dashboard', path: '/', icon: LayoutDashboard, screenId: 'dashboard', roles: ['*'] },
     { label: 'Materialidad', path: '/materialidad', icon: Shield, screenId: 'materialidad', roles: ['ADMIN', 'CONTABLE', 'FACTURACION'] },
     { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
+    { label: 'Órdenes Compra', path: '/ordenes-compra', icon: FileText, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
     { label: 'Proformas', path: '/proformas', icon: FileEdit, screenId: 'proformas', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'REPRESENTANTE'] },
     { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
     { label: 'Bancos', path: '/bancos', icon: FileCheck, screenId: 'bancos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'REPRESENTANTE'] },
@@ -865,6 +867,7 @@ export function App() {
                 <Route path="/cotizaciones" element={<PlaceholderPage title="Gestor de Cotizaciones" />} />
                 <Route path="/cotizaciones/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas" element={<ProformaManager selectedOrg={selectedOrg} />} />
+                <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/facturas" element={<InvoicesPage userProfile={userProfile} />} />

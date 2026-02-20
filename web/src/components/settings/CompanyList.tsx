@@ -17,6 +17,7 @@ interface CompanyListProps {
     };
     uniqueActivities: string[];
     onUnlinkOrg: (orgId: string) => void;
+    subTab: string;
 }
 
 export const CompanyList: React.FC<CompanyListProps> = ({
@@ -25,7 +26,8 @@ export const CompanyList: React.FC<CompanyListProps> = ({
     onSelectOrg,
     filters,
     uniqueActivities,
-    onUnlinkOrg
+    onUnlinkOrg,
+    subTab
 }) => {
     const {
         searchTerm,
@@ -115,7 +117,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({
                                 <div style={{ fontSize: '13px', fontWeight: '600', color: selectedOrgId === org.id ? 'white' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{org.name}</div>
                                 <div style={{ fontSize: '11px', color: '#64748b' }}>{org.rfc}</div>
                             </div>
-                            {!org.is_issuer && (
+                            {subTab === 'clientes' && (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();

@@ -373,6 +373,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                 }}
                                 uniqueActivities={uniqueActivities}
                                 onUnlinkOrg={handleUnlinkClient}
+                                subTab={subTab}
                             />
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { generateProformaPDF } from '../../lib/pdf';
 import paymentFormsData from '../../lib/payment_forms.json';
@@ -934,6 +934,42 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         saveError: null as string | null,
         saveSuccess: false
     });
+
+    const location = useLocation();
+
+    // Precargar datos de la orden de compra si viene en query param
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const poParam = queryParams.get('po');
+
+        if (poParam && !id) {
+            try {
+                const poData = JSON.parse(decodeURIComponent(poParam));
+                setFormData(prev => {
+                    const newItems = poData.items && poData.items.length > 0
+                        ? poData.items.map((it: any, index: number) => ({
+                            id: Date.now() + index,
+                            code: '01010101', // Código SAT por defecto
+                            quantity: it.qty || 1,
+                            unit: 'H87', // Unidad genérica
+                            description: it.desc || '',
+                            unitPrice: it.price || 0,
+                            has_iva: true,
+                            has_ieps: false
+                        }))
+                        : prev.items;
+
+                    return {
+                        ...prev,
+                        notes: `Generado a partir de Orden de Compra: ${poData.po_number || ''}`,
+                        items: newItems
+                    };
+                });
+            } catch (e) {
+                console.error("Error parsing PO query param", e);
+            }
+        }
+    }, [location.search, id]);
 
     const [payments, setPayments] = useState<any[]>([]);
     const [bankAccounts, setBankAccounts] = useState<any[]>([]);
