@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UploadCloud, FileText, CheckCircle, Clock, Search, X, FileCheck, ArrowRight, Eye, RefreshCw, AlertTriangle } from 'lucide-react';
-import { supabase, updateSupabaseAuth } from '../lib/supabase';
-import { useAuth } from '@clerk/clerk-react';
+import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
 interface PurchaseOrderProps {
@@ -9,14 +8,13 @@ interface PurchaseOrderProps {
     selectedOrg: any; // La org actual (B2B)
 }
 
-export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ currentUser, selectedOrg }) => {
+export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) => {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [viewingOrder, setViewingOrder] = useState<any | null>(null);
 
-    const { getToken } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -109,7 +107,6 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ currentUser, sele
 
             // Open the newly created order
             if (funcData && funcData.data && funcData.data.po_id) {
-                const newOrder = orders.find(o => o.id === funcData.data.po_id) || { id: funcData.data.po_id, ...funcData.data };
                 // We might need an extra fetch just for this single one to get full struct
                 await fetchOrders();
             }
