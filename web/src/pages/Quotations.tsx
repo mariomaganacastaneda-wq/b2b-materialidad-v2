@@ -162,9 +162,16 @@ const ProformaDashboard = () => {
                                     return (
                                         <tr key={q.id} className="hover:bg-white/5 transition-colors group">
                                             <td className="p-5">
-                                                <span className="font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded text-xs border border-indigo-500/20">
-                                                    #{q.consecutive_id}
-                                                </span>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded text-xs border border-indigo-500/20 whitespace-nowrap">
+                                                        {(() => {
+                                                            const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                            const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                            const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
+                                                            return `${orgPrefix}-${dateStr}-${folNum}`;
+                                                        })()}
+                                                    </span>
+                                                </div>
                                             </td>
                                             <td className="p-5">
                                                 <div className="flex flex-col">

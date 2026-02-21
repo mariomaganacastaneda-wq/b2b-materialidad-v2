@@ -5,13 +5,13 @@
             "parameters": {
                 "httpMethod": "POST",
                 "path": "process-po-pdf",
-                "responseMode": "lastNode",
+                "responseMode": "responseNode",
                 "options": {}
             },
             "id": "e51ebcd4-1779-42b4-bf57-bd7ef3ecbe7b",
             "name": "Webhook",
             "type": "n8n-nodes-base.webhook",
-            "typeVersion": 1,
+            "typeVersion": 1.1,
             "position": [
                 200,
                 200
@@ -19,35 +19,13 @@
         },
         {
             "parameters": {
-                "model": "gemini-2.5-pro",
-                "options": {
-                    "temperature": 0.1
-                }
+                "operation": "extract",
+                "binaryPropertyName": "data",
+                "options": {}
             },
-            "id": "ed7f66de-a1b7-4a00-b6ab-addad4c67923",
-            "name": "Google Gemini Chat Model",
-            "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-            "typeVersion": 1,
-            "position": [
-                420,
-                380
-            ],
-            "credentials": {
-                "googleApi": {
-                    "id": "A4E7O1dK4Vj08iGk",
-                    "name": "Google Gemini API account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "pdfExtractParameters": {
-                    "splitIntoPages": false
-                }
-            },
-            "id": "f51c7268-2396-48c0-bc66-5085449fb8c5",
-            "name": "Read PDF1",
-            "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+            "id": "c1f7268-2396-48c0-bc66-5085449fb8c5",
+            "name": "Extract from File",
+            "type": "n8n-nodes-base.extractFromFile",
             "typeVersion": 1,
             "position": [
                 420,
@@ -56,35 +34,80 @@
         },
         {
             "parameters": {
-                "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"po_number\": {\n      \"type\": \"string\",\n      \"description\": \"El número de identificación, folio o número de P.O. de la orden (EJ: 8241019376)\"\n    },\n    \"emission_date\": {\n      \"type\": \"string\",\n      \"description\": \"Fecha en que fue emitida la orden en formato YYYY-MM-DD\"\n    },\n    \"issuer_name\": {\n      \"type\": \"string\",\n      \"description\": \"Nombre de la empresa que emite la orden de compra (El proveedor que te va a comprar)\"\n    },\n    \"issuer_rfc\": {\n      \"type\": \"string\",\n      \"description\": \"RFC de la empresa que compra (si está disponible)\"\n    },\n    \"currency\": {\n      \"type\": \"string\",\n      \"description\": \"Moneda de la orden (USD o MXN. Si no se especifica, asume MXN)\"\n    },\n    \"subtotal\": {\n      \"type\": \"number\",\n      \"description\": \"Importe total antes de impuestos\"\n    },\n    \"tax_total\": {\n      \"type\": \"number\",\n      \"description\": \"Importe de los impuestos gravados (Por lo general el IVA al 16%)\"\n    },\n    \"grand_total\": {\n      \"type\": \"number\",\n      \"description\": \"Monto final e total o gran importe (subtotal + tax)\"\n    },\n    \"items\": {\n      \"type\": \"array\",\n      \"description\": \"Listado de todas las partidas o artículos de la orden de compra\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"item_code\": {\n            \"type\": \"string\",\n            \"description\": \"Código interno del artículo. Artículo, Partida, Material, Clave.\"\n          },\n          \"description\": {\n            \"type\": \"string\",\n            \"description\": \"Descripción completa del producto o servicio cotizado.\"\n          },\n          \"quantity\": {\n            \"type\": \"number\",\n            \"description\": \"Cantidad solicitada del producto.\"\n          },\n          \"unit_measure\": {\n            \"type\": \"string\",\n            \"description\": \"Unidad de medida (EA, PZA, PIEZA, SERVICIO, TR, KGM).\"\n          },\n          \"unit_price\": {\n            \"type\": \"number\",\n            \"description\": \"El precio unitario de este artículo (sin impuestos).\"\n          },\n          \"total_amount\": {\n            \"type\": \"number\",\n            \"description\": \"El importe total del concepto (quantity * unit_price).\"\n          }\n        }\n      }\n    }\n  },\n  \"required\": [\"po_number\", \"issuer_name\", \"subtotal\", \"grand_total\", \"items\"]\n}"
-            },
-            "id": "e2cdcf57-41fe-4f10-ae4a-cd0f6dae9834",
-            "name": "Auto-fixing JSON Output Parser",
-            "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
-            "typeVersion": 1,
-            "position": [
-                420,
-                560
-            ]
-        },
-        {
-            "parameters": {
-                "prompt": "Eres un contador experto y sistema OCR forense de alta precisión.\nAnaliza el documento PDF de la Orden de Compra y extrae todos los datos críticos según el esquema que se te provee. \nDebes inferir del texto el número de folio (Orden de Compra, P.O. Number, Pedido), el desglose completo y exhaustivo de todos los artículos de la tabla de conceptos, asegurándote de no perder matemáticas y extraer la cantidad y precio en formato de número (sin comas ni símbolos de moneda).",
-                "options": {}
+                "prompt": "Eres un contador experto y sistema OCR forense de alta precisión.\nAnaliza el documento PDF de la Orden de Compra y extrae todos los datos críticos según el esquema que se te provee. \nDebes inferir del texto el número de folio (Orden de Compra, P.O. Number, Pedido), el desglose completo y exhaustivo de todos los artículos de la tabla de conceptos, asegurándote de no perder matemáticas y extraer la cantidad y precio en formato de número (sin comas ni símbolos de moneda). \n\nDOCUMENTO:\n{{ $json.text }}"
             },
             "id": "bc2d3a95-a4f6-4ef3-b1ba-10e8d120a2e5",
             "name": "Information Extractor",
             "type": "@n8n/n8n-nodes-langchain.agentExtractor",
             "typeVersion": 1,
             "position": [
-                420,
-                0
+                640,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "modelName": "gpt-4o-mini",
+                "options": {
+                    "temperature": 0.1
+                }
+            },
+            "id": "ed7f66de-a1b7-4a00-b6ab-addad4c67923",
+            "name": "OpenAI Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                640,
+                380
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"po_number\": {\n      \"type\": \"string\",\n      \"description\": \"El número de folio o número de P.O.\"\n    },\n    \"emission_date\": {\n      \"type\": \"string\"\n    },\n    \"issuer_name\": {\n      \"type\": \"string\"\n    },\n    \"issuer_rfc\": {\n      \"type\": \"string\"\n    },\n    \"currency\": {\n      \"type\": \"string\"\n    },\n    \"subtotal\": {\n      \"type\": \"number\"\n    },\n    \"tax_total\": {\n      \"type\": \"number\"\n    },\n    \"grand_total\": {\n      \"type\": \"number\"\n    },\n    \"items\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"item_code\": { \"type\": \"string\" },\n          \"description\": { \"type\": \"string\" },\n          \"quantity\": { \"type\": \"number\" },\n          \"unit_measure\": { \"type\": \"string\" },\n          \"unit_price\": { \"type\": \"number\" },\n          \"total_amount\": { \"type\": \"number\" }\n        }\n      }\n    }\n  },\n  \"required\": [\"po_number\", \"issuer_name\", \"items\", \"subtotal\", \"grand_total\"]\n}"
+            },
+            "id": "e2cdcf57-41fe-4f10-ae4a-cd0f6dae9834",
+            "name": "Auto-fixing JSON Output Parser",
+            "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+            "typeVersion": 1,
+            "position": [
+                840,
+                380
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "allIncomingItems",
+                "options": {}
+            },
+            "id": "f51c7268-2396-48c0-bc66-5085449fb8c5",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                860,
+                200
             ]
         }
     ],
-    "pinData": {},
     "connections": {
         "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Extract from File",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract from File": {
             "main": [
                 [
                     {
@@ -95,7 +118,18 @@
                 ]
             ]
         },
-        "Google Gemini Chat Model": {
+        "Information Extractor": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model": {
             "ai_languageModel": [
                 [
                     {
@@ -106,17 +140,6 @@
                     {
                         "node": "Auto-fixing JSON Output Parser",
                         "type": "ai_languageModel",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Read PDF1": {
-            "ai_document": [
-                [
-                    {
-                        "node": "Information Extractor",
-                        "type": "ai_document",
                         "index": 0
                     }
                 ]
@@ -133,9 +156,5 @@
                 ]
             ]
         }
-    },
-    "active": true,
-    "settings": {
-        "executionOrder": "v1"
     }
 }

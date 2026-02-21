@@ -165,7 +165,7 @@ serve(async (req) => {
     console.error("[OC ERROR] Proceso de órden de compra fallido:", error.message);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

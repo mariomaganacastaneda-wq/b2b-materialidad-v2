@@ -22,9 +22,14 @@ interface ProformaData {
     orgAccentColor?: string;
     execution_period?: string;
     proforma_number?: number;
+    folioString?: string;
     total_proformas?: number;
     consecutive_id?: number;
     contract_reference?: string;
+    paymentMethod?: string;
+    paymentForm?: string;
+    usage?: string;
+    notes?: string;
     bankAccounts?: { bank: string; clabe?: string; number?: string }[];
 }
 
@@ -78,19 +83,26 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.setTextColor('#64748b');
 
         // Folio y Fecha
-        const folioText = data.consecutive_id
-            ? `Folio: #${data.consecutive_id}`
-            : (data.proforma_number && data.total_proformas)
-                ? `Folio Seq: ${data.proforma_number} de ${data.total_proformas}`
-                : `Folio: ${new Date().getTime().toString().slice(-6)}`;
+        const folioText = data.folioString
+            ? data.folioString
+            : data.consecutive_id
+                ? `Folio: #${data.consecutive_id}`
+                : data.proforma_number
+                    ? `Folio: ${data.proforma_number}`
+                    : `Folio: ${new Date().getTime().toString().slice(-6)}`;
 
+        const folioLines = folioText.split('\n');
         doc.text(folioText, pageWidth - margin, 26, { align: 'right' });
-        doc.text(`Fecha Emisión: ${new Date().toLocaleDateString()}`, pageWidth - margin, 31, { align: 'right' });
+
+        // Empujar hacia abajo si el folio tiene más de 1 línea
+        const headerY = 31 + ((folioLines.length - 1) * 5);
+
+        doc.text(`Fecha Emisión: ${new Date().toLocaleDateString()}`, pageWidth - margin, headerY, { align: 'right' });
 
         if (data.execution_period) {
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(primaryColor);
-            doc.text(`Periodo: ${data.execution_period.toUpperCase()}`, pageWidth - margin, 36, { align: 'right' });
+            doc.text(`Periodo: ${data.execution_period.toUpperCase()}`, pageWidth - margin, headerY + 5, { align: 'right' });
         }
 
         // Datos Emisor - Centrados verticalmente con el logo (35mm de altura, centro en 37.5)
@@ -132,19 +144,28 @@ export const generateProformaPDF = async (data: ProformaData) => {
 
         doc.setFontSize(10);
         const yAfterClientName = 75 + (clientNameWrap.length * 5);
-        doc.text(`RFC: ${data.clientRFC}`, margin, yAfterClientName);
-        doc.text(`Régimen: ${data.clientRegime}`, margin, yAfterClientName + 6);
-        doc.text(data.clientAddress, margin, yAfterClientName + 12, { maxWidth: 100 });
+        doc.text(`RFC: ${data.clientRFC}  |  CP: ${data.clientCP || 'N/A'}`, margin, yAfterClientName);
+        doc.text(`Régimen Fiscal: ${data.clientRegime}`, margin, yAfterClientName + 6);
+        doc.text(`Uso CFDI: ${data.usage || 'G03'}`, margin, yAfterClientName + 12);
+        doc.text(data.clientAddress, margin, yAfterClientName + 18, { maxWidth: 100 });
 
+        let nextY = 68;
         doc.setFont('helvetica', 'bold');
-        doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, 68, { align: 'right' });
+        doc.text('DATOS DE PAGO:', pageWidth - margin, nextY, { align: 'right' });
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
+        doc.text(`Método: ${data.paymentMethod || 'PUE'}`, pageWidth - margin, nextY + 6, { align: 'right' });
+        doc.text(`Forma: ${data.paymentForm || '03'}`, pageWidth - margin, nextY + 12, { align: 'right' });
+
+        nextY += 20;
+        doc.setFont('helvetica', 'bold');
+        doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, nextY, { align: 'right' });
+        doc.setFont('helvetica', 'normal');
         const activityWrap = doc.splitTextToSize(data.economicActivity, 80);
-        doc.text(activityWrap, pageWidth - margin, 74, { align: 'right' });
+        doc.text(activityWrap, pageWidth - margin, nextY + 6, { align: 'right' });
 
         if (data.contract_reference) {
-            const nextY = 74 + (activityWrap.length * 4) + 5;
+            nextY = nextY + 6 + (activityWrap.length * 4) + 5;
             doc.setFont('helvetica', 'bold');
             doc.text('REFERENCIA CONTRATO:', pageWidth - margin, nextY, { align: 'right' });
             doc.setFont('helvetica', 'normal');
@@ -163,7 +184,7 @@ export const generateProformaPDF = async (data: ProformaData) => {
         ]);
 
         autoTable(doc, {
-            startY: 105,
+            startY: 115,
             head: tableHeaders,
             body: tableData,
             theme: 'striped',
@@ -215,19 +236,32 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.text('TOTAL:', totalsX, currentY + 13);
         doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, currentY + 13, { align: 'right' });
 
-        // --- FOOTER / NOTAS ---
+        // --- NOTAS / OBSERVACIONES ---
+        let notesY = finalY + 10;
+        if (data.notes) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(secondaryColor);
+            doc.text('NOTAS / OBSERVACIONES:', margin, notesY);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor('#475569');
+            const notesWrap = doc.splitTextToSize(data.notes, 100);
+            doc.text(notesWrap, margin, notesY + 5);
+            notesY += 5 + (notesWrap.length * 4) + 6;
+        }
+
         // --- DATOS BANCARIOS ---
         if (data.bankAccounts && data.bankAccounts.length > 0) {
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(9);
             doc.setTextColor(secondaryColor);
-            doc.text('DATOS PARA TRANSFERENCIA BANCARIA:', margin, finalY + 10);
+            doc.text('DATOS PARA TRANSFERENCIA BANCARIA:', margin, notesY);
 
             doc.setFont('helvetica', 'normal');
             doc.setTextColor('#475569');
             data.bankAccounts.forEach((acc, i) => {
                 const accText = `${acc.bank}: ${acc.clabe || acc.number}`;
-                doc.text(accText, margin, finalY + 16 + (i * 5));
+                doc.text(accText, margin, notesY + 5 + (i * 5));
             });
         }
 

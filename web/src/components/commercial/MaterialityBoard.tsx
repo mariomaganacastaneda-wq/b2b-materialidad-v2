@@ -213,10 +213,14 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
                                                 color: 'var(--primary-color)',
                                                 fontWeight: '700'
                                             }}>
-                                                # {p.consecutive_id || p.id.slice(0, 5)}
+                                                {(() => {
+                                                    const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                    const dateStr = new Date(p.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                    const folNum = (p.proforma_number || 1).toString().padStart(2, '0');
+                                                    return `Folio: ${orgPrefix}-${dateStr}-${folNum}`;
+                                                })()}
                                             </span>
-                                            {p.proforma_number && <span>Seq: {p.proforma_number}/{p.total_proformas}</span>}
-                                            <span>• {new Date(p.created_at).toLocaleDateString()}</span>
+                                            <span>• Emisión: {new Date(p.created_at).toLocaleDateString()}</span>
                                         </div>
                                     </td>
                                     <td style={{ padding: '16px 24px' }}>

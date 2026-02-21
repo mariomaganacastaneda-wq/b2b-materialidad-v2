@@ -1006,6 +1006,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     useEffect(() => {
         if (selectedOrg?.id) {
             loadBankAccounts(selectedOrg.id);
+            loadActivities(selectedOrg.id);
         }
     }, [selectedOrg]);
 
@@ -1026,6 +1027,30 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             console.error('Error loading payments:', err);
         } finally {
             // Success
+        }
+    };
+
+    const loadActivities = async (orgId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('organization_activities')
+                .select('*')
+                .eq('organization_id', orgId)
+                .order('activity_order');
+
+            if (error) throw error;
+            if (data) {
+                setOrgActivities(data);
+                // Por defecto seleccionar la primera con mayor porcentaje si no hay una seleccionada
+                setFormData(prev => {
+                    if (data.length > 0 && !prev.economicActivity) {
+                        return { ...prev, economicActivity: data[0].activity_code };
+                    }
+                    return prev;
+                });
+            }
+        } catch (err) {
+            console.error('Error loading organization activities:', err);
         }
     };
 
@@ -1076,9 +1101,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 clientName: q.client_name || q.organizations?.name || '',
                 clientRFC: q.client_rfc || q.organizations?.rfc || '',
                 clientAddress: q.client_address || q.organizations?.tax_domicile || '',
-                clientCP: q.organizations?.state || '', // Usando state como fallback si no hay zip_code específico
+                clientCP: q.client_cp || q.organizations?.zip_code || '',
                 clientRegime: q.client_regime_code || q.organizations?.capital_regime || '601',
-                economicActivity: q.description || '',
                 currency: q.currency || 'MXN',
                 execution_period: q.execution_period || '',
                 proforma_number: q.proforma_number || 1,
@@ -1104,7 +1128,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             console.error('Error loading quotation:', err);
         }
     };
-    const handlePreview = () => {
+    const handlePreview = async () => {
         if (!selectedOrg) {
             alert('No se ha seleccionado una organización emisora.');
             return;
@@ -1116,8 +1140,38 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             // Resolver descripción de actividad económica si es un código
             const activityDesc = orgActivities.find(a => a.activity_code === formData.economicActivity)?.description || formData.economicActivity;
 
+            // Etiquetas Fiscales Formateadas (Clave - Descripción)
+            const regList = clientRegimes !== null && clientRegimes.length > 0 ? clientRegimes : regimes;
+            const regRecord = regList.find(r => r.code === formData.clientRegime);
+            const regimeLabel = regRecord ? `${regRecord.code} - ${regRecord.name}` : formData.clientRegime;
+
+            const methodDict: Record<string, string> = { 'PUE': 'Pago en una sola exhibición', 'PPD': 'Pago en parcialidades o diferido' };
+            const paymentMethodLabel = formData.paymentMethod ? `${formData.paymentMethod} - ${methodDict[formData.paymentMethod] || 'Desconocido'}` : 'PUE';
+
+            const pfRecord = paymentFormsData.find((pf: any) => String(pf.code).padStart(2, '0') === String(formData.paymentForm).padStart(2, '0'));
+            const paymentFormLabel = pfRecord ? `${String(pfRecord.code).padStart(2, '0')} - ${pfRecord.name}` : formData.paymentForm;
+
+            let usageLabel = formData.usage;
+            if (formData.usage) {
+                const { data } = await supabase.from('cat_usage_cfdi').select('description').eq('code', formData.usage).single();
+                if (data) usageLabel = `${formData.usage} - ${data.description}`;
+            }
+
+            // Folio Personalizado
+            const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+            const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+            const folNum = (formData.proforma_number || 1).toString().padStart(2, '0');
+            const folioString = `Folio\n${orgPrefix}-${dateStr}-${folNum}`;
+
             generateProformaPDF({
                 ...formData,
+                clientRegime: regimeLabel,
+                usage: usageLabel,
+                paymentMethod: paymentMethodLabel,
+                paymentForm: paymentFormLabel,
+                folioString,
+                proforma_number: undefined,
+                consecutive_id: undefined,
                 economicActivity: activityDesc,
                 subtotal,
                 iva,
@@ -1209,14 +1263,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 total_proformas: formData.total_proformas,
                 contract_reference: formData.contract_reference,
                 payment_method: formData.paymentMethod,
+                payment_form: formData.paymentForm,
                 usage_cfdi_code: formData.usage,
                 notes: formData.notes,
                 client_rfc: formData.clientRFC,
                 client_name: formData.clientName,
                 client_address: formData.clientAddress,
                 client_regime_code: formData.clientRegime,
-                bank_account_id: formData.bank_account_id
-
+                bank_account_id: formData.bank_account_id || undefined
             };
 
             if (id) {
@@ -1595,6 +1649,30 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             onSelect={(val) => setFormData({ ...formData, usage: val })}
                                         />
                                     </div>
+                                    <div className="pt-0">
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Forma de Pago</label>
+                                        <select
+                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
+                                            value={formData.paymentForm}
+                                            onChange={e => setFormData({ ...formData, paymentForm: e.target.value })}
+                                        >
+                                            {paymentFormsData.filter((pf: any) => typeof pf.code === 'number' || (typeof pf.code === 'string' && !isNaN(Number(pf.code)) && pf.code.trim() !== '')).map((pf: any) => {
+                                                const codeStr = String(pf.code).padStart(2, '0');
+                                                return <option key={codeStr} value={codeStr}>{codeStr} - {pf.name}</option>;
+                                            })}
+                                        </select>
+                                    </div>
+                                    <div className="pt-0">
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Método de Pago</label>
+                                        <select
+                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
+                                            value={formData.paymentMethod}
+                                            onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
+                                        >
+                                            <option value="PUE">PUE - PAGO EN UNA SOLA EXHIBICIÓN</option>
+                                            <option value="PPD">PPD - PAGO EN PARCIALIDADES O DIFERIDO</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 {/* Notas y Observaciones - Span Completo en la base */}
@@ -1656,7 +1734,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 gap-3">
                                     <div>
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Moneda</label>
                                         <select
@@ -1666,17 +1744,6 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         >
                                             <option value="MXN">MXN ($)</option>
                                             <option value="USD">USD ($)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Método Pago</label>
-                                        <select
-                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50"
-                                            value={formData.paymentMethod}
-                                            onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
-                                        >
-                                            <option value="PUE">PUE - PAGO ÚNICO</option>
-                                            <option value="PPD">PPD - PARCIALIDADES</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1779,7 +1846,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             description: prod.name,
                                                             unit: suggested,
                                                             unitPrice: historicalPrice || newItems[idx].unitPrice,
-                                                            has_iva: prod.has_iva ?? true,
+                                                            has_iva: true, // Siempre prendido por default como solicitó el usuario, ignorando la BD del SAT que está mayormente en false
                                                             has_ieps: prod.has_ieps ?? false
                                                         };
                                                         setFormData({ ...formData, items: newItems });
@@ -1832,7 +1899,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                     </button>
                                                     <button
                                                         onClick={() => updateItem(idx, 'has_ieps', !item.has_ieps)}
-                                                        className={`text-[8px] font-black px-1.5 py-0.5 rounded transition-all border ${item.has_ieps ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-400 border-slate-200 opacity-50'}`}
+                                                        className={`text-[8px] font-black px-1.5 py-0.5 rounded transition-all border ${item.has_ieps ? 'bg-red-50 text-red-600 border-red-300 shadow-sm' : 'bg-slate-50 text-slate-400 border-slate-200 opacity-50'}`}
                                                     >
                                                         IEPS 8%
                                                     </button>

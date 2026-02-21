@@ -76,14 +76,6 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ currentUser, sele
 
         setUploading(true);
         try {
-            let token: string | null = null;
-            try {
-                token = await getToken({ template: 'supabase' });
-            } catch (err) {
-                token = await getToken();
-            }
-            if (token) updateSupabaseAuth(token);
-
             // 1. Upload to Storage
             const fileExt = file.name.split('.').pop();
             const fileName = `${selectedOrg.id}_${Date.now()}.${fileExt}`;
@@ -91,7 +83,11 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ currentUser, sele
 
             const { error: uploadError } = await supabase.storage
                 .from('purchase_orders')
-                .upload(filePath, file, { cacheControl: '3600', upsert: false });
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: 'application/pdf'
+                });
 
             if (uploadError) throw uploadError;
 
@@ -104,6 +100,9 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ currentUser, sele
             });
 
             if (funcError) throw funcError;
+            if (funcData && funcData.success === false) {
+                throw new Error(funcData.error || "Error interno dentro de la Edge Function.");
+            }
 
             // 3. Refresh list
             await fetchOrders();
