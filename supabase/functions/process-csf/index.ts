@@ -6,7 +6,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const N8N_WEBHOOK_URL = "https://n8n-n8n.5gad6x.easypanel.host/webhook/67460662-b08f-4da4-872a-44955e806aa8";
+const N8N_WEBHOOK_URL = "https://n8n-n8n.5gad6x.easypanel.host/webhook/csf-extraction";
 
 function parseSpanishDate(dateStr: string | null): string | null {
     if (!dateStr) return null;
@@ -32,6 +32,18 @@ function parseSpanishDate(dateStr: string | null): string | null {
     return null;
 }
 
+function decodeClerkToken(token: string): any {
+    try {
+        const payload = token.split('.')[1];
+        if (!payload) return null;
+        // Decode base64url
+        const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(decoded);
+    } catch {
+        return null;
+    }
+}
+
 serve(async (req) => {
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -41,8 +53,18 @@ serve(async (req) => {
     );
 
     let currentFilePath = "";
+    let userId: string | null = null;
 
     try {
+        // --- NEW: Identify the caller using Clerk Token ---
+        const authHeader = req.headers.get('Authorization');
+        if (authHeader) {
+            const token = authHeader.replace('Bearer ', '');
+            const decoded = decodeClerkToken(token);
+            userId = decoded?.sub || null;
+            console.log(`[FORENSIC] Clerk Token detectado. Usuario decodificado: ${userId || 'No identificado'}`);
+        }
+
         const body = await req.json();
         currentFilePath = body.filePath;
         const { organizationId, isCreatingNew } = body;
@@ -54,8 +76,9 @@ serve(async (req) => {
         // 2. Call n8n Webhook
         console.log(`Enviando ${currentFilePath} a n8n para extracción granular...`);
         const formData = new FormData();
-        const blob = new Blob([await fileData.arrayBuffer()], { type: 'application/pdf' });
-        formData.append('data', blob, currentFilePath);
+        // fileData is a Blob from download()
+        const fileName = currentFilePath.split('/').pop() || 'document.pdf';
+        formData.append('data', fileData, fileName);
 
         const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
             method: 'POST',
@@ -194,6 +217,45 @@ serve(async (req) => {
             emission_date: updateData.csf_emission_date,
             extracted_data: { rfc: updateData.rfc, name: updateData.name }
         });
+
+        // --- NEW: Link User to Organization if not linked ---
+        if (userId && finalOrgId) {
+            const { data: existingAccess } = await supabaseClient
+                .from('user_organization_access')
+                .select('id')
+                .eq('profile_id', userId)
+                .eq('organization_id', finalOrgId)
+                .maybeSingle();
+
+            if (!existingAccess) {
+                console.log(`[FORENSIC] Vinculando usuario ${userId} a la organización ${finalOrgId}...`);
+                const { error: linkError } = await supabaseClient
+                    .from('user_organization_access')
+                    .insert({
+                        profile_id: userId,
+                        organization_id: finalOrgId,
+                        can_manage_quotations: false, // Default to false (Admin must promote)
+                        can_manage_payments: true, // Default to true (Client role)
+                        is_owner: true // Default to true if they uploaded the CSF to register/update it
+                    });
+
+                if (linkError) {
+                    console.error(`[FORENSIC] Error al vincular usuario: ${linkError.message}`);
+                } else {
+                    // Update user's active organization if they don't have one or if it's a new registration
+                    const { data: profile } = await supabaseClient
+                        .from('profiles')
+                        .select('organization_id')
+                        .eq('id', userId)
+                        .single();
+
+                    if (!profile?.organization_id || isCreatingNew) {
+                        console.log(`[FORENSIC] Estableciendo ${finalOrgId} como organización activa para el usuario ${userId}`);
+                        await supabaseClient.from('profiles').update({ organization_id: finalOrgId }).eq('id', userId);
+                    }
+                }
+            }
+        }
 
         // 5. Granular Synchronization (Activities, Regimes, Obligations)
         console.log(`[FORENSIC] Sincronizando datos granulares para Org: ${finalOrgId}`);

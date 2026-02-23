@@ -173,9 +173,10 @@ export const generateProformaPDF = async (data: ProformaData) => {
         }
 
         // --- TABLA DE CONCEPTOS ---
-        const tableHeaders = [['Clave SAT', 'Descripción', 'Cant.', 'Unidad', 'P. Unitario', 'Importe']];
+        const tableHeaders = [['Clave SAT', 'No. Identificación', 'Descripción', 'Cant.', 'Unidad', 'P. Unitario', 'Importe']];
         const tableData = data.items.map(item => [
             item.code,
+            item.item_code || 'N/A',
             item.description,
             item.quantity,
             item.unit,
@@ -190,12 +191,13 @@ export const generateProformaPDF = async (data: ProformaData) => {
             theme: 'striped',
             headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 10, halign: 'center' },
             columnStyles: {
-                0: { cellWidth: 25, halign: 'center' },
-                1: { cellWidth: 'auto' },
-                2: { cellWidth: 15, halign: 'center' },
-                3: { cellWidth: 20, halign: 'center' },
-                4: { cellWidth: 25, halign: 'right' },
-                5: { cellWidth: 30, halign: 'right' }
+                0: { cellWidth: 20, halign: 'center' }, // Clave SAT
+                1: { cellWidth: 25, halign: 'center' }, // No. Identificación
+                2: { cellWidth: 'auto' },               // Descripción
+                3: { cellWidth: 12, halign: 'center' }, // Cant.
+                4: { cellWidth: 18, halign: 'center' }, // Unidad
+                5: { cellWidth: 22, halign: 'right' },  // P. Unitario
+                6: { cellWidth: 25, halign: 'right' }   // Importe
             },
             styles: { fontSize: 9, cellPadding: 3 }
         });

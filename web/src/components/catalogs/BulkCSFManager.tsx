@@ -79,7 +79,9 @@ const BulkCSFManager = () => {
 
                 if (invokeError) {
                     console.error(`[BulkCSF] Error de invocación para ${file.name}:`, invokeError);
-                    throw new Error(invokeError.message);
+                    // Extract error message from invoke error body if available
+                    const bodyError = (invokeError as any).context?.error || invokeError.message;
+                    throw new Error(bodyError || 'Error de conexión con el servidor');
                 }
 
                 if (extractionRes?.success === false) {

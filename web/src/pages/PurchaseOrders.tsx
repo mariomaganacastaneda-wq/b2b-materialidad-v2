@@ -8,7 +8,7 @@ interface PurchaseOrderProps {
     selectedOrg: any; // La org actual (B2B)
 }
 
-export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) => {
+export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, currentUser }) => {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -89,27 +89,134 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
 
             if (uploadError) throw uploadError;
 
-            // 2. Trigger Edge Function for n8n Parsing
-            const { data: funcData, error: funcError } = await supabase.functions.invoke('process-purchase-order', {
-                body: {
-                    filePath: filePath,
-                    clientOrgId: selectedOrg.id
-                }
+            // 2. Trigger n8n Webhook for AI Parsing
+            const formData = new FormData();
+            formData.append('data', file);
+
+            const profileId = currentUser?.id || '';
+            formData.append('profile_id', profileId);
+
+            const response = await fetch('https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf', {
+                method: 'POST',
+                headers: {
+                    'x-profile-id': profileId,
+                },
+                body: formData
             });
 
-            if (funcError) throw funcError;
-            if (funcData && funcData.success === false) {
-                throw new Error(funcData.error || "Error interno dentro de la Edge Function.");
+            const responseText = await response.text();
+
+            if (!response.ok) {
+                throw new Error(`Error en n8n (${response.status}): ${responseText || 'Respuesta vacía'}`);
             }
 
-            // 3. Refresh list
+            let n8nData;
+            try {
+                const parsed = JSON.parse(responseText);
+                // n8n suele devolver un array de items, o un objeto directo dependiendo de la configuración
+                n8nData = Array.isArray(parsed) ? parsed[0] : parsed;
+            } catch (e) {
+                throw new Error(`Respuesta de n8n no es un JSON válido: ${responseText.substring(0, 100)}...`);
+            }
+
+            if (!n8nData.success) {
+                throw new Error(n8nData.error || n8nData.summary || "La IA no pudo procesar este documento correctamente.");
+            }
+
+            // 3. Mapear e Insertar en DB
+            const { quotation, quotation_items, validation_messages } = n8nData;
+
+            // En el esquema de la DB:
+            // issuer_org_id = El que EMITE la orden (El Cliente externo, ej: Goodyear)
+            // client_org_id = El que RECIBE la orden (Nosotros, ej: MEX EPIC)
+
+            let issuerOrgId = null;
+            if (quotation.client_rfc) {
+                const { data: orgData } = await supabase
+                    .from('organizations')
+                    .select('id')
+                    .eq('rfc', quotation.client_rfc)
+                    .single();
+                if (orgData) issuerOrgId = orgData.id;
+            }
+
+            const clientOrgId = selectedOrg.id;
+
+            // Get Public URL for the file
+            const { data: urlData } = supabase.storage
+                .from('purchase_orders')
+                .getPublicUrl(filePath);
+
+            const sourceFileUrl = urlData.publicUrl;
+
+            // Inserción de Cabecera
+            // Validar po_number: Si tiene espacios y es largo, probablemente es una descripción, no un folio.
+            const rawPo = quotation.po_number || n8nData.summary?.po_number || "";
+            const isProbablyDescription = rawPo.includes(' ') && rawPo.length > 20;
+            const finalPo = isProbablyDescription ? (n8nData.summary?.po_number || `OCR-${Date.now()}`) : rawPo;
+
+            const { data: poInserted, error: poError } = await supabase
+                .from('purchase_orders')
+                .insert({
+                    po_number: finalPo || `OCR-${Date.now()}`,
+                    emission_date: quotation.po_date || new Date().toISOString().split('T')[0],
+                    issuer_org_id: issuerOrgId, // El que emite (ej: Goodyear)
+                    client_org_id: clientOrgId, // El que recibe (nosotros: MEX EPIC / selectedOrg)
+                    currency: quotation.currency || 'MXN',
+                    subtotal: quotation.amount_subtotal || 0,
+                    tax_total: (quotation.amount_iva || 0) + (quotation.amount_ieps || 0),
+                    grand_total: quotation.amount_total || 0,
+                    status: 'PENDING_REVIEW',
+                    source_file_url: sourceFileUrl,
+                    raw_ocr_data: n8nData,
+                    validation_messages: validation_messages || [],
+                    // Campos extra de proforma
+                    client_rfc: quotation.client_rfc,
+                    client_name: quotation.client_name,
+                    client_address: quotation.client_address,
+                    client_cp: quotation.client_cp,
+                    client_regime_code: quotation.client_regime_code,
+                    payment_method: quotation.payment_method,
+                    payment_form: quotation.payment_form,
+                    usage_cfdi_code: quotation.usage_cfdi_code,
+                    notes: quotation.notes,
+                    description: quotation.description,
+                    is_licitation: quotation.is_licitation || false,
+                    is_contract_required: quotation.is_contract_required || false,
+                    request_direct_invoice: quotation.request_direct_invoice || false
+                })
+                .select()
+                .single();
+
+            if (poError) throw poError;
+
+            // Inserción de Partidas
+            if (quotation_items && quotation_items.length > 0) {
+                const itemsToInsert = quotation_items.map((item: any) => ({
+                    purchase_order_id: poInserted.id,
+                    item_code: item.sat_product_key,
+                    description: item.description,
+                    quantity: item.quantity,
+                    unit_measure: item.unit_id,
+                    unit_price: item.unit_price,
+                    tax_amount: (item.subtotal * 0.16), // Estimación si no viene
+                    total_amount: item.subtotal,
+                    sat_product_key: item.sat_product_key,
+                    sat_match_score: item.sat_match_score,
+                    sat_search_hint: item.sat_search_hint,
+                    has_iva: item.has_iva ?? true,
+                    has_ieps: item.has_ieps ?? false
+                }));
+
+                const { error: itemsError } = await supabase
+                    .from('purchase_order_items')
+                    .insert(itemsToInsert);
+
+                if (itemsError) console.error("Error insertando items de OC:", itemsError);
+            }
+
+            // 4. Refresh list
             await fetchOrders();
-
-            // Open the newly created order
-            if (funcData && funcData.data && funcData.data.po_id) {
-                // We might need an extra fetch just for this single one to get full struct
-                await fetchOrders();
-            }
 
         } catch (error: any) {
             console.error('Error al procesar la órden de compra:', error);
@@ -120,25 +227,50 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
         }
     };
 
+    const handleDeleteOrder = async (e: React.MouseEvent, orderId: string) => {
+        e.stopPropagation();
+        if (!confirm('¿Estás seguro de que deseas eliminar esta Orden de Compra? Esta acción no se puede deshacer.')) return;
+
+        try {
+            // 1. Borrar items primero (por si acaso el CASCADE no es suficiente en el cliente o RLS)
+            const { error: itemsError } = await supabase
+                .from('purchase_order_items')
+                .delete()
+                .eq('purchase_order_id', orderId);
+
+            if (itemsError) {
+                console.warn('Advertencia al borrar items de OC:', itemsError);
+            }
+
+            // 2. Borrar la OC
+            const { error } = await supabase
+                .from('purchase_orders')
+                .delete()
+                .eq('id', orderId);
+
+            if (error) throw error;
+
+            setOrders(prev => prev.filter(o => o.id !== orderId));
+            if (viewingOrder?.id === orderId) setViewingOrder(null);
+            alert('Orden de Compra eliminada correctamente.');
+        } catch (error: any) {
+            console.error('Error al eliminar la órden de compra:', error);
+            alert(`Error al eliminar: ${error.message}`);
+        }
+    };
+
 
     const handleConvertToProforma = () => {
         if (!viewingOrder) return;
 
-        // Convertir la estructura de items de la OC a la estructura que espera la Proforma
-        const itemsParams = viewingOrder.items?.map((item: any) => ({
-            desc: item.description,
-            qty: item.quantity,
-            price: item.unit_price,
-        })) || [];
-
         // Navegar a "cotizaciones/nueva" pasando el query param para autorrellenar
+        // Ahora enviamos el objeto completo de la OC para que el ProformaManager lo use
         const queryStr = encodeURIComponent(JSON.stringify({
-            po_id: viewingOrder.id,
-            po_number: viewingOrder.po_number,
-            items: itemsParams
+            from_po_id: viewingOrder.id,
+            po_data: viewingOrder
         }));
 
-        navigate(`/cotizaciones/nueva?po=${queryStr}`);
+        navigate(`/cotizaciones/nueva?po_full=${queryStr}`);
     };
 
     const getStatusColor = (status: string) => {
@@ -254,28 +386,57 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
                                         }}
                                     >
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <div>
-                                                <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>FOLIO OC</div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                                    <span>FOLIO OC</span>
+                                                    <span style={{ fontWeight: 'normal' }}>{order.emission_date ? new Date(order.emission_date).toLocaleDateString() : '--'}</span>
+                                                </div>
                                                 <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    {order.po_number}
+                                                    {/* Si el po_number parece una descripción (muy largo), mostrar el folio alternativo del OCR data o un genérico */}
+                                                    {(order.po_number && order.po_number.length > 25 && order.po_number.includes(' '))
+                                                        ? (order.raw_ocr_data?.summary?.po_number || 'S/F')
+                                                        : (order.po_number || 'S/N')}
                                                 </div>
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '20px', backgroundColor: statusInfo.bg, border: `1px solid ${statusInfo.border}`, color: statusInfo.text, fontSize: '10px', fontWeight: '600' }}>
-                                                {statusInfo.icon}
-                                                {order.status.replace(/_/g, ' ')}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '20px', backgroundColor: statusInfo.bg, border: `1px solid ${statusInfo.border}`, color: statusInfo.text, fontSize: '10px', fontWeight: '600' }}>
+                                                    {statusInfo.icon}
+                                                    {order.status.replace(/_/g, ' ')}
+                                                </div>
+                                                <button
+                                                    onClick={(e) => handleDeleteOrder(e, order.id)}
+                                                    style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    title="Eliminar OC"
+                                                >
+                                                    <X size={14} />
+                                                </button>
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <div style={{ fontSize: '12px' }}>
+                                                <div style={{ color: '#64748b', fontSize: '10px' }}>CLIENTE (EMISIÓN OC)</div>
+                                                <div style={{ color: '#e2e8f0', fontWeight: '700', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {order.issuer ? order.issuer.name : (order.client_name || 'Sin identificar')}
+                                                </div>
+                                            </div>
+
+                                            <div style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '4px', borderLeft: '2px solid var(--primary-color)' }}>
+                                                {order.description || order.notes || 'Sin descripción'}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                             <div>
-                                                <div style={{ color: '#64748b', fontSize: '10px' }}>PROVEEDOR (EMISORA)</div>
-                                                <div style={{ color: '#e2e8f0', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                    {order.issuer ? order.issuer.name : <span style={{ color: '#ef4444' }}>No Identificado</span>}
+                                                <div style={{ color: '#64748b', fontSize: '10px' }}>RECEPTOR / PROVEEDOR</div>
+                                                <div style={{ color: 'var(--primary-light-30, #818cf8)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {/* Mostrar MEX EPIC si la IA lo detectó, o la org seleccionada */}
+                                                    {order.raw_ocr_data?.summary?.issuer?.split('(')[0] || selectedOrg.name}
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
                                                 <div style={{ color: '#64748b', fontSize: '10px' }}>TOTAL ({order.currency})</div>
-                                                <div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '14px' }}>
+                                                <div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '16px' }}>
                                                     {formatCurrency(order.grand_total, order.currency)}
                                                 </div>
                                             </div>
@@ -298,21 +459,57 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
             {viewingOrder && (
                 <div className="glass-card fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)', animation: 'slideRight 0.3s ease' }}>
                     <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 'bold' }}>Detalle de Orden <span style={{ color: 'var(--primary-color)' }}>#{viewingOrder.po_number}</span></h3>
+                        <h3 style={{ fontSize: '16px', fontWeight: 'bold' }}>Detalle de Orden <span style={{ color: 'var(--primary-color)' }}>#{viewingOrder.po_number || 'S/N'}</span></h3>
                         <button onClick={() => setViewingOrder(null)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}><X size={18} /></button>
                     </div>
 
                     <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
+                        {/* AI Validation Messages */}
+                        {((viewingOrder.validation_messages && viewingOrder.validation_messages.length > 0) ||
+                            (viewingOrder.raw_ocr_data?.validation_messages && viewingOrder.raw_ocr_data.validation_messages.length > 0)) && (
+                                <div style={{ padding: '16px', backgroundColor: 'rgba(234, 179, 8, 0.05)', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)' }}>
+                                    <h4 style={{ fontSize: '11px', color: '#facc15', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
+                                        <AlertTriangle size={14} />
+                                        OBSERVACIONES DE VALIDACIÓN (IA)
+                                    </h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {(viewingOrder.validation_messages || viewingOrder.raw_ocr_data?.validation_messages).map((msg: any, idx: number) => {
+                                            let icon = 'ℹ️';
+                                            let color = '#94a3b8';
+                                            if (msg.level === 'warning') { icon = '⚠️'; color = '#facc15'; }
+                                            if (msg.level === 'fix') { icon = '🔧'; color = '#38bdf8'; }
+                                            if (msg.level === 'error') { icon = '❌'; color = '#f87171'; }
+                                            if (msg.level === 'info') { icon = '✅'; color = '#10b981'; }
+
+                                            return (
+                                                <div key={idx} style={{ fontSize: '12px', color: color, display: 'flex', gap: '8px' }}>
+                                                    <span>{icon}</span>
+                                                    <span>{msg.message}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                         {/* Metadata Card */}
                         <div style={{ padding: '16px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h4 style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Información Extraída (OCR)</h4>
+                            <h4 style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Información Fiscal Extraída</h4>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>CLIENTE (RECEPTOR)</div>
+                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{viewingOrder.client_name || '---'}</div>
+                                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{viewingOrder.client_rfc || ''} | {viewingOrder.client_regime_code || ''}</div>
+                                </div>
                                 <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>PROVEEDOR DETECTADO</div>
-                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{viewingOrder.issuer?.name || '---'}</div>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{viewingOrder.issuer?.rfc || ''}</div>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>USO CFDI</div>
+                                    <div style={{ fontSize: '11px', color: '#e2e8f0' }}>{viewingOrder.usage_cfdi_code || '---'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>MÉTODO / FORMA PAGO</div>
+                                    <div style={{ fontSize: '11px', color: '#e2e8f0' }}>{viewingOrder.payment_method || '---'} / {viewingOrder.payment_form || '---'}</div>
                                 </div>
                                 <div>
                                     <div style={{ fontSize: '10px', color: '#64748b' }}>FECHA DE EMISIÓN</div>
@@ -325,6 +522,10 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
                                 <div>
                                     <div style={{ fontSize: '10px', color: '#64748b' }}>IMPUESTOS</div>
                                     <div style={{ fontSize: '13px', fontWeight: '500' }}>{formatCurrency(viewingOrder.tax_total, viewingOrder.currency)}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>TOTAL</div>
+                                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(viewingOrder.grand_total, viewingOrder.currency)}</div>
                                 </div>
                             </div>
                         </div>
@@ -348,7 +549,35 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg }) =>
                                     <tbody>
                                         {viewingOrder.items?.map((item: any) => (
                                             <tr key={item.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                                                <td style={{ padding: '8px 12px', color: '#e2e8f0', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={item.description}>{item.description}</td>
+                                                <td style={{ padding: '8px 12px', color: '#e2e8f0', maxWidth: '200px' }}>
+                                                    <div style={{ fontWeight: '500' }}>{item.description}</div>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                                                        {item.sat_product_key && (
+                                                            <div style={{ fontSize: '9px', color: '#818cf8', backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: '2px 4px', borderRadius: '4px' }}>
+                                                                SAT: {item.sat_product_key}
+                                                            </div>
+                                                        )}
+                                                        {item.sat_match_score !== undefined && item.sat_match_score !== null && (
+                                                            <div style={{
+                                                                fontSize: '9px',
+                                                                color: item.sat_match_score < 0.5 ? '#facc15' : '#34d399',
+                                                                backgroundColor: item.sat_match_score < 0.5 ? 'rgba(234, 179, 8, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                                                                padding: '2px 4px',
+                                                                borderRadius: '4px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '2px'
+                                                            }}>
+                                                                {Math.round(item.sat_match_score * 100)}% Match
+                                                            </div>
+                                                        )}
+                                                        {item.sat_search_hint && item.sat_match_score < 0.4 && (
+                                                            <div style={{ fontSize: '9px', color: '#94a3b8', fontStyle: 'italic', width: '100%' }}>
+                                                                Tip: {item.sat_search_hint}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
                                                 <td style={{ padding: '8px 12px', textAlign: 'center', color: '#94a3b8' }}>{item.quantity} {item.unit_measure}</td>
                                                 <td style={{ padding: '8px 12px', textAlign: 'right', color: '#94a3b8' }}>{formatCurrency(item.unit_price, viewingOrder.currency)}</td>
                                                 <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: '500', color: '#cbd5e1' }}>{formatCurrency(item.total_amount, viewingOrder.currency)}</td>

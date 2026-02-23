@@ -27,16 +27,41 @@ serve(async (req) => {
 
         if (action === 'delete') {
             if (!organization_id) throw new Error('organization_id requerido para delete.');
-            console.log(`[ManageUserAccess] Eliminando acceso para perfil: ${profile_id}, org: ${organization_id}`);
+            console.log(`[ManageUserAccess] Solicitud de eliminación detectada.`);
+            console.log(`[ManageUserAccess] profile_id: "${profile_id}"`);
+            console.log(`[ManageUserAccess] organization_id: "${organization_id}"`);
+
+            const { data: accessRecord, error: fetchError } = await supabaseClient
+                .from('user_organization_access')
+                .select('*')
+                .match({ profile_id, organization_id })
+                .maybeSingle();
+
+            if (fetchError) {
+                console.error('[ManageUserAccess] Error al buscar el registro:', fetchError);
+                throw fetchError;
+            }
+
+            if (!accessRecord) {
+                console.warn('[ManageUserAccess] No se encontró el registro para eliminar. Match fallido.');
+                // Podríamos retornar éxito igual si el fin es que no exista, 
+                // pero si el usuario se queja es por algo.
+                throw new Error('No se encontró un vínculo activo para esta empresa en tu perfil.');
+            }
+
+            console.log(`[ManageUserAccess] Registro encontrado (ID: ${accessRecord.id}). Procediendo al borrado.`);
+
             const { error } = await supabaseClient
                 .from('user_organization_access')
                 .delete()
-                .match({ profile_id: profile_id, organization_id: organization_id });
+                .eq('id', accessRecord.id);
 
             if (error) {
                 console.error('[ManageUserAccess] Error en Delete:', error);
                 throw error;
             }
+
+            console.log('[ManageUserAccess] Eliminación exitosa.');
             return new Response(
                 JSON.stringify({ success: true }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

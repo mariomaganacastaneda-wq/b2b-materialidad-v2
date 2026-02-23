@@ -56,14 +56,28 @@ const ProductsServicesTab = () => {
     const fetchSearchResults = async (term: string) => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('cat_cfdi_productos_servicios')
-                .select('*')
-                .or(`name.ilike.%${term}%,code.ilike.%${term}%,similar_words.ilike.%${term}%`)
-                .limit(100);
+            let finalData = null;
+            let queryError = null;
 
-            if (error) throw error;
-            setProducts(data || []);
+            if (/^\d+$/.test(term)) {
+                const { data, error } = await supabase
+                    .from('cat_cfdi_productos_servicios')
+                    .select('*')
+                    .ilike('code', `${term}%`)
+                    .limit(100);
+                finalData = data;
+                queryError = error;
+            } else {
+                const { data, error } = await supabase.rpc('search_productos_sat', {
+                    search_term: term,
+                    max_results: 100
+                });
+                finalData = data;
+                queryError = error;
+            }
+
+            if (queryError) throw queryError;
+            setProducts(finalData || []);
         } catch (err: any) {
             console.error('Error searching:', err.message);
         } finally {

@@ -231,7 +231,8 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
             });
 
             if (invokeError || extractionRes?.success === false) {
-                throw new Error(invokeError?.message || extractionRes?.error || 'Error en procesamiento');
+                const bodyError = (invokeError as any)?.context?.error || extractionRes?.error || invokeError?.message;
+                throw new Error(bodyError || 'Error en procesamiento');
             }
 
             // Success! Reload or alert

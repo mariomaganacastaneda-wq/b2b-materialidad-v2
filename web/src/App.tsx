@@ -517,39 +517,22 @@ export function App() {
         console.log('App: Final userProfile context:', { id: activeProfile?.id, role: activeProfile?.role });
         setUserProfile(activeProfile);
 
-        // 3. Cargar Organizaciones (Diagnóstico Extremo)
-        console.log('App: PROBE -> Attempting raw fetch to organizations...');
-
-        // --- DIAGNÓSTICO DE RED DE BAJO NIVEL ---
-        try {
-          const rawResponse = await fetch(`${supabase.supabaseUrl}/rest/v1/organizations?select=*`, {
-            headers: {
-              'apikey': supabase.supabaseKey,
-              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || 'NO_TOKEN'}`
-            }
-          });
-          const rawText = await rawResponse.text();
-          console.log('App: NETWORK_LOW_LEVEL_PROBE:', {
-            status: rawResponse.status,
-            ok: rawResponse.ok,
-            json_sample: rawText.substring(0, 100)
-          });
-          // @ts-ignore
-          window.__RAW_NETWORK_DIAGNOSTIC = { status: rawResponse.status, data: rawText };
-        } catch (netErr) {
-          console.error('App: NETWORK_CRITICAL_FAILURE:', netErr);
-        }
-        // ---------------------------------------
+        // 3. Cargar Organizaciones
+        console.log('App: Loading profiles and data...');
 
         const { data: orgData, error: orgError } = await supabase.from('organizations').select('*');
 
         if (orgError) {
           console.error('App: SUPABASE_FETCH_ERROR:', orgError);
+          // Solo mostrar errores reales que no sean transitorios (401 suele ser transitorio en el arranque)
+          if (orgError.status !== 401) {
+            // @ts-ignore
+            window.__SUPABASE_ERROR_MSG = orgError.message;
+          }
+        } else {
+          // Limpiar mensaje de error si logramos cargar algo
           // @ts-ignore
-          window.__LAST_ERROR = orgError;
-          // Alerta visual en la barra de diagnóstico
-          // @ts-ignore
-          window.__SUPABASE_ERROR_MSG = orgError.message;
+          window.__SUPABASE_ERROR_MSG = null;
         }
 
         // 4. Cargar Permisos específicos
@@ -662,13 +645,6 @@ export function App() {
             <p style={{ color: '#64748b', fontSize: '12px', marginTop: '4px' }}>
               Identidad: {isLoaded ? (clerkUser ? 'Verificada ✅' : 'Esperando usuario...') : 'Cargando Clerk...'}
             </p>
-            {/* @ts-ignore */}
-            {window.__RAW_NETWORK_DIAGNOSTIC && (
-              <p style={{ color: '#94a3b8', fontSize: '10px', marginTop: '8px', fontFamily: 'monospace', background: '#1e293b', padding: '4px 8px', borderRadius: '4px' }}>
-                Red Supabase: {(window as any).__RAW_NETWORK_DIAGNOSTIC.status} -
-                {(window as any).__RAW_NETWORK_DIAGNOSTIC.data?.includes('[') ? 'Datos OK' : 'Fallo/Vacío'}
-              </p>
-            )}
             {/* @ts-ignore */}
             {(window as any).__SUPABASE_ERROR_MSG && (
               <p style={{ color: '#ef4444', fontSize: '10px', marginTop: '4px' }}>

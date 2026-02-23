@@ -285,7 +285,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         if (!confirm('¿Estás seguro de remover este cliente? Ya no aparecerá en tu lista.')) return;
 
         try {
-            const { error } = await supabase.functions.invoke('manage-user-access', {
+            const { data, error } = await supabase.functions.invoke('manage-user-access', {
                 body: {
                     profile_id: currentUser.id,
                     organization_id: orgId,
@@ -293,7 +293,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 }
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Invoke error:', error);
+                // Si la función retornó un error estructurado, usarlo
+                const bodyError = data?.error;
+                throw new Error(bodyError || error.message || 'Error al procesar la solicitud');
+            }
+
+            if (data?.success === false) {
+                throw new Error(data.error || 'Operación fallida en el servidor');
+            }
 
             // Refrescar toda la pantalla porque la DB cambió
             window.location.reload();

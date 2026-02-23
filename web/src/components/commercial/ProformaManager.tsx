@@ -257,20 +257,40 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                 // 2. Mega-Búsqueda Global (Si hay Tag o Búsqueda Manual)
                 const effectiveSearch = activeTag || search;
                 if (effectiveSearch || (finalData.length === 0 && isOpen)) {
-                    let query = supabase.from('cat_cfdi_productos_servicios').select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered');
+                    let globalData = null;
 
                     if (/^\d+$/.test(effectiveSearch)) {
-                        query = query.ilike('code', `${effectiveSearch}%`);
+                        const { data } = await supabase
+                            .from('cat_cfdi_productos_servicios')
+                            .select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered')
+                            .ilike('code', `${effectiveSearch}%`)
+                            .limit(100);
+                        globalData = data;
                     } else if (effectiveSearch) {
-                        // Búsqueda semántica usando el campo similar_words enriquecido
-                        query = query.or(`name.ilike.%${effectiveSearch}%,similar_words.ilike.%${effectiveSearch}%`);
+                        // Búsqueda semántica usando la nueva función RPC (ordenado por relevancia GIN trigram)
+                        const { data } = await supabase.rpc('search_productos_sat', {
+                            search_term: effectiveSearch,
+                            max_results: 100
+                        });
+                        globalData = data;
                     } else if (activityDescription) {
                         // Si no hay búsqueda pero sí actividad, usamos los primeros keywords para llenar el vacío
                         const keywords = smartTags.slice(0, 2).join(' ');
-                        if (keywords) query = query.ilike('name', `%${keywords}%`);
+                        const query = supabase.from('cat_cfdi_productos_servicios').select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered');
+                        if (keywords) {
+                            const { data } = await query.ilike('name', `%${keywords}%`).limit(100);
+                            globalData = data;
+                        } else {
+                            const { data } = await query.limit(100);
+                            globalData = data;
+                        }
+                    } else {
+                        const { data } = await supabase
+                            .from('cat_cfdi_productos_servicios')
+                            .select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered')
+                            .limit(100);
+                        globalData = data;
                     }
-
-                    const { data: globalData } = await query.limit(100); // Límite masivo para potencia
                     if (globalData) {
                         const mapped = globalData
                             .filter((p: any) => !finalData.find((f: any) => f.code === p.code))
@@ -924,12 +944,17 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         total_proformas: 1,
         contract_reference: '',
         is_licitation: false,
+        is_contract_required: false,
+        request_direct_invoice: false,
+        object_of_contract: '',
+        special_clauses: '',
         bank_account_id: null as string | null,
+        from_po_id: null as string | null,
         notes: '',
         hasQuotation: false,
         hasContract: false,
         advancePayment: false,
-        items: [{ id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }],
+        items: [{ id: Date.now(), code: '', item_code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }],
         isSaving: false,
         saveError: null as string | null,
         saveSuccess: false
@@ -941,32 +966,73 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const poParam = queryParams.get('po');
+        const poFullParam = queryParams.get('po_full');
 
-        if (poParam && !id) {
+        if ((poFullParam || poParam) && (!id || id === 'nueva')) {
             try {
-                const poData = JSON.parse(decodeURIComponent(poParam));
+                // Intentar procesar po_full (objeto completo) primero
+                const rawParam = poFullParam || poParam;
+                if (!rawParam) return;
+
+                let decoded = rawParam;
+                try {
+                    // Solo decodificar si parece estar codificado (contiene %)
+                    if (rawParam.includes('%')) {
+                        decoded = decodeURIComponent(rawParam);
+                    }
+                } catch (e) {
+                    console.warn("Fallo al decodificar param, usando crudo:", e);
+                }
+
+                const fullData = JSON.parse(decoded);
+                // Si es poParam simple, poData es el objeto directo. Si es po_full, está en .po_data
+                const poData = fullData.po_data || fullData;
+
+                if (!poData) throw new Error("No hay po_data en el parámetro");
+
                 setFormData(prev => {
-                    const newItems = poData.items && poData.items.length > 0
-                        ? poData.items.map((it: any, index: number) => ({
+                    const incomingItems = poData.items || [];
+                    const newItems = incomingItems.length > 0
+                        ? incomingItems.map((it: any, index: number) => ({
                             id: Date.now() + index,
-                            code: '01010101', // Código SAT por defecto
-                            quantity: it.qty || 1,
-                            unit: 'H87', // Unidad genérica
-                            description: it.desc || '',
-                            unitPrice: it.price || 0,
-                            has_iva: true,
-                            has_ieps: false
+                            code: it.sat_product_key || '01010101',
+                            item_code: it.item_code || it.sat_product_key || '',
+                            quantity: parseFloat(it.quantity) || 1,
+                            unit: it.unit_measure || 'E48',
+                            description: it.description || '',
+                            unitPrice: parseFloat(it.unit_price) || 0,
+                            has_iva: it.has_iva ?? true,
+                            has_ieps: it.has_ieps ?? false
                         }))
                         : prev.items;
 
                     return {
                         ...prev,
-                        notes: `Generado a partir de Orden de Compra: ${poData.po_number || ''}`,
+                        clientName: poData.client_name || prev.clientName,
+                        clientRFC: poData.client_rfc || prev.clientRFC,
+                        clientAddress: poData.client_address || prev.clientAddress,
+                        clientCP: poData.client_cp || prev.clientCP,
+                        clientRegime: poData.client_regime_code || prev.clientRegime,
+                        currency: poData.currency || prev.currency,
+                        paymentMethod: poData.payment_method || prev.paymentMethod,
+                        paymentForm: poData.payment_form || prev.paymentForm,
+                        usage: poData.usage_cfdi_code || prev.usage,
+                        notes: poData.notes || `Generado a partir de OC: ${poData.po_number || ''}`,
+                        description: poData.description || prev.description,
+                        is_licitation: poData.is_licitation || prev.is_licitation,
+                        is_contract_required: poData.is_contract_required || prev.is_contract_required,
+                        request_direct_invoice: poData.request_direct_invoice || prev.request_direct_invoice,
+                        object_of_contract: poData.object_of_contract || prev.object_of_contract,
+                        special_clauses: poData.special_clauses || prev.special_clauses,
+                        execution_period: poData.execution_period || prev.execution_period,
+                        contract_reference: poData.po_number || prev.contract_reference,
+                        bank_account_id: poData.bank_account_id || prev.bank_account_id,
+                        from_po_id: poData.id || null,
                         items: newItems
                     };
                 });
             } catch (e) {
-                console.error("Error parsing PO query param", e);
+                console.error("Error parsing PO query params", e);
             }
         }
     }, [location.search, id]);
@@ -997,7 +1063,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
     // Cargar datos si existe un ID en la URL
     useEffect(() => {
-        if (id) {
+        if (id && id !== 'nueva') {
             loadQuotationData(id);
             loadPayments(id);
         }
@@ -1112,10 +1178,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 paymentForm: q.payment_form || '03',
                 usage: q.usage_cfdi_code || 'G03',
                 notes: q.notes || '',
+                from_po_id: q.from_po_id || null,
 
                 items: items && items.length > 0 ? items.map((item: any) => ({
                     id: item.id,
                     code: item.sat_product_key,
+                    item_code: item.item_code || '',
                     quantity: parseFloat(item.quantity),
                     unit: item.unit_id,
                     description: item.description,
@@ -1241,7 +1309,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
         try {
             // 1. Insertar o Actualizar Cabecera (Quotation)
-            let quotationId = id;
+            let quotationId = (id === 'nueva') ? undefined : id;
 
             const quotationPayload = {
                 organization_id: selectedOrg.id,
@@ -1256,8 +1324,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 description: `Proforma para ${formData.clientName}`,
                 created_by: user?.id || null,
                 is_licitation: formData.is_licitation || false,
-                is_contract_required: formData.hasContract,
-                request_direct_invoice: false,
+                is_contract_required: formData.is_contract_required || formData.hasContract,
+                request_direct_invoice: formData.request_direct_invoice || false,
+                object_of_contract: formData.object_of_contract,
+                special_clauses: formData.special_clauses,
                 execution_period: formData.execution_period,
                 proforma_number: formData.proforma_number,
                 total_proformas: formData.total_proformas,
@@ -1270,10 +1340,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 client_name: formData.clientName,
                 client_address: formData.clientAddress,
                 client_regime_code: formData.clientRegime,
-                bank_account_id: formData.bank_account_id || undefined
+                bank_account_id: formData.bank_account_id || undefined,
+                from_po_id: formData.from_po_id
             };
 
-            if (id) {
+            if (id && id !== 'nueva') {
                 // UPDATE existente
                 const { error: qError } = await supabase
                     .from('quotations')
@@ -1292,7 +1363,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             }
 
             // 2. Sincronizar Items (Borrar y Re-insertar para simplicidad en edición)
-            if (id) {
+            if (id && id !== 'nueva') {
                 const { error: dError } = await supabase
                     .from('quotation_items')
                     .delete()
@@ -1303,6 +1374,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             const itemsToInsert = formData.items.map(item => ({
                 quotation_id: quotationId,
                 sat_product_key: item.code,
+                item_code: item.item_code,
                 quantity: item.quantity,
                 unit_id: item.unit,
                 description: item.description,
@@ -1319,9 +1391,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             if (iError) throw iError;
 
             setFormData(prev => ({ ...prev, isSaving: false, saveSuccess: true }));
-            alert(id ? 'Proforma actualizada con éxito' : 'Proforma guardada con éxito');
+            alert((id && id !== 'nueva') ? 'Proforma actualizada con éxito' : 'Proforma guardada con éxito');
 
-            if (!id && quotationId) {
+            if ((!id || id === 'nueva') && quotationId) {
                 navigate(`/cotizaciones/${quotationId}`);
             }
 
@@ -1350,25 +1422,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         loadCatalogs();
     }, []);
 
-    // Cargar actividades cuando cambia la organización emisora
+    // Actividades se cargan vía loadActivities arriba, o aquí si cambia de org en vivo
     useEffect(() => {
-        const loadActivities = async () => {
-            if (selectedOrg?.id) {
-                const { data } = await supabase
-                    .from('organization_activities')
-                    .select('*')
-                    .eq('organization_id', selectedOrg.id)
-                    .order('activity_order');
-                if (data) {
-                    setOrgActivities(data);
-                    // Por defecto seleccionar la primera con mayor porcentaje si no hay una seleccionada
-                    if (data.length > 0 && !formData.economicActivity) {
-                        setFormData(prev => ({ ...prev, economicActivity: data[0].activity_code }));
-                    }
-                }
-            }
-        };
-        loadActivities();
+        if (selectedOrg?.id) {
+            loadActivities(selectedOrg.id);
+            loadBankAccounts(selectedOrg.id);
+        }
     }, [selectedOrg]);
 
 
@@ -1450,7 +1509,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const addItem = () => {
         setFormData({
             ...formData,
-            items: [...formData.items, { id: Date.now(), code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }]
+            items: [...formData.items, { id: Date.now(), code: '', item_code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }]
         });
     };
 
@@ -1806,6 +1865,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <thead className="sticky top-0 bg-white shadow-sm z-10">
                                     <tr className="bg-slate-50/80 text-slate-400 uppercase text-[9px] font-bold border-b border-slate-100">
                                         <th className="px-4 py-2 w-44 tracking-wider">Clave SAT</th>
+                                        <th className="px-4 py-2 w-32 tracking-wider">No. Identificación</th>
                                         <th className="px-4 py-2 w-24 text-center tracking-wider">Cant.</th>
                                         <th className="px-4 py-2 w-28 text-center tracking-wider">Unidad</th>
                                         <th className="px-4 py-2 tracking-wider">Descripción del Servicio</th>
@@ -1851,6 +1911,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         };
                                                         setFormData({ ...formData, items: newItems });
                                                     }}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-2 align-middle">
+                                                <input
+                                                    className="w-full border-none bg-transparent p-0 text-[11px] font-bold text-slate-700 focus:ring-0 focus:outline-none uppercase"
+                                                    type="text"
+                                                    value={item.item_code}
+                                                    placeholder="N/A"
+                                                    onChange={e => updateItem(idx, 'item_code', e.target.value)}
                                                 />
                                             </td>
                                             <td className="px-4 py-2 text-center align-middle">
@@ -1984,10 +2053,22 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     onChange={v => setFormData({ ...formData, hasQuotation: v })}
                                 />
                                 <ConfigToggle
+                                    label="Licitación / Concurso"
+                                    sub="Proceso formal"
+                                    checked={formData.is_licitation}
+                                    onChange={v => setFormData({ ...formData, is_licitation: v })}
+                                />
+                                <ConfigToggle
                                     label="Requiere Contrato"
                                     sub="Anexo legal PDF"
-                                    checked={formData.hasContract}
-                                    onChange={v => setFormData({ ...formData, hasContract: v })}
+                                    checked={formData.is_contract_required}
+                                    onChange={v => setFormData({ ...formData, is_contract_required: v, hasContract: v })}
+                                />
+                                <ConfigToggle
+                                    label="Factura Directa"
+                                    sub="Sin remisiones"
+                                    checked={formData.request_direct_invoice}
+                                    onChange={v => setFormData({ ...formData, request_direct_invoice: v })}
                                 />
                                 <ConfigToggle
                                     label="Anticipo"
