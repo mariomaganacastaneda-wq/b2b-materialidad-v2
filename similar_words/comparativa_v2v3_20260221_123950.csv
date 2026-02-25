@@ -1,0 +1,21 @@
+﻿code,name,level,prompt_v2,v2_count,prompt_v3,v3_count
+43000000,"Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",DIVISION,"tecnología, telecomunicaciones, difusión, IT",4,"tecnologia, telecomunicaciones, difusion, IT, tecnologia de la informacion",5
+56000000,Muebles y Mobiliario (Division 56),DIVISION,"muebles, mobiliario, sillas, mesas",4,"muebles, mobiliario, decoracion, muebles para casa, muebles de oficina",5
+43210000,Equipo informatico y accesorios y relacionados (Grupo 4321),GROUP,"equipo informático, accesorios, computadoras, hardware",4,"equipo informatico, accesorios informaticos, hardware, tecnologia, computadoras y accesorios",5
+50200000,Bebidas y relacionados (Grupo 5020),GROUP,"bebidas, refrescos, alcohol, productos de consumo",4,"bebidas, bebidas y alimentos, productos de consumo, refrescos, bebidas no alcoholicas",5
+43211500,Computadores,CLASS,"computadora, PC, desktop, ordenador",4,"computadores, computadoras, desktops, PC, equipos de computo",5
+43211700,Dispositivos de almacenamiento,CLASS,"disco duro, USB, almacenamiento, memoria",4,"dispositivos de almacenamiento, discos duros, USB, memorias, almacenamiento externo",5
+50202300,Bebidas alcoholicas,CLASS,"cerveza, vino, tequila, bebidas alcohólicas",4,"bebidas alcoholicas, cervezas, vinos, licores, bebidas espirituosas",5
+80141600,Actividades de ventas y promocion de negocios,CLASS,"ventas, promoción, mercadeo, publicidad",4,"ventas, promocion de negocios, mercadeo, marketing, estrategias de ventas",5
+43211501,Computadores de tableta,PRODUCT,"tablet, computadora tablet, iPad, dispositivo",4,"tabletas, computadoras tablet, tablets, iPad, dispositivos portatiles",5
+43211503,Computadores notebook,PRODUCT,"notebook, laptop, computadora portátil, equipo portátil",4,"notebooks, computadoras portatiles, laptops, laptops de trabajo, computadoras ligeras",5
+43211507,Computadores de escritorio,PRODUCT,"compu, computadora de escritorio, desktop, pc, computadora fija",5,"computadora de escritorio, compu de escritorio, desktop, pc, computadora fija",5
+43211509,Servidores de computador,PRODUCT,"servidor, servidor de computo, servidor de datos, computadora servidor",4,"servidor, servidor de computador, equipo de servidor, computadora servidor, server",5
+81111812,Servicio de mantenimiento o soporte del hardware del computador,PRODUCT,"mto. hardware, soporte técnico, servicio de mantenimiento, servicio de soporte, reparación de computadoras",5,"mantenimiento de hardware, soporte técnico, servicio técnico de computadoras, reparación de hardware, servicio de soporte",5
+81112502,Servicio de arriendo o leasing de software de computadores,PRODUCT,"arrendamiento de software, leasing de software, alquiler de software, servicio de software",4,"arriendo de software, leasing de software, alquiler de software, renta de software, servicio de software",5
+44103108,Reveladores para impresoras o fotocopiadoras,PRODUCT,"tóner, cartucho, revelador, suministros de impresión, consumibles para impresora",5,"tinta para impresora, cartuchos de impresora, suministros de impresión, revelador de fotocopiadora, toner",5
+50202301,Cerveza,PRODUCT,"chela, cerveza, cerveza artesanal, cerveza clara, cerveza oscura",5,"chela, cerveza, bebida alcohólica, cerveza fría, cerveza artesanal",5
+50202302,Vino,PRODUCT,"vino, vino tinto, vino blanco, vino rosado, botella de vino",5,"vino, bebida alcohólica, vino tinto, vino blanco, vino rosado",5
+50201700,Cafe y te,PRODUCT,"café, té, infusión, bebida caliente, café molido",5,"café, té, bebida caliente, infusión, café y té",5
+80141701,Servicios de venta directa,PRODUCT,"venta directa, ventas por catálogo, venta al por menor, servicio de ventas",4,"venta directa, distribución directa, venta al por menor, servicios de venta, venta de productos",5
+81161704,Servicio de soporte para telefonia movil,PRODUCT,"soporte celular, mto. telefonía, servicio técnico celular, soporte móvil, asistencia telefónica",5,"soporte técnico celular, servicio de telefonía, mantenimiento de telefonía móvil, asistencia técnica móvil, servicio de soporte telefónico",5

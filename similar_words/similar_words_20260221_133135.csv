@@ -1,0 +1,458 @@
+﻿code,name,level,parent_name,similar_words,num_synonyms
+01000000,"Mascotas, Animales Domésticos y Accesorios (División 01)",DIVISION,,"mascotas, animales domésticos, accesorios para mascotas, tienda de mascotas, pet shop, artículos para animales",6
+01010000,[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101),GROUP,"Mascotas, Animales Domésticos y Accesorios (División 01)","mascotas y accesorios, productos para mascotas, equipamiento animal, suministros para mascotas, tienda de animales",5
+01010100,[SINTÉTICO] CLASS - 01010100,CLASS,[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101),"mascotas domésticas, animales de compañía, accesorios de mascotas, productos animales, equipos para mascotas",5
+10000000,Material Vivo Animal y Vegetal (División 10),DIVISION,,"material vivo, animales vivos, plantas vivas, material biológico, organismos vivos, recursos naturales vivos",6
+10100000,Animales vivos de granja y relacionados (Grupo 1010),GROUP,Material Vivo Animal y Vegetal (División 10),"animales de granja, ganadería, animales de corral, crianza de animales, ganado vivo, animales de producción",6
+10101500,Animales vivos de granja,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"animales de corral, ganadería, crianza de animales, ganado vivo, animales de granja, producción animal",6
+10101501,Gatos vivos,PRODUCT,Animales vivos de granja,"gato vivo, felino, minino, gato de granja, gato doméstico, felino vivo",6
+10101502,Perros,PRODUCT,Animales vivos de granja,"perro vivo, canino, cachorro, perro de granja, perro doméstico, can vivo",6
+10101504,Visón,PRODUCT,Animales vivos de granja,"visón vivo, visón de granja, visón en pie, animal de peletería, visón para reproducción",5
+10101505,Ratas,PRODUCT,Animales vivos de granja,"rata viva, roedor, rata de granja, rata doméstica, rata en pie",5
+10101506,Caballos,PRODUCT,Animales vivos de granja,"caballo vivo, equino, caballo de granja, caballo en pie, yegua, potro",6
+10101507,Ovejas,PRODUCT,Animales vivos de granja,"oveja viva, borrego, carnero, ovino, oveja de granja, lana en pie",6
+10101508,Cabras,PRODUCT,Animales vivos de granja,"cabra viva, chivo, caprino, cabra de granja, cabra en pie, chiva",6
+10101509,Asnos,PRODUCT,Animales vivos de granja,"asno vivo, burro, mula, equino de carga, asno de granja, burro en pie",6
+10101510,Ratones,PRODUCT,Animales vivos de granja,"ratón vivo, roedor, rata, ratería, cría de ratones, ratones de laboratorio, roedores pequeños",7
+10101511,Cerdos,PRODUCT,Animales vivos de granja,"cerdo vivo, marrano, puerco, lechón, cochinada, cría de cerdos, ganado porcino",7
+10101512,Conejos,PRODUCT,Animales vivos de granja,"conejo vivo, conejera, cría de conejos, conejo de granja, gazapo, conejitos, conejos para reproducción",7
+10101513,Cobayas o conejillos de indias,PRODUCT,Animales vivos de granja,"cobaya viva, conejillo de indias, cuy, cría de cobayas, cobaya para laboratorio, roedor doméstico",6
+10101514,Primates,PRODUCT,Animales vivos de granja,"primate vivo, mono, chimpancé, macaco, primate de laboratorio, simio, cría de primates",7
+10101515,Armadillos,PRODUCT,Animales vivos de granja,"armadillo vivo, cría de armadillos, armadillos para granja, animal exótico, armadillo silvestre",5
+10101516,Ganado vacuno,PRODUCT,Animales vivos de granja,"vaca viva, toro, becerro, res, ganado bovino, ternero, cría de vacas, ganado lechero",8
+10101517,Camellos,PRODUCT,Animales vivos de granja,"camello vivo, dromedario, cría de camellos, camello de carga, animal exótico, camello para granja",6
+10101601,Pollos vivos,PRODUCT,Pájaros y aves de corral vivos,"pollo vivo, pollito, gallina viva, gallo, ave de corral, cría de pollos, pollo para engorda",7
+10101602,Patos vivos,PRODUCT,Pájaros y aves de corral vivos,"pato vivo, patita, cría de patos, pato de granja, ave acuática, pato para reproducción",6
+10101603,Pavos vivos,PRODUCT,Pájaros y aves de corral vivos,"pavo vivo, guajolote, pavita, cría de pavos, pavo de granja, ave grande, guajolota",7
+10101604,Gansos vivos,PRODUCT,Pájaros y aves de corral vivos,"ganso vivo, oca, cría de gansos, ganso de granja, ave acuática, gansito",6
+10101605,Faisanes vivos,PRODUCT,Pájaros y aves de corral vivos,"faisán vivo, cría de faisanes, faisán de granja, ave de caza, faisanería, ave exótica",6
+10101700,Peces vivos,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"pez vivo, pescado vivo, peces de granja, acuicultura, piscicultura, cría de peces, peces para reproducción",7
+10101701,Salmones vivos,PRODUCT,Peces vivos,"salmon en vivo, salmon fresco vivo, piscicultura salmon, salmon de cultivo, salmon para reproduccion",5
+10101702,Trucha viva,PRODUCT,Peces vivos,"trucha en vivo, trucha fresca viva, trucha de cultivo, piscicultura trucha, trucha para reproduccion",5
+10101703,Tilapia viva,PRODUCT,Peces vivos,"tilapia viva, tilapia en vivo, tilapia de cultivo, tilapia fresca, piscicultura tilapia",5
+10101704,Carpa viva,PRODUCT,Peces vivos,"carpa viva, carpa en vivo, carpa de cultivo, carpa fresca, piscicultura carpa",5
+10101705,Anguilas vivas,PRODUCT,Peces vivos,"anguila viva, anguilas en vivo, anguila de cultivo, anguila fresca, piscicultura anguila",5
+10101800,Mariscos e invertebrados acuáticos vivos,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"mariscos vivos, invertebrados acuaticos, crustaceos vivos, moluscos vivos, marisco fresco vivo",5
+10101801,Camarón vivo,PRODUCT,Mariscos e invertebrados acuáticos vivos,"camaron vivo, camarones frescos, camaron de cultivo, camaron para reproduccion, piscicultura camaron",5
+10101802,Almejas vivas,PRODUCT,Mariscos e invertebrados acuáticos vivos,"almeja viva, almejas frescas, almeja de cultivo, almeja para reproduccion, molusco vivo",5
+10101803,Mejillones vivos,PRODUCT,Mariscos e invertebrados acuáticos vivos,"mejillon vivo, mejillones frescos, mejillon de cultivo, mejillon para reproduccion, molusco vivo",5
+10101804,Ostras vivas,PRODUCT,Mariscos e invertebrados acuáticos vivos,"ostra viva, ostras frescas, ostra de cultivo, ostra para reproduccion, molusco vivo",5
+10101805,Cangrejos vivos,PRODUCT,Mariscos e invertebrados acuáticos vivos,"cangrejo vivo, cangrejos frescos, cangrejo de cultivo, cangrejo para reproduccion, crustaceo vivo",5
+10101806,Abulones vivos,PRODUCT,Mariscos e invertebrados acuáticos vivos,"abalone vivo, abulon fresco, abulon de cultivo, abulon para reproduccion, molusco vivo",5
+10101807,Pulpo vivo,PRODUCT,Mariscos e invertebrados acuáticos vivos,"pulpo vivo, pulpo fresco, pulpo de cultivo, pulpo para reproduccion, cefalopodo vivo",5
+10101808,Calamar vivo,PRODUCT,Mariscos e invertebrados acuáticos vivos,"calamar vivo, calamares frescos, calamar de cultivo, calamar para reproduccion, cefalopodo vivo",5
+10101809,Sanguijuelas,PRODUCT,Mariscos e invertebrados acuáticos vivos,"sanguijuela viva, sanguijuelas frescas, sanguijuela para reproduccion, sanguijuela medicinal, invertebrado acuatico",5
+10101900,Insectos vivos,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"insectos vivos, cría de insectos, insectario, cultivo de insectos, biología insectos",5
+10101901,Mariposas,PRODUCT,Insectos vivos,"mariposas vivas, cría mariposas, mariposa monarca, lepidópteros, invernadero mariposas",5
+10101902,Escarabajos,PRODUCT,Insectos vivos,"escarabajos vivos, coleópteros, crianza escarabajos, escarabajo rinoceronte, escarabajo japonés",5
+10101903,Abejas,PRODUCT,Insectos vivos,"abejas vivas, colmena, abeja melífera, apicultura, núcleo abejas, reina abeja",6
+10101904,Gusanos de seda,PRODUCT,Insectos vivos,"gusanos seda, sericicultura, larva seda, capullo seda, cría gusanos",5
+10102000,Animales salvajes vivos,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"animales salvajes, fauna silvestre, animales exóticos vivos, vida silvestre, animales fauna",5
+10102001,Elefantes,PRODUCT,Animales salvajes vivos,"elefantes vivos, cría elefantes, elefante africano, elefante asiático, paquidermo",5
+10102002,Zorros vivos,PRODUCT,Animales salvajes vivos,"zorros vivos, zorro rojo, cría zorros, zorro plateado, vulpino",5
+10102100,Huevos de aves para incubar,CLASS,Animales vivos de granja y relacionados (Grupo 1010),"huevos incubación, huevos fértiles, huevos para empollar, huevos aves, huevos reproductores",5
+10111301,Juguetes para mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","juguetes mascotas, juguetes perro, juguetes gato, accesorios diversión mascota, entretenimiento mascotas",5
+10111302,Productos para el aseo y cuidado de mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","aseo mascotas, champú perro, champú gato, productos higiene mascota, cuidado pelaje, baño mascota",6
+10111303,Equipo para el manejo de desperdicios de las mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","recogedores heces, bolsas caca perro, pala recogedor, bandeja sanitaria gato, equipo limpieza mascota",5
+10111304,Tazones o equipo para alimentación de mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","comederos mascotas, bebederos perro, platos gato, tazones alimento, comedero automático, fuente agua mascota",6
+10111305,Tratamientos medicados para mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","medicina mascotas, medicamento perro, medicamento gato, tratamiento veterinario, pastillas mascota, inyectable mascota, antibiótico mascota",7
+10111306,Kits para el entrenamiento de mascotas domésticas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","kit adiestramiento perro, entrenamiento mascota, correa adiestramiento, collar entrenamiento, juguete entrenamiento, accesorios adiestramiento",6
+10111307,Cobijas para mascotas,PRODUCT,"Accesorios, equipo y tratamientos para los animales domésticos","cobija perro, manta mascota, cama mascota, cobija gato, frazada mascota, colchoneta mascota",6
+10120000,Pienso para ganado y relacionados (Grupo 1012),GROUP,Material Vivo Animal y Vegetal (División 10),"alimento ganado, pienso ganadero, forraje, concentrado ganadero, suplemento ganadero, nutrición ganadera",6
+10121500,Pienso para ganado,CLASS,Pienso para ganado y relacionados (Grupo 1012),"pienso bovino, alimento vacas, concentrado ganadero, balanceado ganado, suplemento ganadero, nutrición ganadera",6
+10121501,Salvado de trigo puro,PRODUCT,Pienso para ganado,"salvado trigo, afrecho trigo, subproducto trigo, salvadillo, harina trigo integral",5
+10121502,Avena para forraje,PRODUCT,Pienso para ganado,"avena forraje, avena grano, avena para ganado, avena verde, avena seca",5
+10121503,Maíz para forraje,PRODUCT,Pienso para ganado,"maíz forraje, maíz verde, maíz ensilado, maíz grano, maíz para ganado",5
+10121504,Sorgo para forraje,PRODUCT,Pienso para ganado,"sorgo forraje, sorgo grano, sorgo verde, sorgo ensilado, sorgo para ganado",5
+10121505,Heno,PRODUCT,Pienso para ganado,"heno alfalfa, heno pasto, heno seco, forraje seco, paja heno",5
+10121506,Tortas oleaginosas,PRODUCT,Pienso para ganado,"torta soya, torta girasol, torta canola, subproducto oleaginoso, pasta oleaginosa",5
+10121507,Forraje compuesto,PRODUCT,Pienso para ganado,"forraje mezcla, alimento compuesto ganado, balanceado forraje, concentrado forraje, mezcla forraje",5
+10121601,Alimento vivo para aves,PRODUCT,Alimento para pájaros y aves de corral,"alimento vivo aves, larva mosca, gusano alimento, artemia, dafnia, alimento vivo pollo",6
+10121602,Alpiste,PRODUCT,Alimento para pájaros y aves de corral,"alpiste canario, semilla alpiste, alpiste puro, alpiste para pájaros, alpiste grano",5
+10121603,Botanas o comida recreacional para aves,PRODUCT,Alimento para pájaros y aves de corral,"snack para aves, premios para pájaros, golosinas avícolas, botana de pájaros, treats para aves",5
+10121604,Alimento avícola,PRODUCT,Alimento para pájaros y aves de corral,"alimento gallinas, concentrado avícola, balanceado aves, pienso avícola, comida pollos",5
+10121700,Alimento para peces,CLASS,Pienso para ganado y relacionados (Grupo 1012),"alimento acuático, comida peces, pienso piscícola, nutrición peces, alimento acuicultura",5
+10121701,Salmuera fresca o congelada,PRODUCT,Alimento para peces,"salmuera peces, carnada fresca, alimento vivo peces, camarones congelados, artemia",5
+10121702,Alimento granulado para peces,PRODUCT,Alimento para peces,"pellet peces, alimento granulado acuario, balanceado peces, gránulos piscícola, comida peces bolsa",5
+10121703,Alimento en hojuelas para peces,PRODUCT,Alimento para peces,"alimento escamas peces, hojuelas acuario, comida peces flakes, alimento flotante, escamas piscícolas",5
+10121800,Alimento para perros y gatos,CLASS,Pienso para ganado y relacionados (Grupo 1012),"alimento mascotas, comida perros gatos, pienso mascota, balanceado perros, nutrición felina canina",5
+10121801,Comida seca para perros,PRODUCT,Alimento para perros y gatos,"croquetas perros, alimento seco perro, balanceado perro, kibble, comida perro bolsa",5
+10121802,Comida húmeda para perros,PRODUCT,Alimento para perros y gatos,"comida lata perro, alimento húmedo perro, paté perro, comida perro lata, alimento enlatado perro",5
+10121803,Leche para perros o gatos,PRODUCT,Alimento para perros y gatos,"leche mascota, leche perro gato, sustituto leche, leche cachorro, leche gatito",5
+10121804,Comida seca para gatos,PRODUCT,Alimento para perros y gatos,"croquetas gatos, alimento seco gato, balanceado gato, kibble gato, comida gato bolsa",5
+10121805,Comida húmeda para gatos,PRODUCT,Alimento para perros y gatos,"comida lata gato, alimento húmedo gato, paté gato, comida gato lata, alimento enlatado gato",5
+10121806,Botanas o comida recreacional para gatos o perros,PRODUCT,Alimento para perros y gatos,"snack perro gato, premios mascota, golosinas perro, treats gato, hueso perro, galleta mascota",6
+10121900,Alimento para roedores,CLASS,Pienso para ganado y relacionados (Grupo 1012),"alimento roedores, comida hamster, pienso conejo, nutrición ratón, alimento pequeños animales",5
+10121901,Comida granulada para roedores,PRODUCT,Alimento para roedores,"pellet roedores, gránulos hamster, alimento granulado conejo, balanceado roedor, comida hamster bolsa",5
+10122000,Alimento para reptiles,CLASS,Pienso para ganado y relacionados (Grupo 1012),"alimento reptil, comida iguana, comida serpiente, pienso reptiles, nutricion reptil",5
+10122001,Comida granulada para reptiles,PRODUCT,Alimento para reptiles,"pellet reptil, granulado iguana, alimento seco reptil, croqueta reptil, grano comida serpiente",5
+10122002,Comida húmeda para reptiles,PRODUCT,Alimento para reptiles,"comida blanda reptil, alimento humedo iguana, papilla reptil, comida fresca serpiente, alimento gelatinoso",5
+10122003,Comida viva para reptiles,PRODUCT,Alimento para reptiles,"insectos vivos reptil, grillos iguana, larvas serpiente, alimento vivo, presas vivas",5
+10122100,Comida para animales variados,CLASS,Pienso para ganado y relacionados (Grupo 1012),"alimento animales diversos, comida fauna variada, pienso mixto, nutricion animales varios, alimento fauna",5
+10122101,Comida para cerdos,PRODUCT,Comida para animales variados,"alimento cerdo, comida puerco, pienso porcino, nutricion porcina, concentrado cerdo",5
+10122102,Comida para visones,PRODUCT,Comida para animales variados,"alimento vison, comida vison, pienso vison, nutricion vison, concentrado vison",5
+10122103,Comida para monos,PRODUCT,Comida para animales variados,"alimento mono, comida primate, pienso primate, nutricion mono, concentrado primate",5
+10122104,Comida para conejos,PRODUCT,Comida para animales variados,"alimento conejo, comida conejo, pienso conejo, nutricion lagomorfo, concentrado conejo",5
+10130000,Recipientes para animales y relacionados (Grupo 1013),GROUP,Material Vivo Animal y Vegetal (División 10),"jaulas animales, contenedores fauna, recipientes mascota, estructuras alojamiento, infraestructura animal",5
+10131500,Cobertizos para animales,CLASS,Recipientes para animales y relacionados (Grupo 1013),"corral ganado, estancia animal, refugio ganadero, construccion animal, alojamiento fauna",5
+10131506,Establos para ganado,PRODUCT,Cobertizos para animales,"establo vaca, corral ganado, estancia bovino, construccion establo, infraestructura ganadera",5
+10131507,Casas para mascotas domesticadas,PRODUCT,Cobertizos para animales,"caseta mascota, perrera, gatil, casita perro, refugio mascota",5
+10131508,Camas para mascotas,PRODUCT,Cobertizos para animales,"cama perro, colchon mascota, cama gato, lecho animal, colchoneta mascota",5
+10131600,Recipientes para animales,CLASS,Recipientes para animales y relacionados (Grupo 1013),"jaula animal, corral mascota, contenedor fauna, jaula pajaro, transportin mascota",5
+10131601,Jaulas o sus accesorios,PRODUCT,Recipientes para animales,"jaula para pájaros, jaula para aves, jaula para mascotas, accesorios de jaula, comedero jaula, bebedero jaula",6
+10131602,Perreras,PRODUCT,Recipientes para animales,"perrera, caseta para perro, casa para perro, refugio canino, perrera de madera, perrera de plástico",6
+10131603,Equipaje para el transporte de animales,PRODUCT,Recipientes para animales,"transportín para mascotas, caja de transporte animal, jaula de viaje, transportador de mascotas, mochila para mascota",5
+10131604,Correas para perros,PRODUCT,Recipientes para animales,"correa para perro, traílla, collar y correa, correa de cuero, correa extensible, correa de nylon",6
+10131700,Hábitat para animales,CLASS,Recipientes para animales y relacionados (Grupo 1013),"hábitat mascotas, ambiente para animales, jaulas y accesorios, terrarios y acuarios, recipientes animales",5
+10131701,Terrarios,PRODUCT,Hábitat para animales,"terrario para reptiles, terrario para serpientes, terrario para lagartos, terrario de vidrio, hábitat reptiles",5
+10131702,Acuarios,PRODUCT,Hábitat para animales,"acuario para peces, pecera, acuario de vidrio, acuario decorativo, tanque para peces, acuario con filtro",6
+10140000,Talabartería y relacionados (Grupo 1014),GROUP,Material Vivo Animal y Vegetal (División 10),"talabartería, artículos ecuestres, equipo para caballos, accesorios de montar, equipamiento ecuestre",5
+10141500,Talabartería,CLASS,Talabartería y relacionados (Grupo 1014),"talabartería, artículos de cuero ecuestre, equipos de montar, accesorios para caballos, productos ecuestres",5
+10141501,Sillas de montar,PRODUCT,Talabartería,"silla de montar, silla inglesa, silla vaquera, silla de montar de cuero, montura para caballo",5
+10141502,Fustas y látigos,PRODUCT,Talabartería,"fusta, látigo, fusta de cuero, látigo de montar, rebenque, fusta para caballo",6
+10141503,Herraduras para caballo,PRODUCT,Talabartería,"herradura para caballo, herradura de acero, herradura de hierro, clavos para herradura, herrado",5
+10141504,Herraduras para mula,PRODUCT,Talabartería,"herradura para mula, herradura de mula, herrado de mula, clavos para mula, herraje de mula",5
+10141505,Sillín o pelero,PRODUCT,Talabartería,"sillín, pelero, asiento de montar, sillín de cuero, cojinete para montar, almohadilla de silla",6
+10141600,Arneses,CLASS,Talabartería y relacionados (Grupo 1014),"arnés para caballo, arnés de cuero, arnés de tiro, equipamiento de tiro, arnés ecuestre",5
+10141601,Bridas,PRODUCT,Arneses,"brida caballo, brida cuero, brida metal, sujetador arnés, brida equina",5
+10141602,Yugos,PRODUCT,Arneses,"yugo buey, yugo madera, yugo animal, arnés yugo, equipo yugo",5
+10141603,Bocados para caballos,PRODUCT,Arneses,"bocado caballo, bocado metal, freno bocado, pieza bocado, bocado equino",5
+10141604,Riendas,PRODUCT,Arneses,"rienda caballo, rienda cuero, rienda equina, control rienda, rienda montar",5
+10141605,Estribos,PRODUCT,Arneses,"estribo caballo, estribo metal, estribo equino, accesorio estribo, estribo montura",5
+10141606,Correas o traíllas,PRODUCT,Arneses,"correa animal, traílla cuero, correa equina, sujetador correa, traílla animal",5
+10141607,Arneses de cuello para animales,PRODUCT,Arneses,"arnés cuello, arnés animal, arnés equino, arnés caballo, equipo cuello",5
+10141608,Arneses o sus accesorios,PRODUCT,Arneses,"arnés completo, accesorio arnés, equipo arnés, pieza arnés, arnés repuesto",5
+10141609,Sujetadores,PRODUCT,Arneses,"sujetador animal, sujetador equino, hebilla arnés, cierre sujetador, clip sujetador",5
+10141610,Bozales,PRODUCT,Arneses,"bozal caballo, bozal animal, bozal equino, protector bozal, bozal metal",5
+10141611,Soportes para correas,PRODUCT,Arneses,"soporte correa, anilla soporte, hebilla soporte, accesorio soporte, pieza soporte",5
+10150000,Semillas y plántulas vegetales y relacionados (Grupo 1015),GROUP,Material Vivo Animal y Vegetal (División 10),"semilla vegetal, plántula, semilla agrícola, material vegetal, propagación plantas",5
+10151500,Semillas y plántulas vegetales,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semilla plántula, semilla cultivo, semilla huerta, propagación vegetal, semilla germinada",5
+10151501,Semillas o plántulas de fríjol,PRODUCT,Semillas y plántulas vegetales,"semilla frijol, plántula frijol, frijol siembra, semilla legumbre, frijol grano",5
+10151502,Semillas o plántulas de zanahoria,PRODUCT,Semillas y plántulas vegetales,"semilla zanahoria, plántula zanahoria, zanahoria siembra, semilla hortaliza, zanahoria cultivo",5
+10151503,Semillas o plántulas de apio,PRODUCT,Semillas y plántulas vegetales,"plantula apio, semilla apio, apio para sembrar, planta apio, apio vivero",5
+10151504,Semillas o plántulas de chiles,PRODUCT,Semillas y plántulas vegetales,"semilla chile, plantula chile, chile para sembrar, planta chile, chile vivero",5
+10151505,Semillas o plántulas de calabacín,PRODUCT,Semillas y plántulas vegetales,"semilla calabacin, plantula calabacin, calabacin para sembrar, planta calabacin, calabacin vivero",5
+10151506,Semillas o plántulas de alverja,PRODUCT,Semillas y plántulas vegetales,"semilla alverja, plantula alverja, alverja para sembrar, planta alverja, arveja vivero",5
+10151507,Semillas o plántulas de pepino cohombro,PRODUCT,Semillas y plántulas vegetales,"semilla pepino, plantula pepino, pepino para sembrar, planta pepino, pepino vivero",5
+10151508,Semillas o plántulas de berenjena,PRODUCT,Semillas y plántulas vegetales,"semilla berenjena, plantula berenjena, berenjena para sembrar, planta berenjena, berenjena vivero",5
+10151509,Semillas o plántulas de endivias,PRODUCT,Semillas y plántulas vegetales,"semilla endivia, plantula endivia, endivia para sembrar, planta endivia, endivia vivero",5
+10151510,Semillas o plántulas de ajo,PRODUCT,Semillas y plántulas vegetales,"semilla ajo, plantula ajo, ajo para sembrar, planta ajo, ajo vivero",5
+10151511,Semillas o plántulas de puerro,PRODUCT,Semillas y plántulas vegetales,"semilla puerro, plantula puerro, puerro para sembrar, planta puerro, puerro vivero",5
+10151512,Semillas o plántulas de lechuga,PRODUCT,Semillas y plántulas vegetales,"semilla lechuga, plantula lechuga, lechuga para sembrar, planta lechuga, lechuga vivero",5
+10151513,Semillas o plántulas de maíz,PRODUCT,Semillas y plántulas vegetales,"semilla maiz, plantula maiz, maiz para sembrar, planta maiz, maiz vivero",5
+10151514,Semillas o plántulas de melón,PRODUCT,Semillas y plántulas vegetales,"semilla melon, plantula melon, melon para sembrar, planta melon, melon vivero",5
+10151515,Semillas o plántulas cebolla,PRODUCT,Semillas y plántulas vegetales,"semilla cebolla, plantula cebolla, cebolla para sembrar, planta cebolla, cebolla vivero",5
+10151516,Semillas o plántulas de soya,PRODUCT,Semillas y plántulas vegetales,"semilla soya, plantula soya, soya para sembrar, planta soya, soya vivero",5
+10151517,Semillas o plántulas de espinaca,PRODUCT,Semillas y plántulas vegetales,"semilla espinaca, plantula espinaca, espinaca para sembrar, planta espinaca, espinaca vivero",5
+10151518,Semillas o plántulas de tomate,PRODUCT,Semillas y plántulas vegetales,"semilla tomate, plántula tomate, jitomate semilla, semillero tomate, plantín tomate, germinado tomate, semilla jitomate",7
+10151519,Semillas o plántulas de nabo,PRODUCT,Semillas y plántulas vegetales,"semilla nabo, plántula nabo, nabo para siembra, semillero nabo, plantín nabo, germinado nabo, semilla nabos",7
+10151520,Semillas o plántulas de acelga,PRODUCT,Semillas y plántulas vegetales,"semilla acelga, plántula acelga, acelga para siembra, semillero acelga, plantín acelga, germinado acelga, semilla acelgas",7
+10151521,Semillas o plántulas de pimiento morrón,PRODUCT,Semillas y plántulas vegetales,"semilla pimiento, plántula pimiento, pimiento morrón semilla, semillero pimiento, plantín pimiento, germinado pimiento, semilla chile morrón",7
+10151522,Semillas o plántulas de remolacha,PRODUCT,Semillas y plántulas vegetales,"semilla remolacha, plántula remolacha, remolacha para siembra, semillero remolacha, plantín remolacha, germinado remolacha, semilla betabel",7
+10151523,Semillas o plántulas de coliflor,PRODUCT,Semillas y plántulas vegetales,"semilla coliflor, plántula coliflor, coliflor para siembra, semillero coliflor, plantín coliflor, germinado coliflor, semilla col flor",7
+10151524,Semillas o plántulas de perejil,PRODUCT,Semillas y plántulas vegetales,"semilla perejil, plántula perejil, perejil para siembra, semillero perejil, plantín perejil, germinado perejil, semilla perejiles",7
+10151525,Semillas o plántulas de brócoli,PRODUCT,Semillas y plántulas vegetales,"semilla brócoli, plántula brócoli, brócoli para siembra, semillero brócoli, plantín brócoli, germinado brócoli, semilla brocoli",7
+10151526,Semillas o plántulas de repollo,PRODUCT,Semillas y plántulas vegetales,"semilla repollo, plántula repollo, repollo para siembra, semillero repollo, plantín repollo, germinado repollo, semilla col",7
+10151527,Semillas o plántulas de papa,PRODUCT,Semillas y plántulas vegetales,"semilla papa, plántula papa, papa para siembra, semillero papa, plantín papa, tubérculo papa, semilla patata",7
+10151528,Semillas o plántulas de batata,PRODUCT,Semillas y plántulas vegetales,"semilla batata, plántula batata, batata para siembra, semillero batata, plantín batata, germinado batata, semilla camote",7
+10151529,Semillas o plántulas de calabaza,PRODUCT,Semillas y plántulas vegetales,"semilla calabaza, plántula calabaza, calabaza para siembra, semillero calabaza, plantín calabaza, germinado calabaza, semilla zapallo",7
+10151530,Semillas o plántulas de rábano,PRODUCT,Semillas y plántulas vegetales,"semilla rábano, plántula rábano, rábano para siembra, semillero rábano, plantín rábano, germinado rábano, semilla rabanitos",7
+10151531,Semillas o plántulas de repollitos de bruselas,PRODUCT,Semillas y plántulas vegetales,"semilla bruselas, plántula bruselas, repollitos bruselas semilla, semillero bruselas, plantín bruselas, germinado bruselas, semilla col bruselas",7
+10151532,Semillas o plántulas de ahuyama,PRODUCT,Semillas y plántulas vegetales,"semilla ahuyama, plántula ahuyama, ahuyama para siembra, semillero ahuyama, plantín ahuyama, germinado ahuyama, semilla zapallo",7
+10151533,Semillas o plántulas de okra,PRODUCT,Semillas y plántulas vegetales,"semilla okra, plantula okra, okra para siembra, semilla de quimbombo, quimbombo semilla",5
+10151534,Semillas o plántulas de melón cantalupo,PRODUCT,Semillas y plántulas vegetales,"semilla melon, plantula melon cantalupo, semilla cantalupo, melon para siembra, semilla melón chino",5
+10151535,Semillas o plántulas de maní,PRODUCT,Semillas y plántulas vegetales,"semilla cacahuate, plantula mani, semilla de mani, cacahuate para siembra, semilla cacahuete",5
+10151536,Semillas o plántulas de caigua,PRODUCT,Semillas y plántulas vegetales,"semilla caigua, plantula caigua, semilla de achojcha, caigua para siembra, semilla de cicla",5
+10151537,Semillas o plántulas de espárrago,PRODUCT,Semillas y plántulas vegetales,"semilla esparrago, plantula esparrago, esparrago para siembra, semilla de esparrago blanco, semilla esparrago verde",5
+10151538,Semillas o plántulas de garbanzo,PRODUCT,Semillas y plántulas vegetales,"semilla garbanzo, plantula garbanzo, garbanzo para siembra, semilla de garbanzo blanco, semilla garbanzo negro",5
+10151539,Semillas o plántulas de haba,PRODUCT,Semillas y plántulas vegetales,"semilla haba, plantula haba, haba para siembra, semilla de haba blanca, semilla habichuela",5
+10151600,Semillas de cereales,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semillas cereal, semillas grano, semillas para siembra cereal, semillas cultivo cereal, semillas trigo maiz",5
+10151601,Semillas de trigo,PRODUCT,Semillas de cereales,"semilla trigo, plantula trigo, trigo para siembra, semilla trigo harinero, semilla trigo cristalino",5
+10151602,Semillas de canola,PRODUCT,Semillas de cereales,"semilla canola, plantula canola, canola para siembra, semilla de colza, semilla canola hibrida",5
+10151603,Semillas de cebada,PRODUCT,Semillas de cereales,"semilla cebada, plantula cebada, cebada para siembra, semilla cebada cervecera, semilla cebada maltera",5
+10151604,Semillas de mijo,PRODUCT,Semillas de cereales,"semilla mijo, plantula mijo, mijo para siembra, semilla de mijo blanco, semilla mijo dorado",5
+10151605,Semillas de avena,PRODUCT,Semillas de cereales,"semilla avena, plantula avena, avena para siembra, semilla avena blanca, semilla avena negra",5
+10151606,Semillas de ajonjolí,PRODUCT,Semillas de cereales,"semilla ajonjoli, plantula ajonjoli, ajonjoli para siembra, semilla sesamo, semilla de sesamo blanco",5
+10151607,Semillas de linaza,PRODUCT,Semillas de cereales,"semilla linaza, plantula linaza, linaza para siembra, semilla de lino, semilla linaza dorada",5
+10151608,Semillas de aceite de ricino,PRODUCT,Semillas de cereales,"ricino, semilla ricino, aceite ricino semilla, castor bean, semilla para aceite",5
+10151609,Semillas de maíz,PRODUCT,Semillas de cereales,"maíz semilla, semilla maíz, maíz grano, semilla para siembra maíz, maíz criollo",5
+10151610,Semillas de centeno,PRODUCT,Semillas de cereales,"centeno semilla, semilla centeno, centeno grano, semilla forraje centeno, centeno para siembra",5
+10151611,Semillas de sorgo,PRODUCT,Semillas de cereales,"sorgo semilla, semilla sorgo, sorgo grano, sorgo forrajero, semilla sorgo dulce",5
+10151612,Semillas o plántulas de kiwicha,PRODUCT,Semillas de cereales,"kiwicha semilla, semilla kiwicha, kiwicha plántula, amaranto kiwicha, kiwicha grano",5
+10151613,Semillas o plántulas de quínoa,PRODUCT,Semillas de cereales,"quinoa semilla, semilla quinoa, quinoa plántula, quinua semilla, semilla para siembra quinoa",5
+10151700,Semillas y plántulas de hierba y forraje,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semilla forraje, semilla pasto, semilla hierba, plántula forraje, semilla ganadería",5
+10151701,Semillas o plántulas de arroz,PRODUCT,Semillas y plántulas de hierba y forraje,"arroz semilla, semilla arroz, arroz grano, semilla para siembra arroz, arroz paddy",5
+10151702,Semillas o plántulas de trébol,PRODUCT,Semillas y plántulas de hierba y forraje,"trébol semilla, semilla trébol, trébol plántula, trébol forraje, semilla trébol rojo",5
+10151703,Semillas o plántulas de alfalfa,PRODUCT,Semillas y plántulas de hierba y forraje,"alfalfa semilla, semilla alfalfa, alfalfa plántula, semilla forraje alfalfa, alfalfa heno",5
+10151704,Semillas o plántulas de pasto,PRODUCT,Semillas y plántulas de hierba y forraje,"pasto semilla, semilla pasto, pasto plántula, semilla césped, semilla grama",5
+10151705,Semillas o plántulas de veza (gachas / guija),PRODUCT,Semillas y plántulas de hierba y forraje,"veza semilla, semilla veza, guija semilla, gachas semilla, veza plántula",5
+10151706,Semillas o plántulas de guar,PRODUCT,Semillas y plántulas de hierba y forraje,"guar semilla, semilla guar, guar plántula, guar goma, semilla para goma guar",5
+10151801,Semillas o plántulas de pimienta,PRODUCT,Semillas y plántulas de especias,"pimienta semilla, semilla pimienta, pimienta plántula, pimienta negra semilla, semilla condimento",5
+10151802,Semillas o plántulas de vainilla,PRODUCT,Semillas y plántulas de especias,"vainilla semilla, plántula vainilla, orquídea vainilla, vaina vainilla, cultivo vainilla",5
+10151803,Semillas o plántulas de canela,PRODUCT,Semillas y plántulas de especias,"canela semilla, plántula canela, árbol canela, cultivo canela, canela en rama semilla",5
+10151804,Semillas o plántulas de clavo de olor,PRODUCT,Semillas y plántulas de especias,"clavo semilla, plántula clavo, clavo de olor semilla, cultivo clavo, árbol clavo",5
+10151805,Semillas o plántulas de cilantro,PRODUCT,Semillas y plántulas de especias,"cilantro semilla, plántula cilantro, culantro semilla, cultivo cilantro, cilantro fresco semilla",5
+10151806,Semillas o plántulas de jengibre,PRODUCT,Semillas y plántulas de especias,"jengibre semilla, plántula jengibre, raíz jengibre semilla, cultivo jengibre, rizoma jengibre",5
+10151807,Semillas o plántulas de azafrán,PRODUCT,Semillas y plántulas de especias,"azafrán semilla, plántula azafrán, crocus semilla, cultivo azafrán, azafrán mexicano semilla",5
+10151808,Semillas o plántulas de tomillo,PRODUCT,Semillas y plántulas de especias,"tomillo semilla, plántula tomillo, tomillo fresco semilla, cultivo tomillo, hierba tomillo",5
+10151809,Semillas o plántulas de curry,PRODUCT,Semillas y plántulas de especias,"curry semilla, plántula curry, mezcla curry semilla, cultivo curry, hierba curry",5
+10151810,Semillas o plántulas de mostaza,PRODUCT,Semillas y plántulas de especias,"mostaza semilla, plántula mostaza, mostaza negra semilla, cultivo mostaza, mostaza amarilla",5
+10151811,Semillas o plántulas de ginseng,PRODUCT,Semillas y plántulas de especias,"ginseng semilla, plántula ginseng, ginseng asiático semilla, cultivo ginseng, raíz ginseng",5
+10151812,Semillas o plántulas de champiñones,PRODUCT,Semillas y plántulas de especias,"champiñón semilla, plántula champiñón, seta semilla, cultivo champiñón, micelio champiñón",5
+10151813,Semillas o plántulas de sacha inchi,PRODUCT,Semillas y plántulas de especias,"sacha inchi semilla, plántula sacha inchi, maní inca semilla, cultivo sacha inchi, inchi semilla",5
+10151814,Semillas o plántulas de achiote,PRODUCT,Semillas y plántulas de especias,"achiote semilla, plántula achiote, bija semilla, cultivo achiote, colorante achiote",5
+10151815,Semillas o plántulas de kudzu,PRODUCT,Semillas y plántulas de especias,"kudzu semilla, plántula kudzu, kuzu semilla, cultivo kudzu, raíz kudzu",5
+10151816,Semillas o plántulas de albahaca,PRODUCT,Semillas y plántulas de especias,"albahaca semilla, plántula albahaca, albahaca fresca semilla, cultivo albahaca, hierba albahaca",5
+10151817,Semillas o plántulas de anís,PRODUCT,Semillas y plántulas de especias,"semilla anis, plantula anis, anis para siembra, semilla condimento anis, anis grano",5
+10151900,"Semillas, bulbos, plántulas y esquejes de flores",CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semillas flores, bulbos flores, plantulas florales, esquejes ornamentales, material propagacion flores",5
+10151901,"Semillas, bulbos, plántulas o esquejes de tulipán",PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","semilla tulipan, bulbo tulipan, plantula tulipan, esqueje tulipan, tulipan para siembra",5
+10151902,"Semillas, plántulas o esquejes de rosa",PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","semilla rosa, plantula rosa, esqueje rosa, rosa para siembra, propagacion rosa",5
+10151903,"Semillas, bulbos, plántulas o esquejes de narciso",PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","semilla narciso, bulbo narciso, plantula narciso, esqueje narciso, narciso para siembra",5
+10151904,Semillas de girasol,PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","semilla girasol, girasol siembra, semilla helianto, girasol ornamental, semilla girasol aceite",5
+10151905,Bulbos o tallos de jacinto,PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","bulbo jacinto, tallo jacinto, plantula jacinto, jacinto siembra, jacinto bulboso",5
+10151906,Bulbos de lirio,PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","bulbo lirio, semilla lirio, plantula lirio, lirio siembra, lirio bulboso",5
+10151907,Semillas o plántulas de veza,PRODUCT,"Semillas, bulbos, plántulas y esquejes de flores","semilla veza, plantula veza, veza siembra, esqueje veza, veza forrajera",5
+10152000,Semillas y esquejes de árboles y arbustos,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semillas arboles, esquejes arboles, semillas arbustos, propagacion arboles, material arboles arbustos",5
+10152001,Semillas o esquejes de árboles frutales,PRODUCT,Semillas y esquejes de árboles y arbustos,"semilla frutal, esqueje frutal, plantula frutal, semilla arbol frutal, propagacion frutales",5
+10152002,Semillas o esquejes de coníferas,PRODUCT,Semillas y esquejes de árboles y arbustos,"semilla conífera, esqueje conífera, plantula conífera, semilla pino, semilla abeto",5
+10152003,Semillas o esquejes de árboles de frutos secos,PRODUCT,Semillas y esquejes de árboles y arbustos,"semilla frutos secos, esqueje nogal, semilla nuez, semilla almendra, arbol frutos secos",5
+10152004,Plántulas de latifoliados,PRODUCT,Semillas y esquejes de árboles y arbustos,"plantula latifoliado, semilla latifoliado, esqueje latifoliado, arbol hoja ancha, propagacion latifoliados",5
+10152005,Plántulas de coníferas,PRODUCT,Semillas y esquejes de árboles y arbustos,"plantula conífera, semilla conífera, esqueje pino, plantula pino, propagacion coníferas",5
+10152006,Semillas o yemas de pino,PRODUCT,Semillas y esquejes de árboles y arbustos,"semilla de pino, yema de pino, propagacion pino, vivero pino, plantula pino",5
+10152007,Semillas o yemas de algarrobo,PRODUCT,Semillas y esquejes de árboles y arbustos,"semilla algarrobo, yema algarrobo, propagacion algarrobo, vivero algarrobo, plantula algarrobo",5
+10152100,Residuos que no sean de piensos,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"residuos semilla, subproductos semilla, desechos semilla, rechazo semilla, material residual vegetal",5
+10152101,Extracción de los residuos de semilla de babool,PRODUCT,Residuos que no sean de piensos,"residuo babool, extraccion babool, torta babool, subproducto babool, rechazo babool",5
+10152102,Residuos de semilla de colza,PRODUCT,Residuos que no sean de piensos,"residuo colza, torta colza, subproducto colza, rechazo colza, desecho colza",5
+10152103,Residuo de semillas de linaza,PRODUCT,Residuos que no sean de piensos,"residuo linaza, torta linaza, subproducto linaza, rechazo linaza, desecho linaza",5
+10152104,Torta de neem,PRODUCT,Residuos que no sean de piensos,"torta neem, residuo neem, subproducto neem, rechazo neem, desecho neem",5
+10152201,Semillas o plántulas de algodón,PRODUCT,Semillas de cultivos fibrosos y semilleros,"semilla algodon, plantula algodon, vivero algodon, propagacion algodon, semillero algodon",5
+10152202,Semillas o plántulas de lino,PRODUCT,Semillas de cultivos fibrosos y semilleros,"semilla lino, plantula lino, vivero lino, propagacion lino, semillero lino",5
+10152300,Plántulas y semillas de leguminosas,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semilla leguminosa, plantula leguminosa, vivero leguminosa, semillero leguminosa, propagacion leguminosa",5
+10152400,Plántulas y semillas de tubérculos,CLASS,Semillas y plántulas vegetales y relacionados (Grupo 1015),"semilla tuberculo, plantula tuberculo, vivero tuberculo, semillero tuberculo, propagacion tuberculo",5
+10160000,Árboles y arbustos y relacionados (Grupo 1016),GROUP,Material Vivo Animal y Vegetal (División 10),"arboles arbustos, vivero plantas, material vegetal, propagacion plantas, ornamentales",5
+10161501,Aceitunos,PRODUCT,Árboles y arbustos,"arbol aceituno, olivo, plantula olivo, vivero olivo, propagacion olivo",5
+10161502,Cafetos,PRODUCT,Árboles y arbustos,"planta de cafe, cafetal, arbusto cafetero, semilla de cafe, cultivo de cafe",5
+10161503,Cacaoteros,PRODUCT,Árboles y arbustos,"planta de cacao, cacaotal, arbusto cacaotero, semilla de cacao, cultivo de cacao",5
+10161504,Manzanos,PRODUCT,Árboles y arbustos,"arbol de manzana, manzanal, frutal de manzana, semilla de manzano, cultivo de manzana",5
+10161505,Peros,PRODUCT,Árboles y arbustos,"arbol de pera, peraleda, frutal de pera, semilla de pero, cultivo de pera",5
+10161506,Naranjos,PRODUCT,Árboles y arbustos,"arbol de naranja, naranjal, citrico naranja, semilla de naranjo, cultivo de naranja",5
+10161507,Rododendros,PRODUCT,Árboles y arbustos,"arbusto rododendro, flor rododendro, planta ornamental rododendro, rododendro rosa, cultivo rododendro",5
+10161508,Plantas de te,PRODUCT,Árboles y arbustos,"planta de te, tebal, arbusto de te, semilla de te, cultivo de te, planta de infusion",6
+10161509,Coníferas,PRODUCT,Árboles y arbustos,"arbol conífera, conífero, arbol de madera blanda, pino y abeto, cultivo de coníferas",5
+10161510,Abetos rojos (píceas),PRODUCT,Árboles y arbustos,"arbol pícea, abeto rojo, pícea europea, arbol de navidad, cultivo de pícea",5
+10161511,Pinos,PRODUCT,Árboles y arbustos,"arbol de pino, pinada, arbol maderero pino, semilla de pino, cultivo de pino, pino silvestre",6
+10161512,Abetos,PRODUCT,Árboles y arbustos,"arbol abeto, abetal, arbol de madera abeto, semilla de abeto, cultivo de abeto",5
+10161513,Palmeras,PRODUCT,Árboles y arbustos,"arbol palmera, palmeral, planta tropical palmera, semilla de palmera, cultivo de palmera",5
+10161514,Casuarina,PRODUCT,Árboles y arbustos,"arbol casuarina, casuarineta, arbol de madera casuarina, semilla de casuarina, cultivo casuarina",5
+10161515,Ciprés,PRODUCT,Árboles y arbustos,"arbol cipres, cipreseda, arbol ornamental cipres, semilla de cipres, cultivo de cipres",5
+10161516,Eucalipto,PRODUCT,Árboles y arbustos,"arbol eucalipto, eucaliptal, arbol maderero eucalipto, semilla de eucalipto, cultivo de eucalipto",5
+10161517,Árbol de quinua,PRODUCT,Árboles y arbustos,"quinua planta, arbusto quinua, semilla quinua, cultivo quinua, quinoa",5
+10161518,Magnolio,PRODUCT,Árboles y arbustos,"magnolio ornamental, árbol magnolio, flor magnolio, magnolio blanco, magnolio rosa",5
+10161519,Mioporo,PRODUCT,Árboles y arbustos,"mioporo planta, arbusto mioporo, mioporo ornamental, mioporo flores",4
+10161520,Acalifa,PRODUCT,Árboles y arbustos,"acalifa roja, acalifa planta, arbusto acalifa, acalifa ornamental, acalifa hojas",5
+10161521,Tecomaria capensis o madreselva del cabo,PRODUCT,Árboles y arbustos,"madreselva cabo, tecomaria capensis, enredadera tecomaria, flor tecomaria, madreselva naranja",5
+10161522,Arbusto croton bolaina,PRODUCT,Árboles y arbustos,"croton bolaina, arbusto croton, croton planta, bolaina ornamental, croton hojas",5
+10161523,Abutillón,PRODUCT,Árboles y arbustos,"abutillón planta, arbusto abutillón, abutillón flores, abutillón ornamental, flor linterna",5
+10161524,Ficus,PRODUCT,Árboles y arbustos,"ficus árbol, ficus planta, ficus benjamina, ficus ornamental, ficus interior",5
+10161525,Lúcumo,PRODUCT,Árboles y arbustos,"lúcumo fruta, árbol lúcumo, lúcumo peruano, lúcumo cultivo, fruto lúcumo",5
+10161526,Aguacatal,PRODUCT,Árboles y arbustos,"aguacatal plantación, árbol aguacate, cultivo aguacate, aguacatal producción, huerta aguacate",5
+10161527,Guanábano,PRODUCT,Árboles y arbustos,"guanábano árbol, guanábano fruta, cultivo guanábano, árbol guanábana, fruto guanábano",5
+10161528,Carambolo,PRODUCT,Árboles y arbustos,"carambolo árbol, carambolo fruta, árbol carambola, cultivo carambolo, fruto carambolo",5
+10161529,Ciruelo,PRODUCT,Árboles y arbustos,"ciruelo árbol, ciruelo fruta, cultivo ciruelo, árbol ciruela, fruto ciruelo",5
+10161530,Árbol de quince,PRODUCT,Árboles y arbustos,"árbol quince, membrillo árbol, cultivo membrillo, fruto quince, árbol membrillero",5
+10161600,Plantas florales,CLASS,Árboles y arbustos y relacionados (Grupo 1016),"plantas flores, flores ornamentales, plantas florales, flores cultivo, plantas decorativas",5
+10161602,Poinsettias,PRODUCT,Plantas florales,"flor de nochebuena, nochebuena, poinsetia, flor roja navideña, planta navideña",5
+10161604,Azaleas,PRODUCT,Plantas florales,"azalea, flor azalea, arbusto florido, azalea japonesa, planta azalea",5
+10161605,Cactos,PRODUCT,Plantas florales,"cactus, cacto, suculenta, nopal, planta desértica",5
+10161606,Ageratum púrpura,PRODUCT,Plantas florales,"ageratum, flor ageratum, ageratum morado, flor púrpura pequeña, planta ageratum",5
+10161800,Plantas sin flor,CLASS,Árboles y arbustos y relacionados (Grupo 1016),"plantas verdes, plantas de interior, plantas sin flores, follaje, plantas de ornato",5
+10161801,Helechos,PRODUCT,Plantas sin flor,"helecho, helecho de interior, helecho ornamental, planta helecho, follaje helecho",5
+10161802,Hiedras,PRODUCT,Plantas sin flor,"hiedra, enredadera, hiedra inglesa, planta trepadora, ivy",5
+10161803,Filodendros,PRODUCT,Plantas sin flor,"filodendro, filodendron, planta filodendro, filodendro trepador, planta de interior",5
+10161804,Líquenes,PRODUCT,Plantas sin flor,"liquen, liquenes, musgo liquen, planta liquen, organismo liquen",5
+10161805,Vides,PRODUCT,Plantas sin flor,"vid, enredadera, planta trepadora, vid ornamental, rama trepadora",5
+10161900,Productos florales secos,CLASS,Árboles y arbustos y relacionados (Grupo 1016),"flores secas, productos secos, arreglos secos, decoración seca, flores deshidratadas",5
+10161901,Vainas secas,PRODUCT,Productos florales secos,"vaina seca, vainas, semillas secas, vaina de decoración, productos secos",5
+10161902,Follaje seco,PRODUCT,Productos florales secos,"follaje seco, hojas secas, ramas secas, decoración follaje, plantas deshidratadas",5
+10161903,Helechos secos,PRODUCT,Productos florales secos,"helecho seco, helechos deshidratados, helecho decorativo, follaje seco helecho, arreglo seco",5
+10161905,Ramas y tallos secos,PRODUCT,Productos florales secos,"ramas secas, tallos secos, madera seca decorativa, ramas decorativas, tallos deshidratados",5
+10161906,Penachos de gramíneas secos,PRODUCT,Productos florales secos,"pasto seco, gramínea deshidratada, decoración con pastos, arreglo floral seco, pasto ornamental",5
+10161907,Flores secas prensadas,PRODUCT,Productos florales secos,"flores prensadas, flor deshidratada, flores aplastadas, arreglo floral prensado, flores secas aplastadas",5
+10161908,Pétalos secos,PRODUCT,Productos florales secos,"pétalos deshidratados, pétalos de flor seca, pétalos decorativos, pétalos para arreglos, pétalos desecados",5
+10170000,Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017),GROUP,Material Vivo Animal y Vegetal (División 10),"fertilizantes naturales, nutrientes para cultivo, abonos para plantas, enmiendas orgánicas, mejoradores de suelo",5
+10171500,Abonos orgánicos y nutrientes para plantas,CLASS,Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017),"abono natural, fertilizante orgánico, nutrientes de plantas, enmienda para cultivo, mejorador de tierra",5
+10171501,Estiércol o guano,PRODUCT,Abonos orgánicos y nutrientes para plantas,"guano, estiércol de animal, abono animal, excremento para plantas, gallinaza",5
+10171502,Hormonas para plantas,PRODUCT,Abonos orgánicos y nutrientes para plantas,"regulador de crecimiento, auxinas, giberelinas, estimulante de plantas, promotor de raíces",5
+10171503,Harina de pescado,PRODUCT,Abonos orgánicos y nutrientes para plantas,"harina de pescado, polvo de pescado, abono de pescado, fertilizante de pescado, subproducto pesquero",5
+10171504,Abono,PRODUCT,Abonos orgánicos y nutrientes para plantas,"fertilizante, abono para plantas, enmienda de suelo, mejorador de tierra, nutriente para cultivo",5
+10171505,Nutriente foliar,PRODUCT,Abonos orgánicos y nutrientes para plantas,"fertilizante foliar, nutriente foliar, spray para plantas, abono líquido, nutrición foliar",5
+10171506,Humus,PRODUCT,Abonos orgánicos y nutrientes para plantas,"humus de lombriz, tierra negra, materia orgánica, compost maduro, sustrato orgánico",5
+10171600,Abonos químicos y nutrientes para plantas,CLASS,Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017),"fertilizante químico, abono sintético, nutrientes minerales, fertilizante industrial, abono de laboratorio",5
+10171601,Fertilizante nitrogenado,PRODUCT,Abonos químicos y nutrientes para plantas,"fertilizante con nitrógeno, nitrato, urea, abono nitrogenado, nutriente nitrogenado",5
+10171602,Fertilizante de potasio,PRODUCT,Abonos químicos y nutrientes para plantas,"fertilizante potásico, potasa, abono de potasio, nutriente potásico, cloruro de potasio",5
+10171603,Fertilizante de fósforo,PRODUCT,Abonos químicos y nutrientes para plantas,"fertilizante fosfatado, superfosfato, abono de fósforo, nutriente fosfórico, roca fosfórica",5
+10171604,Fertilizante de sulfuro,PRODUCT,Abonos químicos y nutrientes para plantas,"sulfuro abono, sulfato fertilizante, azufre para plantas, nutriente sulfurado, abono con azufre",5
+10171605,Mezclas de nitrógeno – fósforo – potasio – npk,PRODUCT,Abonos químicos y nutrientes para plantas,"NPK, mezcla NPK, abono triple, nitrogeno fosforo potasio, fertilizante balanceado",5
+10171606,Fertilizarte de sílice puro,PRODUCT,Abonos químicos y nutrientes para plantas,"silice pura, silicio fertilizante, acido silicico, abono siliceo, nutriente silice",5
+10171607,Fertilizante con magnesio,PRODUCT,Abonos químicos y nutrientes para plantas,"magnesio abono, sulfato de magnesio, magnesiano fertilizante, nutriente magnesio, abono con mag",5
+10171608,Fertilizante micro elemento,PRODUCT,Abonos químicos y nutrientes para plantas,"microelementos, micros, oligoelementos, fertilizante micro, nutrientes menores",5
+10171609,Fertilizante fosfato de sílice,PRODUCT,Abonos químicos y nutrientes para plantas,"fosfato silice, silicato fosfato, abono fosforico, nutriente fosfato siliceo, fertilizante compuesto",5
+10171610,Fertilizante potasio de sílice,PRODUCT,Abonos químicos y nutrientes para plantas,"potasio silice, silicato potasio, abono potasico, nutriente potasio siliceo, fertilizante potasio",5
+10171611,Fertilizante de calcio,PRODUCT,Abonos químicos y nutrientes para plantas,"calcio abono, carbonato calcio, cal agricola, nutriente calcio, fertilizante calcareo",5
+10171700,Herbicidas,CLASS,Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017),"mata maleza, desyerbante, herbicida agricola, control maleza, producto desmalezador",5
+10171701,Matamalezas,PRODUCT,Herbicidas,"mata maleza, desyerbante, herbicida selectivo, control de hierba, producto antimaleza",5
+10171702,Fungicidas,PRODUCT,Herbicidas,"fungicida, antimicótico, control hongos, fungicida agricola, producto antifungal",5
+10171800,Acondicionadores de suelos,CLASS,Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017),"mejora suelo, enmienda suelo, corrector suelo, acondicionador tierra, producto suelo",5
+10171801,Acondicionador orgánico de suelos,PRODUCT,Acondicionadores de suelos,"enmienda organica, compost, materia organica, acondicionador natural, mejora suelo biologica",5
+10171802,Acondicionador inorgánico de suelos,PRODUCT,Acondicionadores de suelos,"enmienda mineral, corrector inorganico, acondicionador mineral, mejora suelo quimica, producto mineral",5
+10190000,Pesticidas o repelentes de plagas y relacionados (Grupo 1019),GROUP,Material Vivo Animal y Vegetal (División 10),"pesticida, insecticida, repelente plagas, control de plagas, producto antiplagas",5
+10191500,Pesticidas o repelentes de plagas,CLASS,Pesticidas o repelentes de plagas y relacionados (Grupo 1019),"plaguicida, veneno para plagas, desinfectante, fumigación, control de plagas, pesticida agrícola, spray anti-plagas",7
+10191506,Mata – roedores,PRODUCT,Pesticidas o repelentes de plagas,"veneno para ratones, raticida, trampa de roedores, control de ratas, mata ratas, rodenticida, veneno para ratería",7
+10191507,Repelentes de aves,PRODUCT,Pesticidas o repelentes de plagas,"espanta pájaros, ahuyentador de aves, repelente aviar, control de aves, protección contra pájaros, dispositivo anti-pájaros",6
+10191508,Protectores contra termitas,PRODUCT,Pesticidas o repelentes de plagas,"termicida, protección de termitas, tratamiento anti-termitas, veneno para termitas, barrera anti-termitas, fumigación de termitas",6
+10191509,Insecticidas,PRODUCT,Pesticidas o repelentes de plagas,"veneno para insectos, spray insecticida, mata insectos, desinsectante, control de plagas insectiles, fumigación de insectos, insecticida agrícola",7
+10191510,Abamectina,PRODUCT,Pesticidas o repelentes de plagas,"abamectina pura, principio activo abamectina, abamectina concentrado, abamectina polvo, abamectina líquido",5
+10191511,Fipronil,PRODUCT,Pesticidas o repelentes de plagas,"fipronil puro, principio activo fipronil, fipronil concentrado, fipronil polvo, fipronil líquido",5
+10191700,Dispositivos para control de plagas,CLASS,Pesticidas o repelentes de plagas y relacionados (Grupo 1019),"trampa para plagas, dispositivo control plagas, equipo anti-plagas, herramienta control animal, aparato para plagas, sistema de trampas",6
+10191701,Trampas para control animal,PRODUCT,Dispositivos para control de plagas,"trampa para animales, trampa de roedores, jaula trampa, trampa viva, captura de animales, trampa para mamíferos",6
+10191703,Trampas para el control de insectos voladores,PRODUCT,Dispositivos para control de plagas,"trampa para moscas, trampa para mosquitos, trampa para insectos voladores, mata moscas eléctrico, trampa adhesiva insectos, cazador de insectos",6
+10191704,Matamoscas,PRODUCT,Dispositivos para control de plagas,"mata moscas eléctrico, raqueta mata moscas, mata insectos, cazador de moscas, trampa electrónica moscas, mata mosquitos",6
+10191705,Lazos,PRODUCT,Dispositivos para control de plagas,"lazo para animales, trampa de lazo, nudo corredizo, captura con lazo, lazo de caza, trampa de cuello",6
+10191706,Cepos,PRODUCT,Dispositivos para control de plagas,"cepo para roedores, trampa de cepo, cepo para animales, cepo de resorte, trampa mecánica, cepo para ratones",6
+10191707,Repelente ultrasónico de pestes,PRODUCT,Dispositivos para control de plagas,"repelente ultrasónico, ahuyentador ultrasónico, dispositivo ultrasónico plagas, repelente sónico, aparato ultrasónico pestes, espanta plagas electrónico",6
+10200000,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),GROUP,Material Vivo Animal y Vegetal (División 10),"rosales azules, rosales lavanda, rosales púrpura, rosas de color azul, rosas lavanda, plantas ornamentales azules, flores vivas de color",7
+10201500,Rosales vivos azules o lavanda o púrpura,CLASS,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),"rosa azul, rosa lavanda, rosa púrpura, flores azules vivas, rosas de color morado, plantas ornamentales azules, rosales tonos fríos",7
+10201501,Rosal vivo allure o sterling 95,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa allure, rosa sterling 95, rosal variedad allure, flor allure sterling, rosa de corte allure",5
+10201502,Rosal vivo amnesia,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa amnesia, rosal amnesia, flor amnesia, rosa variedad amnesia, amnesia de corte",5
+10201503,Rosal vivo augusta louise,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa augusta louise, rosal augusta louise, flor augusta louise, rosa variedad augusta, augusta louise de corte",5
+10201504,Rosal vivo avant garde,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa avant garde, rosal avant garde, flor avant garde, rosa variedad avant, avant garde de corte",5
+10201505,Rosal vivo blue bird,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa blue bird, rosal blue bird, flor blue bird, rosa azul pájaro, blue bird de corte",5
+10201506,Rosal vivo curiosa,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa curiosa, rosal curiosa, flor curiosa, rosa variedad curiosa, curiosa de corte",5
+10201507,Rosal vivo cool water,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa cool water, rosal cool water, flor cool water, rosa agua fresca, cool water de corte",5
+10201508,Rosal vivo delilah,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa delilah, rosal delilah, flor delilah, rosa variedad delilah, delilah de corte",5
+10201509,Rosal vivo double party,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa double party, rosal double party, flor double party, rosa doble fiesta, double party de corte",5
+10201510,Rosal vivo faith,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa faith, rosal faith, flor faith, rosa variedad faith, faith de corte",5
+10201511,Rosal vivo mami blue o mammy blue,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa mami blue, rosa mammy blue, rosal mami blue, flor mami blue, mami blue de corte",5
+10201512,Rosal vivo marítimo,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa marítimo, rosal marítimo, flor marítimo, rosa variedad marítimo, marítimo de corte",5
+10201513,Rosal vivo milano,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa milano, rosal milano, flor milano, rosa variedad milano, milano de corte",5
+10201514,Rosal vivo mistery,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa mistery, rosal mistery, flor mistery, rosa variedad mistery, mistery de corte",5
+10201515,Rosal vivo ocean song o boyfriend,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa ocean song, rosa boyfriend, flor azul lavanda, rosa viva púrpura, ramo azul",5
+10201516,Rosal vivo cezanne púrpura,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa cezanne, rosa púrpura viva, flor cezanne, rosa lavanda oscuro, ramo púrpura",5
+10201517,Rosal vivo purple fragrance,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa purple fragrance, rosa fragancia púrpura, flor aromática púrpura, rosa viva perfumada, ramo fragancia",5
+10201518,Rosal vivo sanaa,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa sanaa, flor sanaa, rosa viva sanaa, ramo sanaa, rosa azul lavanda",5
+10201519,Rosal vivo silverstone,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa silverstone, flor silverstone, rosa viva plateada, ramo silverstone, rosa gris plateado",5
+10201520,Rosal vivo soulmate,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa soulmate, flor soulmate, rosa viva soulmate, ramo soulmate, rosa púrpura oscuro",5
+10201521,Rosal vivo stranger,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa stranger, flor stranger, rosa viva stranger, ramo stranger, rosa azul intenso",5
+10201522,Rosal vivo tinted blue,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa tinted blue, rosa azul teñida, flor azul tinta, rosa viva azul, ramo azul tintado",5
+10201523,Rosal vivo two faces,PRODUCT,Rosales vivos azules o lavanda o púrpura,"rosa two faces, flor two faces, rosa bicolor, rosa viva two faces, ramo dos tonos",5
+10201600,Rosales vivos chocolate o marrón,CLASS,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),"rosa chocolate, rosa marrón, rosa café, flor marrón, ramo chocolate",5
+10201601,Rosal vivo black lava,PRODUCT,Rosales vivos chocolate o marrón,"rosa black lava, rosa negra, flor black lava, rosa viva negra, ramo negro oscuro",5
+10201602,Rosal vivo cimarron,PRODUCT,Rosales vivos chocolate o marrón,"rosa cimarrón, flor cimarrón, rosa viva cimarrón, ramo cimarrón, rosa marrón oscuro",5
+10201603,Rosal vivo coffee break,PRODUCT,Rosales vivos chocolate o marrón,"rosa coffee break, rosa café, flor coffee break, rosa viva café, ramo marrón café",5
+10201604,Rosal vivo estelle,PRODUCT,Rosales vivos chocolate o marrón,"rosa estelle, flor estelle, rosa viva estelle, ramo estelle, rosa marrón chocolate",5
+10201605,Rosal vivo gypsy leonidas,PRODUCT,Rosales vivos chocolate o marrón,"rosa gypsy leonidas, flor gypsy, rosa leonidas, rosa viva gypsy, ramo gypsy marrón",5
+10201606,Rosal vivo leonidas,PRODUCT,Rosales vivos chocolate o marrón,"rosa leonidas, rosal leonidas, rosa viva marrón, rosa chocolate leonidas, flor leonidas",5
+10201607,Rosal vivo matilda,PRODUCT,Rosales vivos chocolate o marrón,"rosa matilda, rosal matilda, rosa viva chocolate, rosa marrón matilda, flor matilda",5
+10201608,Rosal vivo sunny leonidas,PRODUCT,Rosales vivos chocolate o marrón,"rosa sunny leonidas, rosal sunny, rosa viva sunny, rosa chocolate sunny, flor sunny leonidas",5
+10201609,Rosal vivo terra nostra,PRODUCT,Rosales vivos chocolate o marrón,"rosa terra nostra, rosal terra nostra, rosa viva marrón, rosa chocolate terra, flor terra nostra",5
+10201610,Rosal vivo terracotta,PRODUCT,Rosales vivos chocolate o marrón,"rosa terracotta, rosal terracotta, rosa viva terracota, rosa marrón terracotta, flor terracotta",5
+10201700,Rosales vivos crema,CLASS,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),"rosales crema, rosas vivas crema, rosales color crema, flores crema, rosas claras",5
+10201701,Rosal vivo advenire,PRODUCT,Rosales vivos crema,"rosa advenire, rosal advenire, rosa viva crema, rosa advenire crema, flor advenire",5
+10201702,Rosal vivo alex,PRODUCT,Rosales vivos crema,"rosa alex, rosal alex, rosa viva alex, rosa crema alex, flor alex",5
+10201703,Rosal vivo antique brass,PRODUCT,Rosales vivos crema,"rosa antique brass, rosal antique brass, rosa viva brass, rosa metálica antique, flor antique brass",5
+10201704,Rosal vivo aubade,PRODUCT,Rosales vivos crema,"rosa aubade, rosal aubade, rosa viva aubade, rosa crema aubade, flor aubade",5
+10201705,Rosal vivo beach,PRODUCT,Rosales vivos crema,"rosa beach, rosal beach, rosa viva beach, rosa crema beach, flor beach",5
+10201706,Rosal vivo belle pearl,PRODUCT,Rosales vivos crema,"rosa belle pearl, rosal belle pearl, rosa viva perla, rosa crema pearl, flor belle pearl",5
+10201707,Rosal vivo blush de los andes,PRODUCT,Rosales vivos crema,"rosa blush andes, rosal blush, rosa viva blush, rosa andes crema, flor blush andes",5
+10201708,Rosal vivo camel,PRODUCT,Rosales vivos crema,"rosa camel, rosal camel, rosa viva camel, rosa crema camel, flor camel",5
+10201709,Rosal vivo caramel antike o caramel antique,PRODUCT,Rosales vivos crema,"rosa caramel antique, rosal caramel, rosa viva caramel, rosa antike crema, flor caramel antique",5
+10201710,Rosal vivo champagne,PRODUCT,Rosales vivos crema,"rosa champagne, rosal crema champagne, flor champagne, planta rosa champagne, rosal vivo",5
+10201711,Rosal vivo clear ocean,PRODUCT,Rosales vivos crema,"rosa clear ocean, rosal crema azul, flor clear ocean, planta rosa ocean, rosal vivo",5
+10201712,Rosal vivo combo,PRODUCT,Rosales vivos crema,"rosa combo, rosal crema combo, flor combo, planta rosa variada, rosal vivo",5
+10201713,Rosal vivo creme de la creme,PRODUCT,Rosales vivos crema,"rosa creme de la creme, rosal crema premium, flor creme, planta rosa elegante, rosal vivo",5
+10201714,Rosal vivo emanuella,PRODUCT,Rosales vivos crema,"rosa emanuella, rosal crema emanuella, flor emanuella, planta rosa emanuella, rosal vivo",5
+10201715,Rosal vivo evolution,PRODUCT,Rosales vivos crema,"rosa evolution, rosal crema evolution, flor evolution, planta rosa evolution, rosal vivo",5
+10201716,Rosal vivo fedora,PRODUCT,Rosales vivos crema,"rosa fedora, rosal crema fedora, flor fedora, planta rosa fedora, rosal vivo",5
+10201717,Rosal vivo fenice,PRODUCT,Rosales vivos crema,"rosa fenice, rosal crema fenice, flor fenice, planta rosa fenice, rosal vivo",5
+10201718,Rosal vivo french vanilla,PRODUCT,Rosales vivos crema,"rosa french vanilla, rosal crema vainilla, flor french vanilla, planta rosa vanilla, rosal vivo",5
+10201719,Rosal vivo hollywood,PRODUCT,Rosales vivos crema,"rosa hollywood, rosal crema hollywood, flor hollywood, planta rosa hollywood, rosal vivo",5
+10201720,Rosal vivo ilios,PRODUCT,Rosales vivos crema,"rosa ilios, rosal crema ilios, flor ilios, planta rosa ilios, rosal vivo",5
+10201721,Rosal vivo jelena,PRODUCT,Rosales vivos crema,"rosa jelena, rosal crema jelena, flor jelena, planta rosa jelena, rosal vivo",5
+10201722,Rosal vivo kameleon,PRODUCT,Rosales vivos crema,"rosa kameleon, rosal crema kameleon, flor kameleon, planta rosa kameleon, rosal vivo",5
+10201723,Rosal vivo kentucky,PRODUCT,Rosales vivos crema,"rosa kentucky, rosal crema kentucky, flor kentucky, planta rosa kentucky, rosal vivo",5
+10201724,Rosal vivo kings pride,PRODUCT,Rosales vivos crema,"rosa kings pride, rosal crema kings pride, flor kings pride, planta rosa pride, rosal vivo",5
+10201725,Rosal vivo latin fusion,PRODUCT,Rosales vivos crema,"rosa viva latin fusion, planta rosal crema, rosal decorativo, rosa de jardin, flor viva",5
+10201726,Rosal vivo lemon dream,PRODUCT,Rosales vivos crema,"rosa viva lemon dream, rosal amarillo crema, planta rosal limon, rosa decorativa, flor viva",5
+10201727,Rosal vivo magic moka,PRODUCT,Rosales vivos crema,"rosa viva magic moka, rosal marron crema, planta rosal chocolate, rosa decorativa, flor viva",5
+10201728,Rosal vivo mamamia,PRODUCT,Rosales vivos crema,"rosa viva mamamia, rosal crema intenso, planta rosal decorativo, rosa de jardin, flor viva",5
+10201729,Rosal vivo message,PRODUCT,Rosales vivos crema,"rosa viva message, rosal crema claro, planta rosal vivo, rosa decorativa, flor viva",5
+10201730,Rosal vivo muneca o munieca,PRODUCT,Rosales vivos crema,"rosa viva muneca, rosal crema suave, planta rosal delicado, rosa de jardin, flor viva",5
+10201731,Rosal vivo parfum de rosas,PRODUCT,Rosales vivos crema,"rosa viva parfum, rosal aroma crema, planta rosal fragante, rosa decorativa, flor viva",5
+10201732,Rosal vivo porcelina,PRODUCT,Rosales vivos crema,"rosa viva porcelina, rosal blanco crema, planta rosal palido, rosa decorativa, flor viva",5
+10201733,Rosal vivo privilege,PRODUCT,Rosales vivos crema,"rosa viva privilege, rosal crema premium, planta rosal exclusivo, rosa de jardin, flor viva",5
+10201734,Rosal vivo quicksand,PRODUCT,Rosales vivos crema,"rosa viva quicksand, rosal arena crema, planta rosal neutro, rosa decorativa, flor viva",5
+10201735,Rosal vivo rollercoaster,PRODUCT,Rosales vivos crema,"rosa viva rollercoaster, rosal crema dinamico, planta rosal vistoso, rosa de jardin, flor viva",5
+10201736,Rosal vivo romantic curiosa,PRODUCT,Rosales vivos crema,"rosa viva romantic, rosal crema romantico, planta rosal curiosa, rosa decorativa, flor viva",5
+10201737,Rosal vivo safari,PRODUCT,Rosales vivos crema,"rosa viva safari, rosal naranja crema, planta rosal exotico, rosa de jardin, flor viva",5
+10201738,Rosal vivo sahara,PRODUCT,Rosales vivos crema,"rosa viva sahara, rosal dorado crema, planta rosal caido, rosa decorativa, flor viva",5
+10201739,Rosal vivo sandy femma,PRODUCT,Rosales vivos crema,"rosa viva sandy, rosal crema arenoso, planta rosal femma, rosa de jardin, flor viva",5
+10201740,Rosal vivo talea,PRODUCT,Rosales vivos crema,"rosal talea, rosa talea, planta rosal talea, flor talea, rosal vivo variedad talea",5
+10201741,Rosal vivo timeless,PRODUCT,Rosales vivos crema,"rosal timeless, rosa timeless, planta rosal timeless, flor timeless, rosal vivo variedad timeless",5
+10201742,Rosal vivo transition,PRODUCT,Rosales vivos crema,"rosal transition, rosa transition, planta rosal transition, flor transition, rosal vivo variedad transition",5
+10201743,Rosal vivo trump,PRODUCT,Rosales vivos crema,"rosal trump, rosa trump, planta rosal trump, flor trump, rosal vivo variedad trump",5
+10201744,Rosal vivo twin,PRODUCT,Rosales vivos crema,"rosal twin, rosa twin, planta rosal twin, flor twin, rosal vivo variedad twin",5
+10201745,Rosal vivo vendela,PRODUCT,Rosales vivos crema,"rosal vendela, rosa vendela, planta rosal vendela, flor vendela, rosal vivo variedad vendela",5
+10201746,Rosal vivo virginia,PRODUCT,Rosales vivos crema,"rosal virginia, rosa virginia, planta rosal virginia, flor virginia, rosal vivo variedad virginia",5
+10201800,Rosales vivos verdes o lima,CLASS,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),"rosales verdes, rosales lima, rosales color verde, rosales tonos lima, plantas rosales verdes",5
+10201801,Rosal vivo amandine,PRODUCT,Rosales vivos verdes o lima,"rosal amandine, rosa amandine, planta rosal amandine, flor amandine, rosal verde amandine",5
+10201802,Rosal vivo caipirinha,PRODUCT,Rosales vivos verdes o lima,"rosal caipirinha, rosa caipirinha, planta rosal caipirinha, flor caipirinha, rosal verde caipirinha",5
+10201803,Rosal vivo green fashion,PRODUCT,Rosales vivos verdes o lima,"rosal green fashion, rosa green fashion, planta rosal green fashion, flor green fashion, rosal verde fashion",5
+10201804,Rosal vivo green tea,PRODUCT,Rosales vivos verdes o lima,"rosal green tea, rosa green tea, planta rosal green tea, flor green tea, rosal verde tea",5
+10201805,Rosal vivo jade,PRODUCT,Rosales vivos verdes o lima,"rosal jade, rosa jade, planta rosal jade, flor jade, rosal verde jade",5
+10201806,Rosal vivo limbo,PRODUCT,Rosales vivos verdes o lima,"rosal limbo, rosa limbo, planta rosal limbo, flor limbo, rosal verde limbo",5
+10201807,Rosal vivo limena o limenia,PRODUCT,Rosales vivos verdes o lima,"rosal limena, rosal limenia, rosa limena, planta rosal limena, flor limena, rosal verde limena",6
+10201808,Rosal vivo limona,PRODUCT,Rosales vivos verdes o lima,"rosa limona, rosal limón, rosa verde limón, flor limona, rosa viva limona",5
+10201809,Rosal vivo old dutch,PRODUCT,Rosales vivos verdes o lima,"rosa old dutch, rosal holandés, rosa antigua, flor old dutch, rosa viva old dutch",5
+10201810,Rosal vivo super green,PRODUCT,Rosales vivos verdes o lima,"rosa super green, rosal verde intenso, rosa verde super, flor super green, rosa viva super green",5
+10201811,Rosal vivo sweet green,PRODUCT,Rosales vivos verdes o lima,"rosa sweet green, rosal verde dulce, rosa verde sweet, flor sweet green, rosa viva sweet green",5
+10201812,Rosal vivo viva,PRODUCT,Rosales vivos verdes o lima,"rosa viva, rosal viva, flor viva, rosa viva viva, rosal variedad viva",5
+10201813,Rosal vivo zazu,PRODUCT,Rosales vivos verdes o lima,"rosa zazu, rosal zazu, flor zazu, rosa viva zazu, rosal variedad zazu",5
+10201900,Rosales vivos rosado claro,CLASS,Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020),"rosa rosado claro, rosal rosa pálido, flores rosadas claras, rosa pastel, rosal tonalidad rosada",5
+10201901,Rosal vivo anna,PRODUCT,Rosales vivos rosado claro,"rosa anna, rosal anna, flor anna, rosa viva anna, rosal variedad anna",5
+10201902,Rosal vivo bella vita,PRODUCT,Rosales vivos rosado claro,"rosa bella vita, rosal bella vita, flor bella vita, rosa viva bella vita, rosal variedad bella vita",5
+10201903,Rosal vivo bridal dream,PRODUCT,Rosales vivos rosado claro,"rosa bridal dream, rosal bridal dream, flor bridal dream, rosa viva bridal dream, rosal variedad bridal dream",5
+10201904,Rosal vivo candy bianca,PRODUCT,Rosales vivos rosado claro,"rosa candy bianca, rosal candy bianca, flor candy bianca, rosa viva candy bianca, rosal variedad candy bianca",5
+10201905,Rosal vivo caress,PRODUCT,Rosales vivos rosado claro,"rosa caress, rosal caress, flor caress, rosa viva caress, rosal variedad caress",5
+10201906,Rosal vivo carolina,PRODUCT,Rosales vivos rosado claro,"rosa carolina, rosal carolina, flor carolina, rosa viva carolina, rosal variedad carolina",5
+10201907,Rosal vivo climax,PRODUCT,Rosales vivos rosado claro,"rosa climax, rosal climax, flor climax, rosa viva climax, rosal variedad climax",5
+10201908,Rosal vivo danny,PRODUCT,Rosales vivos rosado claro,"rosa danny, rosal danny, flor danny, rosa viva danny, rosal variedad danny",5
+10201909,Rosal vivo dolce vita,PRODUCT,Rosales vivos rosado claro,"rosa dolce vita, rosal rosado claro, rosa viva, planta rosal, rosa fresca",5
+10201910,Rosal vivo elite,PRODUCT,Rosales vivos rosado claro,"rosa elite, rosal elite rosado, rosa viva elite, planta rosa, rosal premium",5
+10201911,Rosal vivo emma,PRODUCT,Rosales vivos rosado claro,"rosa emma, rosal emma rosado, rosa viva emma, planta rosal emma, rosa fresca emma",5
+10201912,Rosal vivo engagement,PRODUCT,Rosales vivos rosado claro,"rosa engagement, rosal engagement rosado, rosa viva engagement, planta rosal, rosa para boda",5
+10201913,Rosal vivo esther,PRODUCT,Rosales vivos rosado claro,"rosa esther, rosal esther rosado, rosa viva esther, planta rosal esther, rosa fresca esther",5
+10201914,Rosal vivo excalibur,PRODUCT,Rosales vivos rosado claro,"rosa excalibur, rosal excalibur rosado, rosa viva excalibur, planta rosal, rosa premium excalibur",5
+10201915,Rosal vivo exciting,PRODUCT,Rosales vivos rosado claro,"rosa exciting, rosal exciting rosado, rosa viva exciting, planta rosal exciting, rosa fresca exciting",5
+10201916,Rosal vivo first lady,PRODUCT,Rosales vivos rosado claro,"rosa first lady, rosal first lady rosado, rosa viva first lady, planta rosal, rosa elegante",5
+10201917,Rosal vivo geraldine,PRODUCT,Rosales vivos rosado claro,"rosa geraldine, rosal geraldine rosado, rosa viva geraldine, planta rosal geraldine, rosa fresca",5
+10201918,Rosal vivo gotcha,PRODUCT,Rosales vivos rosado claro,"rosa gotcha, rosal gotcha rosado, rosa viva gotcha, planta rosal gotcha, rosa fresca gotcha",5
+10201919,Rosal vivo harmonie,PRODUCT,Rosales vivos rosado claro,"rosa harmonie, rosal harmonie rosado, rosa viva harmonie, planta rosal, rosa armonía",5
+10201920,Rosal vivo heaven,PRODUCT,Rosales vivos rosado claro,"rosa heaven, rosal heaven rosado, rosa viva heaven, planta rosal heaven, rosa celestial",5
+10201921,Rosal vivo high and elegant,PRODUCT,Rosales vivos rosado claro,"rosa high and elegant, rosal elegante rosado, rosa viva elegante, planta rosal, rosa sofisticada",5
+10201922,Rosal vivo katherine,PRODUCT,Rosales vivos rosado claro,"rosa katherine, rosal katherine rosado, rosa viva katherine, planta rosal katherine, rosa fresca",5
+10201923,Rosal vivo king kong,PRODUCT,Rosales vivos rosado claro,"rosa king kong, rosal king kong rosado, rosa viva grande, planta rosal gigante, rosa robusta",5
+10201924,Rosal vivo livia,PRODUCT,Rosales vivos rosado claro,"rosa livia, flor livia, planta rosada livia, rosal variedad livia, rosa viva livia",5
+10201925,Rosal vivo lorena,PRODUCT,Rosales vivos rosado claro,"rosa lorena, flor lorena, planta rosada lorena, rosal variedad lorena, rosa viva lorena",5
+10201926,Rosal vivo lovely,PRODUCT,Rosales vivos rosado claro,"rosa lovely, flor lovely, planta rosada lovely, rosal variedad lovely, rosa viva lovely",5
+10201927,Rosal vivo maaike,PRODUCT,Rosales vivos rosado claro,"rosa maaike, flor maaike, planta rosada maaike, rosal variedad maaike, rosa viva maaike",5
+10201928,Rosal vivo marilyn,PRODUCT,Rosales vivos rosado claro,"rosa marilyn, flor marilyn, planta rosada marilyn, rosal variedad marilyn, rosa viva marilyn",5
+10201929,Rosal vivo marlise,PRODUCT,Rosales vivos rosado claro,"rosa marlise, flor marlise, planta rosada marlise, rosal variedad marlise, rosa viva marlise",5
+10201930,Rosal vivo miranda o ausimmon,PRODUCT,Rosales vivos rosado claro,"rosa miranda, rosa ausimmon, flor miranda, planta rosada miranda, rosal variedad miranda",5
+10201931,Rosal vivo mona lisa,PRODUCT,Rosales vivos rosado claro,"rosa mona lisa, flor mona lisa, planta rosada mona lisa, rosal variedad mona lisa, rosa viva mona lisa",5
+10201932,Rosal vivo nirvana,PRODUCT,Rosales vivos rosado claro,"rosa nirvana, flor nirvana, planta rosada nirvana, rosal variedad nirvana, rosa viva nirvana",5
+10201933,Rosal vivo o hara,PRODUCT,Rosales vivos rosado claro,"rosa o hara, flor o hara, planta rosada o hara, rosal variedad o hara, rosa viva o hara",5
+10201934,Rosal vivo ole,PRODUCT,Rosales vivos rosado claro,"rosa ole, flor ole, planta rosada ole, rosal variedad ole, rosa viva ole",5
+10201935,Rosal vivo olga,PRODUCT,Rosales vivos rosado claro,"rosa olga, flor olga, planta rosada olga, rosal variedad olga, rosa viva olga",5
+10201936,Rosal vivo pacífica,PRODUCT,Rosales vivos rosado claro,"rosa pacifica, flor pacifica, planta rosada pacifica, rosal variedad pacifica, rosa viva pacifica",5
+10201937,Rosal vivo party mix,PRODUCT,Rosales vivos rosado claro,"rosa party mix, flor party mix, planta rosada party mix, rosal variedad party mix, rosa viva party mix",5
+10201938,Rosal vivo peckoubo o pekcoubo,PRODUCT,Rosales vivos rosado claro,"rosa peckoubo, rosa pekcoubo, flor peckoubo, planta rosada peckoubo, rosal variedad peckoubo",5

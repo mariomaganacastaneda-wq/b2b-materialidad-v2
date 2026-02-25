@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
@@ -25,10 +25,11 @@ import {
 
 // Componentes importados
 import ProformaManager from './components/commercial/ProformaManager';
-import MaterialityBoard from './components/commercial/MaterialityBoard';
+import ProformaDashboard from './pages/Quotations';
 import { SettingsPage } from './components/settings/SettingsPage';
 import SATCatalogsPage from './pages/SATCatalogs';
 import BankAccountsPage from './pages/BankAccounts';
+import Invoices from './pages/Invoices';
 import { SecurityCenter } from './pages/SecurityCenter';
 import { PurchaseOrders } from './pages/PurchaseOrders';
 
@@ -177,62 +178,6 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   </div>
 );
 
-const InvoicesPage = ({ userProfile }: { userProfile: any }) => {
-  const { id } = useParams();
-  const [list, setList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      setLoading(true);
-      let query = supabase.from('invoices').select('*');
-      if (id) {
-        query = query.eq('quotation_id', id);
-      }
-
-      // Aplicar filtro de suplantación/seguridad si no es ADMIN
-      if (userProfile && userProfile.role !== 'ADMIN') {
-        const { data: userAccess } = await supabase.from('user_organization_access').select('organization_id').eq('profile_id', userProfile.id);
-        const allowedIds = userAccess?.map((a: any) => a.organization_id) || [];
-        query = query.in('issuer_id', allowedIds);
-      }
-
-      const { data } = await query;
-      setList(data || []);
-      setLoading(false);
-    };
-    fetchInvoices();
-  }, [id, userProfile]);
-
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Cargando facturas...</div>;
-
-  return (
-    <div className="fade-in">
-      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px' }}>
-        {id ? 'Facturas de la Cotización' : 'Facturación General'}
-      </h1>
-      {list.length === 0 ? (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '40px', opacity: 0.7 }}>
-          <p>No se encontraron facturas {id ? 'para esta cotización' : ''}.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-          {list.map((i: any) => (
-            <div key={i.id} className="glass-card">
-              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>Folio SAT: {i.sat_uuid || 'PENDIENTE'}</div>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '12px' }}>{i.internal_number}</div>
-              <div style={{ fontSize: '24px', color: '#10b981', fontWeight: 'bold', marginBottom: '16px' }}>${i.amount_total?.toLocaleString()}</div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <span style={{ fontSize: '10px', background: '#064e3b', color: '#34d399', padding: '2px 8px', borderRadius: '4px' }}>{i.status}</span>
-                <span style={{ fontSize: '10px', background: '#1e293b', color: '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>CFDI 4.0</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const DashboardPage = ({ userProfile }: { userProfile: any }) => {
   const [data, setData] = useState<any>(null);
@@ -582,7 +527,11 @@ export function App() {
           if (filteredOrgs.length > 0) {
             const currentIsValid = selectedOrg && filteredOrgs.some((o: any) => o.id === selectedOrg.id);
             if (!currentIsValid) {
-              setSelectedOrg(filteredOrgs[0]);
+              // Usar default_org_id del perfil si existe y pertenece al set filtrado
+              const defaultOrg = activeProfile?.default_org_id
+                ? filteredOrgs.find((o: any) => o.id === activeProfile.default_org_id)
+                : null;
+              setSelectedOrg(defaultOrg || filteredOrgs[0]);
             }
           } else {
             setSelectedOrg(null);
@@ -601,6 +550,18 @@ export function App() {
   }, [clerkUser, isLoaded, supabase, impersonatedUser, getToken]);
 
   useTheme(selectedOrg);
+
+  const handleSetDefaultOrg = async (orgId: string) => {
+    const targetUserId = impersonatedUser?.id || clerkUser?.id;
+    if (!targetUserId) return;
+    const { error } = await supabase
+      .from('profiles')
+      .update({ default_org_id: orgId })
+      .eq('id', targetUserId);
+    if (!error) {
+      setUserProfile((prev: any) => ({ ...prev, default_org_id: orgId }));
+    }
+  };
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard, screenId: 'dashboard', roles: ['*'] },
@@ -839,21 +800,21 @@ export function App() {
               )}
               <Routes>
                 <Route path="/" element={<DashboardPage userProfile={userProfile} />} />
-                <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
-                <Route path="/cotizaciones" element={<PlaceholderPage title="Gestor de Cotizaciones" />} />
+                <Route path="/materialidad" element={<ProformaDashboard selectedOrg={selectedOrg} />} />
+                <Route path="/cotizaciones" element={<ProformaDashboard selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/facturas" element={<InvoicesPage userProfile={userProfile} />} />
-                <Route path="/facturas/:id" element={<InvoicesPage userProfile={userProfile} />} />
+                <Route path="/facturas" element={<Invoices userProfile={userProfile} />} />
+                <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} />} />
                 <Route path="/catalogos-sat" element={<SATCatalogsPage />} />
                 <Route path="/bancos" element={<BankAccountsPage selectedOrg={selectedOrg} />} />
                 <Route path="/evidencia" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
                 <Route path="/evidencia/:id" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
                 <Route path="/reportes" element={<PlaceholderPage title="Generador de Reportes" />} />
-                <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} currentUser={userProfile} userPermissions={userPermissions} userRolePermissions={userRolePermissions} setImpersonatedUser={setImpersonatedUser} realUserProfile={realUserProfile} />} />
+                <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} currentUser={userProfile} userPermissions={userPermissions} userRolePermissions={userRolePermissions} setImpersonatedUser={setImpersonatedUser} realUserProfile={realUserProfile} defaultOrgId={userProfile?.default_org_id} onSetDefaultOrg={handleSetDefaultOrg} />} />
                 <Route path="/security" element={<SecurityCenter supabase={supabase} clerkUser={clerkUser} getToken={getToken} impersonatedUser={impersonatedUser} />} />
               </Routes>
             </main>

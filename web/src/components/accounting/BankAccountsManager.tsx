@@ -77,12 +77,23 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
         e.preventDefault();
         if (!selectedOrg?.id) return;
 
+        // Validación básica de campos requeridos
+        if (!formData.bank_name.trim() || !formData.account_number.trim()) {
+            alert('Por favor complete el nombre de la institución y el número de cuenta');
+            return;
+        }
+
         setIsSaving(true);
         try {
             if (editingId) {
                 const { error } = await supabase
                     .from('org_bank_accounts')
-                    .update(formData)
+                    .update({
+                        account_type: formData.account_type,
+                        bank_name: formData.bank_name,
+                        account_number: formData.account_number,
+                        currency: formData.currency
+                    })
                     .eq('id', editingId);
                 if (error) throw error;
             } else {
@@ -97,14 +108,15 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                 if (error) throw error;
             }
 
+            // Reset completo del estado tras guardado exitoso
             setFormData({ account_type: 'BANCO', bank_name: '', account_number: '', currency: 'MXN' });
             setSearchTerm('');
             setIsDropdownOpen(false);
             setEditingId(null);
-            loadAccounts();
-        } catch (err) {
+            await loadAccounts();
+        } catch (err: any) {
             console.error('Error saving account:', err);
-            alert('Error al guardar la cuenta');
+            alert(`Error al guardar la cuenta: ${err.message || 'Error desconocido'}`);
         } finally {
             setIsSaving(false);
         }
@@ -125,24 +137,52 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
 
     return (
         <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Icon name="add_business" className="text-[#1e40af]" />
-                        <h3 className="text-[11px] font-black uppercase text-slate-500 tracking-wider">
-                            {editingId ? 'Editar Cuenta' : 'Registrar Nueva Cuenta o Caja'}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm relative"> {/* Eliminado overflow-hidden para permitir que el catálogo salga de la caja */}
+                <div className="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2 notranslate" translate="no">
+                        <Icon name="account_balance_wallet" className="text-[#1e40af]" />
+                        <h3 className="text-[11px] font-black uppercase text-slate-600 tracking-wider">
+                            {editingId ? 'Actualizar Cuenta o Caja' : 'Registrar Nueva Cuenta o Caja'}
                         </h3>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {editingId && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setEditingId(null);
+                                    setFormData({ account_type: 'BANCO', bank_name: '', account_number: '', currency: 'MXN' });
+                                }}
+                                className="px-3 py-1.5 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                            >
+                                Cancelar
+                            </button>
+                        )}
+                        <button
+                            form="bank-form"
+                            type="submit"
+                            disabled={isSaving}
+                            className="bg-[#1e40af] text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-blue-100 hover:bg-blue-800 transition-all disabled:opacity-50 flex items-center gap-2"
+                        >
+                            {isSaving ? (
+                                <span className="animate-spin h-3 w-3 border-2 border-white/30 border-t-white rounded-full" />
+                            ) : (
+                                <Icon name={editingId ? 'save' : 'add'} className="text-sm" />
+                            )}
+                            {isSaving ? '...' : editingId ? 'Actualizar' : 'Registrar'}
+                        </button>
                     </div>
                 </div>
 
-                <form onSubmit={handleSave} className="p-6">
+                <form id="bank-form" onSubmit={handleSave} className="p-4">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                         <div className="space-y-1.5">
                             <label className="block text-[10px] font-black text-slate-400 uppercase ml-1">Tipo de Cuenta</label>
                             <select
                                 value={formData.account_type}
                                 onChange={(e) => setFormData({ ...formData, account_type: e.target.value as any })}
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
                             >
                                 <option value="BANCO">CUENTA BANCARIA</option>
                                 <option value="EFECTIVO">CAJA DE EFECTIVO</option>
@@ -163,34 +203,50 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                         }}
                                         onFocus={() => setIsDropdownOpen(true)}
                                         placeholder="Buscar banco (BBVA, Banorte...)"
-                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100 placeholder:text-slate-300"
+                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 placeholder:text-slate-300"
                                     />
                                     {isDropdownOpen && (
-                                        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-                                            {bankCatalog
-                                                .filter(b => b.name.toLowerCase().includes((formData.bank_name || searchTerm).toLowerCase()))
-                                                .map(bank => (
-                                                    <button
-                                                        key={bank.code}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setFormData({ ...formData, bank_name: bank.name });
-                                                            setSearchTerm(bank.name);
-                                                            setIsDropdownOpen(false);
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center justify-between group transition-colors"
-                                                    >
-                                                        <span className="text-[10px] font-bold text-slate-700 uppercase">{bank.name}</span>
-                                                        <span className="text-[8px] font-black text-slate-300 group-hover:text-blue-400">{bank.code}</span>
-                                                    </button>
-                                                ))}
+                                        <>
                                             <div
-                                                className="p-2 border-t border-slate-50 text-center cursor-pointer hover:bg-slate-50"
+                                                className="fixed inset-0 z-40 bg-transparent"
                                                 onClick={() => setIsDropdownOpen(false)}
-                                            >
-                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cerrar Catálogo</span>
+                                            />
+                                            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-200 overflow-x-hidden">
+                                                <div className="sticky top-0 bg-slate-50 border-b border-slate-100 p-2 flex items-center justify-between z-10">
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter ml-2">Seleccione Institución</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsDropdownOpen(false)}
+                                                        className="p-1 hover:bg-slate-200 rounded-md transition-colors"
+                                                    >
+                                                        <Icon name="close" className="text-xs text-slate-500" />
+                                                    </button>
+                                                </div>
+                                                {bankCatalog
+                                                    .filter(b => b.name.toLowerCase().includes((formData.bank_name || searchTerm).toLowerCase()))
+                                                    .map(bank => (
+                                                        <button
+                                                            key={bank.code}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setFormData({ ...formData, bank_name: bank.name });
+                                                                setSearchTerm(bank.name);
+                                                                setIsDropdownOpen(false);
+                                                            }}
+                                                            className="w-full text-left px-4 py-2.5 hover:bg-blue-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
+                                                        >
+                                                            <span className="text-[10px] font-bold text-slate-700 uppercase">{bank.name}</span>
+                                                            <span className="text-[8px] font-black text-slate-300 group-hover:text-blue-400 bg-slate-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
+                                                        </button>
+                                                    ))}
+                                                {bankCatalog.filter(b => b.name.toLowerCase().includes((formData.bank_name || searchTerm).toLowerCase())).length === 0 && (
+                                                    <div className="px-4 py-6 text-center">
+                                                        <Icon name="search_off" className="text-slate-200 text-2xl mb-1" />
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Sin coincidencias</p>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
+                                        </>
                                     )}
                                 </div>
                             ) : (
@@ -199,7 +255,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                     value={formData.bank_name}
                                     onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
                                     placeholder="Nombre de la Caja (ej: Caja Chica)"
-                                    className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                    className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
                                 />
                             )}
                         </div>
@@ -211,7 +267,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                 value={formData.account_number}
                                 onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
                                 placeholder="0123... o Referencia interna"
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
                             />
                         </div>
 
@@ -220,7 +276,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                             <select
                                 value={formData.currency}
                                 onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
                             >
                                 <option value="MXN">MXN - PESOS</option>
                                 <option value="USD">USD - DÓLARES</option>
@@ -228,27 +284,6 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                         </div>
                     </div>
 
-                    <div className="mt-4 flex justify-end gap-2">
-                        {editingId && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setEditingId(null);
-                                    setFormData({ account_type: 'BANCO', bank_name: '', account_number: '', currency: 'MXN' });
-                                }}
-                                className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 hover:bg-slate-100 rounded-xl transition-all"
-                            >
-                                Cancelar
-                            </button>
-                        )}
-                        <button
-                            type="submit"
-                            disabled={isSaving}
-                            className="bg-[#1e40af] text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-800 transition-all disabled:opacity-50"
-                        >
-                            {isSaving ? 'Guardando...' : editingId ? 'Actualizar Cuenta' : 'Registrar Cuenta'}
-                        </button>
-                    </div>
                 </form>
             </div>
 
@@ -261,7 +296,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                     <span className="text-[9px] font-bold text-slate-400 uppercase">{accounts.length} cuentas en total</span>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto min-h-[320px]">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50">
@@ -335,12 +370,15 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                                 <Icon name="edit" className="text-sm" />
                                             </button>
                                             <button
-                                                onMouseDown={async (e) => {
+                                                onClick={async (e) => {
                                                     e.preventDefault();
                                                     if (confirm('¿Eliminar permanentemente esta cuenta?')) {
                                                         const { error } = await supabase.from('org_bank_accounts').delete().eq('id', acc.id);
-                                                        if (error) alert('No se puede eliminar porque tiene pagos asociados. Desactívela en su lugar.');
-                                                        loadAccounts();
+                                                        if (error) {
+                                                            console.error('Delete error:', error);
+                                                            alert('No se puede eliminar porque tiene registros asociados (pagos o cotizaciones). Desactívela en su lugar.');
+                                                        }
+                                                        await loadAccounts();
                                                     }
                                                 }}
                                                 className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"

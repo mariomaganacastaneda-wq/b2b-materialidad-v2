@@ -27,13 +27,13 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ selectedOrg }) => {
     // So typical page signature here seems to be { selectedOrg: any }
     return (
         <div className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <header className="mb-8 flex items-center justify-between">
+            <header className="mb-6 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2 uppercase">
-                        <Icon name="account_balance" className="text-blue-600" />
+                    <h1 className="text-2xl font-black text-[#1e40af] tracking-tight flex items-center gap-2 uppercase notranslate" translate="no">
+                        <Icon name="account_balance_wallet" className="text-blue-600" />
                         Tesorería y Bancos
                     </h1>
-                    <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                    <p className="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest notranslate" translate="no">
                         Gestión de cuentas bancarias y cajas de efectivo del emisor
                     </p>
                 </div>

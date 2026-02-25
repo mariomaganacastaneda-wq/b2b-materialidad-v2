@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, X, MinusCircle } from 'lucide-react';
+import { Search, Filter, X, MinusCircle, Star } from 'lucide-react';
 
 interface CompanyListProps {
     orgs: any[];
@@ -18,6 +18,8 @@ interface CompanyListProps {
     uniqueActivities: string[];
     onUnlinkOrg: (orgId: string) => void;
     subTab: string;
+    defaultOrgId?: string;
+    onSetDefaultOrg?: (orgId: string) => void;
 }
 
 export const CompanyList: React.FC<CompanyListProps> = ({
@@ -27,7 +29,9 @@ export const CompanyList: React.FC<CompanyListProps> = ({
     filters,
     uniqueActivities,
     onUnlinkOrg,
-    subTab
+    subTab,
+    defaultOrgId,
+    onSetDefaultOrg
 }) => {
     const {
         searchTerm,
@@ -113,11 +117,34 @@ export const CompanyList: React.FC<CompanyListProps> = ({
                             <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: org.primary_color || '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px', border: '1px solid rgba(255,255,255,0.1)', flexShrink: 0 }}>
                                 {org.logo_url ? <img src={org.logo_url} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="" /> : org.rfc?.substring(0, 2)}
                             </div>
-                            <div style={{ flex: 1, overflow: 'hidden' }}>
-                                <div style={{ fontSize: '13px', fontWeight: '600', color: selectedOrgId === org.id ? 'white' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{org.name}</div>
-                                <div style={{ fontSize: '11px', color: '#64748b' }}>{org.rfc}</div>
+                            <div style={{ flex: 1, overflow: 'hidden' }} className="notranslate" translate="no">
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: selectedOrgId === org.id ? 'white' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <span key={`org-name-${org.id}`}>{org.name}</span>
+                                </div>
+                                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                    <span key={`org-rfc-${org.id}`}>{org.rfc}</span>
+                                </div>
                             </div>
-                            {subTab === 'clientes' && (
+                            {subTab === 'emisoras' && onSetDefaultOrg ? (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onSetDefaultOrg(org.id);
+                                    }}
+                                    style={{
+                                        padding: '4px',
+                                        borderRadius: '4px',
+                                        border: 'none',
+                                        background: 'transparent',
+                                        cursor: 'pointer',
+                                        color: defaultOrgId === org.id ? '#f59e0b' : '#64748b',
+                                        flexShrink: 0
+                                    }}
+                                    title={defaultOrgId === org.id ? 'Emisora por defecto' : 'Establecer como emisora por defecto'}
+                                >
+                                    <Star size={14} fill={defaultOrgId === org.id ? '#f59e0b' : 'none'} />
+                                </button>
+                            ) : subTab === 'clientes' ? (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -137,7 +164,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({
                                 >
                                     <MinusCircle size={14} />
                                 </button>
-                            )}
+                            ) : null}
                         </div>
                     ))
                 ) : (

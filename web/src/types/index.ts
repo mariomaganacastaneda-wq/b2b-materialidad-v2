@@ -14,6 +14,9 @@ export interface Profile {
     email: string;
     full_name: string;
     role: 'ADMIN' | 'VENDEDOR' | 'FACTURACION' | 'REPRESENTANTE' | 'GESTOR_NOM151' | 'CXC' | 'CONTABLE' | 'CLIENTE';
+    phone_whatsapp?: string;
+    telegram_chat_id?: string;
+    notification_prefered_channels?: string[];
 }
 
 export interface Quotation {
@@ -34,7 +37,7 @@ export interface Invoice {
     id: string;
     internal_number: string;
     amount_total: number;
-    status: 'PREFACTURA_PENDIENTE' | 'EN_REVISION_VENDEDOR' | 'VALIDADA' | 'RECHAZADA' | 'TIMBRADA' | 'CANCELADA';
+    status: 'SOLICITUD' | 'PREFACTURA_PENDIENTE' | 'EN_REVISION_VENDEDOR' | 'VALIDADA' | 'RECHAZADA' | 'TIMBRADA' | 'CANCELADA';
     created_at: string;
     preinvoice_url?: string;
     xml_url?: string;

@@ -6,7 +6,22 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+interface AccessData {
+    profile_id: string;
+    organization_id: string;
+    can_manage_quotations: boolean;
+    can_manage_payments: boolean;
+    is_owner: boolean;
+}
+
+interface ActionPayload {
+    profile_id: string;
+    access_data: AccessData[];
+    action: 'upsert' | 'delete';
+    organization_id?: string;
+}
+
+serve(async (req: Request) => {
     // Manejo de CORS
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
@@ -18,7 +33,7 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        const body = await req.json();
+        const body: ActionPayload = await req.json();
         const { profile_id, access_data, action, organization_id } = body;
 
         if (!profile_id) {
@@ -27,9 +42,6 @@ serve(async (req) => {
 
         if (action === 'delete') {
             if (!organization_id) throw new Error('organization_id requerido para delete.');
-            console.log(`[ManageUserAccess] Solicitud de eliminación detectada.`);
-            console.log(`[ManageUserAccess] profile_id: "${profile_id}"`);
-            console.log(`[ManageUserAccess] organization_id: "${organization_id}"`);
 
             const { data: accessRecord, error: fetchError } = await supabaseClient
                 .from('user_organization_access')
@@ -37,31 +49,19 @@ serve(async (req) => {
                 .match({ profile_id, organization_id })
                 .maybeSingle();
 
-            if (fetchError) {
-                console.error('[ManageUserAccess] Error al buscar el registro:', fetchError);
-                throw fetchError;
-            }
+            if (fetchError) throw fetchError;
 
             if (!accessRecord) {
-                console.warn('[ManageUserAccess] No se encontró el registro para eliminar. Match fallido.');
-                // Podríamos retornar éxito igual si el fin es que no exista, 
-                // pero si el usuario se queja es por algo.
                 throw new Error('No se encontró un vínculo activo para esta empresa en tu perfil.');
             }
-
-            console.log(`[ManageUserAccess] Registro encontrado (ID: ${accessRecord.id}). Procediendo al borrado.`);
 
             const { error } = await supabaseClient
                 .from('user_organization_access')
                 .delete()
-                .eq('id', accessRecord.id);
+                .eq('id', (accessRecord as { id: string }).id);
 
-            if (error) {
-                console.error('[ManageUserAccess] Error en Delete:', error);
-                throw error;
-            }
+            if (error) throw error;
 
-            console.log('[ManageUserAccess] Eliminación exitosa.');
             return new Response(
                 JSON.stringify({ success: true }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -72,8 +72,6 @@ serve(async (req) => {
             throw new Error('Payload inválido: access_data (array) es requerido para upsert.');
         }
 
-        console.log(`[ManageUserAccess] Procesando ${access_data.length} registros para el perfil: ${profile_id}`);
-
         // Realizar el upsert masivo usando SERVICE_ROLE (bypassing RLS)
         const { data, error } = await supabaseClient
             .from('user_organization_access')
@@ -82,20 +80,18 @@ serve(async (req) => {
             })
             .select();
 
-        if (error) {
-            console.error('[ManageUserAccess] Error en Upsert:', error);
-            throw error;
-        }
+        if (error) throw error;
 
         return new Response(
             JSON.stringify({ success: true, data }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
-    } catch (error: any) {
-        console.error("[ManageUserAccess] Error fatal:", error.message);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        console.error("[ManageUserAccess] Error fatal:", message);
         return new Response(
-            JSON.stringify({ success: false, error: error.message }),
+            JSON.stringify({ success: false, error: message }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
     }

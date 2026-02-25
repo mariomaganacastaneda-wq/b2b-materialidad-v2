@@ -1,0 +1,362 @@
+{
+  "metadata": {
+    "model": "claude-haiku-4-5-20251001",
+    "timestamp": "2026-02-21T13:26:08.998971",
+    "total_records": 50,
+    "total_tokens": 7100,
+    "cost_usd": 0.02,
+    "elapsed_minutes": 0.4
+  },
+  "results": [
+    {
+      "code": "01000000",
+      "similar_words": "mascotas, animales domesticos, accesorios para mascotas, perros, gatos, mascotas en general",
+      "original_name": "Mascotas, Animales Domésticos y Accesorios (División 01)",
+      "level": "DIVISION",
+      "parent_name": ""
+    },
+    {
+      "code": "50000000",
+      "similar_words": "alimentos, bebidas, comida, bebida, tabaco, productos alimenticios, víveres",
+      "original_name": "Alimentos, Bebidas y Tabaco (División 50)",
+      "level": "DIVISION",
+      "parent_name": ""
+    },
+    {
+      "code": "01010000",
+      "similar_words": "mascotas domesticas, animales de compania, accesorios mascota, productos para mascotas",
+      "original_name": "[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101)",
+      "level": "GROUP",
+      "parent_name": "Mascotas, Animales Domésticos y Accesorios (División 01)"
+    },
+    {
+      "code": "46150000",
+      "similar_words": "control de masas, equipo seguridad, vigilancia, defensa, equipo control multitudes",
+      "original_name": "Equipo de control de masas y relacionados (Grupo 4615)",
+      "level": "GROUP",
+      "parent_name": "Defensa, Seguridad y Vigilancia (División 46)"
+    },
+    {
+      "code": "01010100",
+      "similar_words": "mascotas varias, animales domesticos varios, accesorios mascotas variados",
+      "original_name": "[SINTÉTICO] CLASS - 01010100",
+      "level": "CLASS",
+      "parent_name": "[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101)"
+    },
+    {
+      "code": "31311300",
+      "similar_words": "tuberia empernada, conjuntos tuberia, tuberias con pernos, accesorios tuberia, conexiones tuberia",
+      "original_name": "Conjuntos empernados de tubería",
+      "level": "CLASS",
+      "parent_name": "Conjuntos de tubería soldada de solvente y relacionados (Grupo 3131)"
+    },
+    {
+      "code": "50402700",
+      "similar_words": "apio, apios frescos, verdura apio, hortaliza apio, apio verde",
+      "original_name": "Apios",
+      "level": "CLASS",
+      "parent_name": "Aguacates y relacionados (Grupo 5040)"
+    },
+    {
+      "code": "01010101",
+      "similar_words": "producto mascota no especificado, articulo mascota general, item mascota varios",
+      "original_name": "No existe en el catálogo",
+      "level": "PRODUCT",
+      "parent_name": "[SINTÉTICO] CLASS - 01010100"
+    },
+    {
+      "code": "10212203",
+      "similar_words": "aster japones, flor aster verde, aster viva, flores decorativas, aster fresco",
+      "original_name": "Aster viva verde japonés",
+      "level": "PRODUCT",
+      "parent_name": "Aster viva"
+    },
+    {
+      "code": "10225804",
+      "similar_words": "sicilia peruana, flor sicilia, flores frescas, sicilia viva, flores decorativas",
+      "original_name": "Sicilia viva peruana",
+      "level": "PRODUCT",
+      "parent_name": "Sicilia viva"
+    },
+    {
+      "code": "10302775",
+      "similar_words": "rosal cortado, rosa fresca, rosal tara, flores rosas, rosa amarilla fresca",
+      "original_name": "Rosal cortado fresco tara",
+      "level": "PRODUCT",
+      "parent_name": "Rosas cortadas frescas amarillos"
+    },
+    {
+      "code": "10318324",
+      "similar_words": "leucospermum cortado, flor leucospermum, flores frescas, leucospermum fresco, flores decorativas",
+      "original_name": "Leucospermum cortado fresco utriculosum",
+      "level": "PRODUCT",
+      "parent_name": "leucospermum cortado fresco"
+    },
+    {
+      "code": "10402448",
+      "similar_words": "rosal seco, rosa seca, rosal rojo seco, flores secas, rosa burgundy seca",
+      "original_name": "Rosal cortado seco paz",
+      "level": "PRODUCT",
+      "parent_name": "Rosas cortadas secas rojos o burgundy"
+    },
+    {
+      "code": "10417916",
+      "similar_words": "amaryllis seca, flor amaryllis, amaryllis cortada, flores secas, amaryllis decorativa",
+      "original_name": "Amaryllis cortada seca calyptratum",
+      "level": "PRODUCT",
+      "parent_name": "Amaryllis cortada seca"
+    },
+    {
+      "code": "11131506",
+      "similar_words": "lana sin procesar, lana cruda, fibra lana, lana natural, material textil animal",
+      "original_name": "Lana sin procesar",
+      "level": "PRODUCT",
+      "parent_name": "Cuero, pieles o materiales textiles de animales"
+    },
+    {
+      "code": "20111701",
+      "similar_words": "camara inspeccion pozo, sonda audiovisual pozo, equipo vision pozo, inspeccion visual perforacion, camara fondo pozo",
+      "original_name": "Instrumentos audiovisuales para inspección de pozos",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios de perforación y explotación"
+    },
+    {
+      "code": "23153420",
+      "similar_words": "maquina ensamble cable, equipo armado alambre, maquina torcido cable, ensambladora de cables, equipo union alambres",
+      "original_name": "Máquina para el ensamble de cables y alambres",
+      "level": "PRODUCT",
+      "parent_name": "Ensambladoras"
+    },
+    {
+      "code": "25172001",
+      "similar_words": "suspension auto, sistema amortiguador, kit suspension vehiculo, componente suspension coche, amortiguadores y resortes",
+      "original_name": "Sistemas de suspensión para automóviles",
+      "level": "PRODUCT",
+      "parent_name": "Componentes de sistema de suspensión"
+    },
+    {
+      "code": "27111732",
+      "similar_words": "destornillador antiexplosivo, destornillador sin chispa, herramienta no chispeante, destornillador seguridad, destornillador intrinsecamente seguro",
+      "original_name": "Destornillador que no saca chispas",
+      "level": "PRODUCT",
+      "parent_name": "Llaves inglesas y guías"
+    },
+    {
+      "code": "30261603",
+      "similar_words": "lamina laton frio, plancha laton enrollada, hoja laton c464, laton en rollo, lamina metalica laton",
+      "original_name": "Lámina de latón enrollado en frío c 464",
+      "level": "PRODUCT",
+      "parent_name": "Láminas de latón"
+    },
+    {
+      "code": "31161607",
+      "similar_words": "perno expansion, tornillo expansion, perno anclaje, tuerca expansion, perno taconite",
+      "original_name": "Pernos de expansión",
+      "level": "PRODUCT",
+      "parent_name": "Pernos"
+    },
+    {
+      "code": "31311212",
+      "similar_words": "tuberia remachada cobre, conjunto tubo cobre, ensamble tuberia cobre, tubo remachado, sistema tuberias cobre",
+      "original_name": "Ensambles de tubería remachada de cobre",
+      "level": "PRODUCT",
+      "parent_name": "Conjuntos de tubería remachada"
+    },
+    {
+      "code": "32141016",
+      "similar_words": "tubo multiple, tubo multiples electronico, tubo vacio multiple, tubo catodico, tubo rayos catodicos",
+      "original_name": "Tubos múltiples",
+      "level": "PRODUCT",
+      "parent_name": "Tubos electrónicos"
+    },
+    {
+      "code": "40171516",
+      "similar_words": "tubo no ferroso comercial, tuberia cobre comercial, tubo aluminio comercial, tubo bronce comercial, tuberia no magnetica",
+      "original_name": "Tubo no ferroso para uso comercial",
+      "level": "PRODUCT",
+      "parent_name": "Tubos y tuberías comerciales"
+    },
+    {
+      "code": "41106703",
+      "similar_words": "auxanometro, medidor crecimiento planta, instrumento auxanometrico, equipo medicion plantas, sensor crecimiento vegetal",
+      "original_name": "Instrumento de medición de crecimiento de las plantas o auxanómetro",
+      "level": "PRODUCT",
+      "parent_name": "Equipos y accesorios de laboratorio botánico"
+    },
+    {
+      "code": "41121819",
+      "similar_words": "botella gotero, frasco gotero, tapa gotero, dispensador gotero, cuenta gotas laboratorio",
+      "original_name": "Botella de gotero y tapa de gotero",
+      "level": "PRODUCT",
+      "parent_name": "Artículos de vidrio o plástico y suministros generales de laboratorio"
+    },
+    {
+      "code": "42191606",
+      "similar_words": "brazo techo medico, soporte techo hospital, sistema suspension medico, brazo articulo medico, equipo montaje techo",
+      "original_name": "Brazos de techo para instalaciones médicas",
+      "level": "PRODUCT",
+      "parent_name": "Sistemas de construcción de facilidad médica"
+    },
+    {
+      "code": "42294531",
+      "similar_words": "lente laser oftalmico, lente laser ojo, optica laser medica, lente quirurgico laser, instrumento laser oftalmologia",
+      "original_name": "Lente láser para uso oftálmico",
+      "level": "PRODUCT",
+      "parent_name": "Instrumentos de especialidad oftálmica y productos relacionados"
+    },
+    {
+      "code": "43232606",
+      "similar_words": "software compliance, programa cumplimiento normativo, sft. cumplimiento, sistema normatividad, software regulatorio",
+      "original_name": "Software de cumplimiento (compliance)",
+      "level": "PRODUCT",
+      "parent_name": "Software específico para la industria"
+    },
+    {
+      "code": "47101566",
+      "similar_words": "filtro multiples medios, filtro agua multiple, sistema filtracion agua, filtro arena carbon, equipo purificacion agua",
+      "original_name": "Filtro de medios múltiples",
+      "level": "PRODUCT",
+      "parent_name": "Equipo para el tratamiento y suministro de agua"
+    },
+    {
+      "code": "50301593",
+      "similar_words": "manzana blanca, manzana transparente, manzana criolla, manzana de mesa, variedad blanca",
+      "original_name": "Manzana blanco transparente",
+      "level": "PRODUCT",
+      "parent_name": "Manzanas"
+    },
+    {
+      "code": "50307036",
+      "similar_words": "manzana estrella, manzana tipo estrella, manzana carambolo, manzana exótica, fruta estrella",
+      "original_name": "Manzana estrella",
+      "level": "PRODUCT",
+      "parent_name": "Frutas Nominant"
+    },
+    {
+      "code": "50315862",
+      "similar_words": "ciruela quetsch, ciruela orgánica, ciruela morada, ciruela seca, ciruela deshidratada",
+      "original_name": "Ciruela quetsch orgánica",
+      "level": "PRODUCT",
+      "parent_name": "Ciruelas orgánicas"
+    },
+    {
+      "code": "50325448",
+      "similar_words": "pera crimson, pera stark, pera seca, pera deshidratada, pera roja seca",
+      "original_name": "Pera crimson stark seca",
+      "level": "PRODUCT",
+      "parent_name": "Peras secas"
+    },
+    {
+      "code": "50335210",
+      "similar_words": "maracuyá orgánico, maracuyá seco, fruta de la pasión seca, maracuyá deshidratado, passion fruit seco",
+      "original_name": "Maracuyá  wing- stemmed orgánicas secas",
+      "level": "PRODUCT",
+      "parent_name": "Maracuyás orgánicas secas"
+    },
+    {
+      "code": "50344701",
+      "similar_words": "mora congelada, mora negra, mora mulberry, mora congelada orgánica, frutos rojos congelados",
+      "original_name": "Mora negra congeladas",
+      "level": "PRODUCT",
+      "parent_name": "Moras mulberry congeladas"
+    },
+    {
+      "code": "50354414",
+      "similar_words": "mandarina congelada, mandarina orgánica, mandarina miel, mandarina deshidratada, cítrico congelado",
+      "original_name": "Mandarina miel congelada orgánica",
+      "level": "PRODUCT",
+      "parent_name": "Mandarinas orgánicas congeladas"
+    },
+    {
+      "code": "50363610",
+      "similar_words": "uva charbono, uva en lata, uva enlatada, uva para vino, uva en frasco",
+      "original_name": "Uva charbono en lata o en frasco",
+      "level": "PRODUCT",
+      "parent_name": "Uvas para vino en lata o en frasco"
+    },
+    {
+      "code": "50373302",
+      "similar_words": "toronja duncan, toronja orgánica, toronja enlatada, toronja en frasco, pomelo orgánico",
+      "original_name": "Toronja duncan orgánica en lata o en frasco",
+      "level": "PRODUCT",
+      "parent_name": "Toronjas orgánicas en lata o en frasco"
+    },
+    {
+      "code": "50402208",
+      "similar_words": "cebolla tokyo, cebolla de ensalada, cebolla blanca, cebolla morada, cebolla fresca",
+      "original_name": "Cebolla tokyo ensalada",
+      "level": "PRODUCT",
+      "parent_name": "Cebollas de ensalada"
+    },
+    {
+      "code": "50414017",
+      "similar_words": "pápalo orgánico, pápalo fresco, hierba aromática, condimento mexicano, pápalo delgado",
+      "original_name": "Pápalo delgado orgánico",
+      "level": "PRODUCT",
+      "parent_name": "Hierbas orgánicas"
+    },
+    {
+      "code": "50425510",
+      "similar_words": "pimentón seco, pimiento melrose, pimiento deshidratado, pimiento rojo seco, especia pimentón",
+      "original_name": "Pimentón melrose seco",
+      "level": "PRODUCT",
+      "parent_name": "Pimientos Secos"
+    },
+    {
+      "code": "50436809",
+      "similar_words": "hoja de plátano, plátano seco, hoja orgánica, envoltorio natural, hoja deshidratada",
+      "original_name": "Hojas de plátano orgánica seca",
+      "level": "PRODUCT",
+      "parent_name": "Vegetales Nominant orgánicos secos"
+    },
+    {
+      "code": "50451838",
+      "similar_words": "frijol orgánico, frijol congelado, frijol ganzo, legumbre congelada, frijol monstoler",
+      "original_name": "Frijoles monstoler ganzo salvaje orgánicos congelados",
+      "level": "PRODUCT",
+      "parent_name": "Fríjoles orgánicos congelados"
+    },
+    {
+      "code": "50463405",
+      "similar_words": "cocombro enlatado, pepinillo burpless, pepinillo en lata, cocombro envasado, encurtido verde",
+      "original_name": "Cocombro verde burpless buen sabor enlatado o envasado",
+      "level": "PRODUCT",
+      "parent_name": "Cocombros en lata o en frasco"
+    },
+    {
+      "code": "50475202",
+      "similar_words": "cebolla enlatada, cebolla en lata, cebolla orgánica envasada, cebolla conserva, cebolla frasco",
+      "original_name": "Cebolla alisia craig orgánica enlatada o envasada",
+      "level": "PRODUCT",
+      "parent_name": "Cebollas orgánicas en lata o en frasco"
+    },
+    {
+      "code": "51141920",
+      "similar_words": "diazepam tabletas, diazepam inyectable, ansiolítico, tranquilizante, valium genérico",
+      "original_name": "Diazepam",
+      "level": "PRODUCT",
+      "parent_name": "Tranquilizantes y fármacos ansiolíticos y antimaniacos"
+    },
+    {
+      "code": "52141501",
+      "similar_words": "refri, refrigerador, nevera doméstica, heladera, congelador, equipo cocina",
+      "original_name": "Neveras para uso doméstico",
+      "level": "PRODUCT",
+      "parent_name": "Electrodomésticos para cocina"
+    },
+    {
+      "code": "60102306",
+      "similar_words": "flanelógrafo educativo, tablero flanela, material didáctico tela, recurso escolar, flanelógrafo infantil",
+      "original_name": "Flanelógrafos",
+      "level": "PRODUCT",
+      "parent_name": "Libros de lectura y recursos"
+    },
+    {
+      "code": "60141009",
+      "similar_words": "kit ciencia niños, juego experimentos, kit educativo ciencias, laboratorio infantil, juguete científico",
+      "original_name": "Kits de ciencias para niños",
+      "level": "PRODUCT",
+      "parent_name": "Juguetes"
+    }
+  ]
+}

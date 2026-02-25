@@ -1,0 +1,715 @@
+[
+  {
+    "model": "GPT-4o Mini",
+    "provider": "openai",
+    "model_id": "gpt-4o-mini",
+    "price_input_1m": 0.15,
+    "price_output_1m": 0.6,
+    "input_tokens": 1619,
+    "output_tokens": 649,
+    "cost_test": 0.0006,
+    "projected_53k": 1.68,
+    "projected_53k_batch": 0.84,
+    "results": [
+      {
+        "code": "43000000",
+        "similar_words": "tecnologia, telecomunicaciones, informatica, servicios de IT, soluciones tecnológicas",
+        "original_name": "Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "56000000",
+        "similar_words": "muebles, mobiliario, decoracion, muebles de oficina, muebles para casa",
+        "original_name": "Muebles y Mobiliario (Division 56)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "43210000",
+        "similar_words": "equipo informatico, computadoras, accesorios de computadora, hardware, tecnologia",
+        "original_name": "Equipo informatico y accesorios y relacionados (Grupo 4321)",
+        "level": "GROUP",
+        "parent_name": "Tecnologia de la Informacion (Division 43)"
+      },
+      {
+        "code": "50200000",
+        "similar_words": "bebidas, bebidas no alcoholicas, refrescos, jugos, aguas",
+        "original_name": "Bebidas y relacionados (Grupo 5020)",
+        "level": "GROUP",
+        "parent_name": "Alimentos, Bebidas y Tabaco (Division 50)"
+      },
+      {
+        "code": "43211500",
+        "similar_words": "computadora, desktop, PC, computadora de escritorio, equipo de computo",
+        "original_name": "Computadores",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "43211700",
+        "similar_words": "disco duro, USB, memoria externa, almacenamiento, dispositivos de memoria",
+        "original_name": "Dispositivos de almacenamiento",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "50202300",
+        "similar_words": "bebidas alcoholicas, chela, cheve, vino, licor",
+        "original_name": "Bebidas alcoholicas",
+        "level": "CLASS",
+        "parent_name": "Bebidas y relacionados (Grupo 5020)"
+      },
+      {
+        "code": "80141600",
+        "similar_words": "ventas, promocion, marketing, estrategias de venta, mercadeo",
+        "original_name": "Actividades de ventas y promocion de negocios",
+        "level": "CLASS",
+        "parent_name": "Mercadeo y distribucion (Grupo 8014)"
+      },
+      {
+        "code": "43211501",
+        "similar_words": "tablet, computadora tablet, iPad, dispositivo portátil, tableta",
+        "original_name": "Computadores de tableta",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211503",
+        "similar_words": "notebook, laptop, computadora portátil, equipo movil, laptop ligera",
+        "original_name": "Computadores notebook",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211507",
+        "similar_words": "compu de escritorio, computadora de escritorio, desktop, PC, computadora fija",
+        "original_name": "Computadores de escritorio",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211509",
+        "similar_words": "servidor, servidor de computo, equipo de servidor, servidor dedicado, servidor virtual",
+        "original_name": "Servidores de computador",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "81111812",
+        "similar_words": "mantenimiento de compus, soporte técnico, reparación de hardware, servicio técnico de computadora, mantenimiento de equipo",
+        "original_name": "Servicio de mantenimiento o soporte del hardware del computador",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de sistemas y administracion de componentes de sistemas"
+      },
+      {
+        "code": "81112502",
+        "similar_words": "arriendo de software, leasing de software, renta de software, alquiler de licencias, servicio de software",
+        "original_name": "Servicio de arriendo o leasing de software de computadores",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de alquiler o arrendamiento de licencias de software"
+      },
+      {
+        "code": "44103108",
+        "similar_words": "tóner, cartucho de impresora, suministros de impresión, revelador para fotocopiadora, insumos para impresora",
+        "original_name": "Reveladores para impresoras o fotocopiadoras",
+        "level": "PRODUCT",
+        "parent_name": "Suministros para impresora, fax y fotocopiadora"
+      },
+      {
+        "code": "50202301",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, cerveza de barril",
+        "original_name": "Cerveza",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50202302",
+        "similar_words": "vino tinto, vino blanco, vino rosado, vino espumoso, vino de mesa",
+        "original_name": "Vino",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50201700",
+        "similar_words": "cafeteria, infusion, cafe molido, cafe soluble, te de hierbas",
+        "original_name": "Cafe y te",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas no alcoholicas"
+      },
+      {
+        "code": "80141701",
+        "similar_words": "venta directa, distribución de productos, venta al por menor, ventas en campo, servicio de ventas",
+        "original_name": "Servicios de venta directa",
+        "level": "PRODUCT",
+        "parent_name": "Distribucion"
+      },
+      {
+        "code": "81161704",
+        "similar_words": "soporte técnico celular, mantenimiento de telefonía, servicio de telefonía móvil, asistencia técnica celular, reparación de cel",
+        "original_name": "Servicio de soporte para telefonia movil",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de telecomunicaciones"
+      }
+    ]
+  },
+  {
+    "model": "GPT-4o",
+    "provider": "openai",
+    "model_id": "gpt-4o",
+    "price_input_1m": 2.5,
+    "price_output_1m": 10.0,
+    "input_tokens": 1619,
+    "output_tokens": 787,
+    "cost_test": 0.0119,
+    "projected_53k": 31.62,
+    "projected_53k_batch": 15.81,
+    "results": [
+      {
+        "code": "43000000",
+        "similar_words": "ti, telecomunicaciones, difusion, tecnologia, sistemas, informatica, it",
+        "original_name": "Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "56000000",
+        "similar_words": "muebles, mobiliario, equipamiento, decoracion, muebles oficina, muebles hogar, muebles comerciales",
+        "original_name": "Muebles y Mobiliario (Division 56)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "43210000",
+        "similar_words": "equipo computo, accesorios computo, hardware, perifericos, accesorios pc, partes computadora, componentes informaticos",
+        "original_name": "Equipo informatico y accesorios y relacionados (Grupo 4321)",
+        "level": "GROUP",
+        "parent_name": "Tecnologia de la Informacion (Division 43)"
+      },
+      {
+        "code": "50200000",
+        "similar_words": "bebidas, refrescos, jugos, bebidas alcoholicas, bebidas energeticas, bebidas gaseosas, bebidas embotelladas",
+        "original_name": "Bebidas y relacionados (Grupo 5020)",
+        "level": "GROUP",
+        "parent_name": "Alimentos, Bebidas y Tabaco (Division 50)"
+      },
+      {
+        "code": "43211500",
+        "similar_words": "computadora, pc, desktop, equipo computo, pc de escritorio, torre, equipo informatico",
+        "original_name": "Computadores",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "43211700",
+        "similar_words": "disco duro, usb, almacenamiento externo, ssd, memoria externa, disco solido, almacenamiento masivo",
+        "original_name": "Dispositivos de almacenamiento",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "50202300",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, cerveza de barril, vino, licor",
+        "original_name": "Bebidas alcoholicas",
+        "level": "CLASS",
+        "parent_name": "Bebidas y relacionados (Grupo 5020)"
+      },
+      {
+        "code": "80141600",
+        "similar_words": "promocion ventas, marketing, ventas, actividades comerciales, promocion productos, estrategias ventas, publicidad",
+        "original_name": "Actividades de ventas y promocion de negocios",
+        "level": "CLASS",
+        "parent_name": "Mercadeo y distribucion (Grupo 8014)"
+      },
+      {
+        "code": "43211501",
+        "similar_words": "tablet, ipad, tableta, dispositivo tactil, tablet pc, equipo portatil, dispositivo movil",
+        "original_name": "Computadores de tableta",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211503",
+        "similar_words": "laptop, notebook, lap, portatil, equipo portatil, computadora portatil, macbook",
+        "original_name": "Computadores notebook",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211507",
+        "similar_words": "pc de escritorio, computadora fija, desktop, compu de oficina, equipo de escritorio",
+        "original_name": "Computadores de escritorio",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211509",
+        "similar_words": "servidor de red, servidor dedicado, equipo servidor, servidor en rack, servidor empresarial",
+        "original_name": "Servidores de computador",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "81111812",
+        "similar_words": "mantenimiento de pc, soporte tecnico de compu, reparacion de hardware, svc. tecnico de computadora, soporte de eq. informatico",
+        "original_name": "Servicio de mantenimiento o soporte del hardware del computador",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de sistemas y administracion de componentes de sistemas"
+      },
+      {
+        "code": "81112502",
+        "similar_words": "renta de software, leasing de licencias, arriendo de programas, alquiler de software, arrendamiento de licencias",
+        "original_name": "Servicio de arriendo o leasing de software de computadores",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de alquiler o arrendamiento de licencias de software"
+      },
+      {
+        "code": "44103108",
+        "similar_words": "toner para impresora, revelador de copiadora, insumo de impresora, polvo para fotocopiadora, consumible de impresora",
+        "original_name": "Reveladores para impresoras o fotocopiadoras",
+        "level": "PRODUCT",
+        "parent_name": "Suministros para impresora, fax y fotocopiadora"
+      },
+      {
+        "code": "50202301",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, cerveza de barril",
+        "original_name": "Cerveza",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50202302",
+        "similar_words": "vino tinto, vino blanco, vino rosado, vino espumoso, vino de mesa",
+        "original_name": "Vino",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50201700",
+        "similar_words": "cafeteria, infusion, cafe molido, cafe soluble, te de hierbas",
+        "original_name": "Cafe y te",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas no alcoholicas"
+      },
+      {
+        "code": "80141701",
+        "similar_words": "venta directa, ventas puerta a puerta, comercializacion directa, distribucion directa, ventas personales",
+        "original_name": "Servicios de venta directa",
+        "level": "PRODUCT",
+        "parent_name": "Distribucion"
+      },
+      {
+        "code": "81161704",
+        "similar_words": "soporte tecnico cel, svc. tecnico de celular, asistencia para telefonia movil, soporte de eq. movil, reparacion de cel",
+        "original_name": "Servicio de soporte para telefonia movil",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de telecomunicaciones"
+      }
+    ]
+  },
+  {
+    "model": "Claude Haiku 4.5",
+    "provider": "anthropic",
+    "model_id": "claude-haiku-4-5-20251001",
+    "price_input_1m": 1.0,
+    "price_output_1m": 5.0,
+    "input_tokens": 1939,
+    "output_tokens": 1062,
+    "cost_test": 0.0072,
+    "projected_53k": 19.23,
+    "projected_53k_batch": 9.62,
+    "results": [
+      {
+        "code": "43000000",
+        "similar_words": "IT, informatica, telecomunicaciones, tecnologia digital, difusion, medios, redes, sistemas",
+        "original_name": "Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "56000000",
+        "similar_words": "muebles, mobiliario, sillas, escritorios, estantes, decoracion, equipamiento, enseres",
+        "original_name": "Muebles y Mobiliario (Division 56)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "43210000",
+        "similar_words": "equipo informatico, computadoras, accesorios tech, perifericos, hardware, dispositivos digitales, equipo de computo",
+        "original_name": "Equipo informatico y accesorios y relacionados (Grupo 4321)",
+        "level": "GROUP",
+        "parent_name": "Tecnologia de la Informacion (Division 43)"
+      },
+      {
+        "code": "50200000",
+        "similar_words": "bebidas, refrescos, jugos, aguas, bebidas sin alcohol, bebidas con alcohol, licores, tragos",
+        "original_name": "Bebidas y relacionados (Grupo 5020)",
+        "level": "GROUP",
+        "parent_name": "Alimentos, Bebidas y Tabaco (Division 50)"
+      },
+      {
+        "code": "43211500",
+        "similar_words": "compu, computadora, PC, desktop, laptop, maquina, equipo de computo, procesador",
+        "original_name": "Computadores",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "43211700",
+        "similar_words": "almacenamiento, disco duro, SSD, memoria, USB, tarjeta SD, pendrive, backup",
+        "original_name": "Dispositivos de almacenamiento",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "50202300",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, whiskey, tequila, ron, vodka",
+        "original_name": "Bebidas alcoholicas",
+        "level": "CLASS",
+        "parent_name": "Bebidas y relacionados (Grupo 5020)"
+      },
+      {
+        "code": "80141600",
+        "similar_words": "ventas, promocion, marketing, publicidad, negocio, comercializacion, distribucion, venta de servicios",
+        "original_name": "Actividades de ventas y promocion de negocios",
+        "level": "CLASS",
+        "parent_name": "Mercadeo y distribucion (Grupo 8014)"
+      },
+      {
+        "code": "43211501",
+        "similar_words": "tablet, iPad, tableta, dispositivo tactil, pantalla tactil, tablet Android, tab",
+        "original_name": "Computadores de tableta",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211503",
+        "similar_words": "notebook, laptop, lap, computadora portatil, netbook, ultrabook, maquina portatil",
+        "original_name": "Computadores notebook",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211507",
+        "similar_words": "compu escritorio, pc de escritorio, desktop, computadora fija, equipo de computo, cpu, torre",
+        "original_name": "Computadores de escritorio",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211509",
+        "similar_words": "servidor, server, equipo servidor, computador servidor, infraestructura ti, maquina servidor",
+        "original_name": "Servidores de computador",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "81111812",
+        "similar_words": "mantenimiento compu, soporte tecnico pc, reparacion hardware, servicio tecnico, mto. hardware, svc. computador",
+        "original_name": "Servicio de mantenimiento o soporte del hardware del computador",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de sistemas y administracion de componentes de sistemas"
+      },
+      {
+        "code": "81112502",
+        "similar_words": "renta software, leasing software, arrendamiento licencia, suscripcion software, rta. programa, lic. software",
+        "original_name": "Servicio de arriendo o leasing de software de computadores",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de alquiler o arrendamiento de licencias de software"
+      },
+      {
+        "code": "44103108",
+        "similar_words": "toner impresora, revelador fotocopiadora, cartucho tinta, suministro impresora, tinta fax, recarga toner",
+        "original_name": "Reveladores para impresoras o fotocopiadoras",
+        "level": "PRODUCT",
+        "parent_name": "Suministros para impresora, fax y fotocopiadora"
+      },
+      {
+        "code": "50202301",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, cerveza de barril, cerveza importada",
+        "original_name": "Cerveza",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50202302",
+        "similar_words": "vino tinto, vino blanco, vino rosado, vino espumoso, vino de mesa, vino importado",
+        "original_name": "Vino",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50201700",
+        "similar_words": "cafe molido, cafe soluble, te de hierbas, tisana, cafeteria, infusion, cafe instantaneo",
+        "original_name": "Cafe y te",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas no alcoholicas"
+      },
+      {
+        "code": "80141701",
+        "similar_words": "venta directa, distribucion directa, venta puerta a puerta, comercializacion directa, distribuidor",
+        "original_name": "Servicios de venta directa",
+        "level": "PRODUCT",
+        "parent_name": "Distribucion"
+      },
+      {
+        "code": "81161704",
+        "similar_words": "soporte celular, servicio tecnico cel, soporte movil, atencion cliente telefonia, svc. telefonica",
+        "original_name": "Servicio de soporte para telefonia movil",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de telecomunicaciones"
+      }
+    ]
+  },
+  {
+    "model": "Claude Sonnet 4",
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-20250514",
+    "price_input_1m": 3.0,
+    "price_output_1m": 15.0,
+    "input_tokens": 1939,
+    "output_tokens": 924,
+    "cost_test": 0.0197,
+    "projected_53k": 52.2,
+    "projected_53k_batch": 26.1,
+    "results": [
+      {
+        "code": "43000000",
+        "similar_words": "tecnologia, sistemas, IT, informatica, telecomunicaciones, software, hardware, equipos tecnologicos",
+        "original_name": "Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "56000000",
+        "similar_words": "muebles, mobiliario, oficina, escritorios, sillas, archiveros, estantes, decoracion",
+        "original_name": "Muebles y Mobiliario (Division 56)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "43210000",
+        "similar_words": "equipos de computo, hardware, accesorios informaticos, perifericos, componentes PC, tecnologia computacional",
+        "original_name": "Equipo informatico y accesorios y relacionados (Grupo 4321)",
+        "level": "GROUP",
+        "parent_name": "Tecnologia de la Informacion (Division 43)"
+      },
+      {
+        "code": "50200000",
+        "similar_words": "bebidas, refrescos, jugos, aguas, chelas, cheves, liquidos, bebidas preparadas",
+        "original_name": "Bebidas y relacionados (Grupo 5020)",
+        "level": "GROUP",
+        "parent_name": "Alimentos, Bebidas y Tabaco (Division 50)"
+      },
+      {
+        "code": "43211500",
+        "similar_words": "compus, PC, equipos de computo, desktop, all in one, workstation, servidores",
+        "original_name": "Computadores",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "43211700",
+        "similar_words": "discos duros, USB, memorias, almacenamiento digital, respaldos, storage, dispositivos memoria",
+        "original_name": "Dispositivos de almacenamiento",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "50202300",
+        "similar_words": "chelas, cheves, birras, vinos, licores, destilados, bebidas con alcohol, cervezas artesanales",
+        "original_name": "Bebidas alcoholicas",
+        "level": "CLASS",
+        "parent_name": "Bebidas y relacionados (Grupo 5020)"
+      },
+      {
+        "code": "80141600",
+        "similar_words": "marketing, promociones, ventas, publicidad, mercadotecnia, campañas comerciales, estrategias ventas, promocion productos",
+        "original_name": "Actividades de ventas y promocion de negocios",
+        "level": "CLASS",
+        "parent_name": "Mercadeo y distribucion (Grupo 8014)"
+      },
+      {
+        "code": "43211501",
+        "similar_words": "tablets, iPad, tabletas digitales, dispositivos tactiles, tab, tabletas graficas",
+        "original_name": "Computadores de tableta",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211503",
+        "similar_words": "laptops, lap, notebook, portatiles, computadoras portatiles, laptop gaming, ultrabook",
+        "original_name": "Computadores notebook",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211507",
+        "similar_words": "compu de escritorio, PC escritorio, computadora fija, desktop, torre, CPU escritorio, equipo escritorio",
+        "original_name": "Computadores de escritorio",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211509",
+        "similar_words": "server, servidor web, servidor datos, equipo servidor, servidor red, servidor empresa, rack server",
+        "original_name": "Servidores de computador",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "81111812",
+        "similar_words": "soporte tecnico compu, mantenimiento PC, reparacion computadora, servicio tecnico desktop, soporte hardware, mto. equipos",
+        "original_name": "Servicio de mantenimiento o soporte del hardware del computador",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de sistemas y administracion de componentes de sistemas"
+      },
+      {
+        "code": "81112502",
+        "similar_words": "renta software, arrendamiento licencias, leasing programas, rta. software, alquiler licencias, suscripcion software",
+        "original_name": "Servicio de arriendo o leasing de software de computadores",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de alquiler o arrendamiento de licencias de software"
+      },
+      {
+        "code": "44103108",
+        "similar_words": "toner impresora, revelador fotocopiadora, cartucho revelador, suministro impresion, toner copiadora, revelador laser",
+        "original_name": "Reveladores para impresoras o fotocopiadoras",
+        "level": "PRODUCT",
+        "parent_name": "Suministros para impresora, fax y fotocopiadora"
+      },
+      {
+        "code": "50202301",
+        "similar_words": "chela, cheve, birra, cerveza artesanal, cerveza de barril, cerveza lata, cerveza importada",
+        "original_name": "Cerveza",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50202302",
+        "similar_words": "vino tinto, vino blanco, vino rosado, vino espumoso, vino nacional, vino importado, bebida vinicola",
+        "original_name": "Vino",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas alcoholicas"
+      },
+      {
+        "code": "50201700",
+        "similar_words": "cafeteria, cafe molido, cafe soluble, te hierbas, infusion, tisana, cafe grano, te verde",
+        "original_name": "Cafe y te",
+        "level": "PRODUCT",
+        "parent_name": "Bebidas no alcoholicas"
+      },
+      {
+        "code": "80141701",
+        "similar_words": "venta directa, distribucion productos, comercializacion directa, venta domicilio, distribucion mercancia, svc. distribucion",
+        "original_name": "Servicios de venta directa",
+        "level": "PRODUCT",
+        "parent_name": "Distribucion"
+      },
+      {
+        "code": "81161704",
+        "similar_words": "soporte celular, servicio tecnico cel, reparacion movil, soporte telefonia, servicio cel, mto. telefono",
+        "original_name": "Servicio de soporte para telefonia movil",
+        "level": "PRODUCT",
+        "parent_name": "Servicios de telecomunicaciones"
+      }
+    ]
+  },
+  {
+    "model": "Gemini 2.5 Flash",
+    "provider": "google",
+    "model_id": "gemini-2.5-flash",
+    "price_input_1m": 0.3,
+    "price_output_1m": 2.5,
+    "input_tokens": 1743,
+    "output_tokens": 624,
+    "cost_test": 0.0021,
+    "projected_53k": 11.05,
+    "projected_53k_batch": 5.53,
+    "results": [
+      {
+        "code": "43000000",
+        "similar_words": "sistemas, software, hardware, redes, internet, comunicaciones, media, digital",
+        "original_name": "Tecnologia de la Informacion, Telecomunicaciones y Difusion (Division 43)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "56000000",
+        "similar_words": "enseres, equipamiento, decoracion, hogar, oficina, amueblado, interiorismo, diseño",
+        "original_name": "Muebles y Mobiliario (Division 56)",
+        "level": "DIVISION",
+        "parent_name": null
+      },
+      {
+        "code": "43210000",
+        "similar_words": "hardware, perifericos, componentes, accesorios compu, equipo computo, refacciones pc, gadgets, electronica",
+        "original_name": "Equipo informatico y accesorios y relacionados (Grupo 4321)",
+        "level": "GROUP",
+        "parent_name": "Tecnologia de la Informacion (Division 43)"
+      },
+      {
+        "code": "50200000",
+        "similar_words": "refrescos, jugos, agua embotellada, licores, alcohol, sodas, energizantes, hidratantes",
+        "original_name": "Bebidas y relacionados (Grupo 5020)",
+        "level": "GROUP",
+        "parent_name": "Alimentos, Bebidas y Tabaco (Division 50)"
+      },
+      {
+        "code": "43211500",
+        "similar_words": "pc, laptop, desktop, workstation, equipo computo, computadoras personales, compu, cpu",
+        "original_name": "Computadores",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "43211700",
+        "similar_words": "discos duros, ssd, usb, memoria, pendrive, almacenamiento externo, hdd, nube",
+        "original_name": "Dispositivos de almacenamiento",
+        "level": "CLASS",
+        "parent_name": "Equipo informatico y accesorios (Grupo 4321)"
+      },
+      {
+        "code": "50202300",
+        "similar_words": "chela, cheve, vino, tequila, mezcal, cerveza, licores, destilados",
+        "original_name": "Bebidas alcoholicas",
+        "level": "CLASS",
+        "parent_name": "Bebidas y relacionados (Grupo 5020)"
+      },
+      {
+        "code": "80141600",
+        "similar_words": "marketing, publicidad, promocion, ventas, prospeccion, desarrollo negocios, consultoria comercial, estrategia comercial",
+        "original_name": "Actividades de ventas y promocion de negocios",
+        "level": "CLASS",
+        "parent_name": "Mercadeo y distribucion (Grupo 8014)"
+      },
+      {
+        "code": "43211501",
+        "similar_words": "tablet, iPad, galaxy tab, surface, tableta digital, tableta electronica, mini lap, slate pc",
+        "original_name": "Computadores de tableta",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      },
+      {
+        "code": "43211503",
+        "similar_words": "laptop, notebook, ultrabook, netbook, portatil, lap, compu portatil, mini laptop",
+        "original_name": "Computadores notebook",
+        "level": "PRODUCT",
+        "parent_name": "Computadores"
+      }
+    ]
+  },
+  {
+    "model": "Gemini 2.5 Pro",
+    "provider": "google",
+    "model_id": "gemini-2.5-pro",
+    "price_input_1m": 1.25,
+    "price_output_1m": 10.0,
+    "input_tokens": 1743,
+    "output_tokens": 0,
+    "cost_test": 0.0022,
+    "projected_53k": 115.6,
+    "projected_53k_batch": 57.8,
+    "results": []
+  }
+]

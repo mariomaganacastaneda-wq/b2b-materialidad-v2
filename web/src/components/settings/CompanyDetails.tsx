@@ -387,13 +387,13 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                                 (org.brand_name || org.name || '?').substring(0, 1).toUpperCase()
                             )}
                         </div>
-                        <div>
+                        <div className="notranslate" translate="no">
                             <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                                {org.brand_name || org.name}
+                                <span key="org-display-name">{org.brand_name || org.name}</span>
                             </h2>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontSize: '13px', color: '#94a3b8', fontFamily: 'monospace', backgroundColor: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px' }}>{org.rfc}</span>
-                                <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '12px', backgroundColor: validity?.color + '20', color: validity?.color, border: `1px solid ${validity?.color}40` }}>
+                                <span key="org-display-rfc" style={{ fontSize: '13px', color: '#94a3b8', fontFamily: 'monospace', backgroundColor: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px' }}>{org.rfc}</span>
+                                <span key="org-display-validity" style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '12px', backgroundColor: validity?.color + '20', color: validity?.color, border: `1px solid ${validity?.color}40` }}>
                                     CSF {validity?.label}
                                 </span>
                             </div>
@@ -432,31 +432,47 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                                 <div>
                                     <h5 style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identificación Detallada</h5>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                        <div className="detail-item">
+                                        <div className="detail-item notranslate" translate="no">
                                             <div style={{ fontSize: '9px', color: '#64748b', textTransform: 'uppercase' }}>CURP</div>
-                                            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{org.curp || 'N/A'}</div>
+                                            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                                                <span key="org-curp">{org.curp || 'N/A'}</span>
+                                            </div>
                                         </div>
-                                        <div className="detail-item">
+                                        <div className="detail-item notranslate" translate="no">
                                             <div style={{ fontSize: '9px', color: '#64748b', textTransform: 'uppercase' }}>idCIF</div>
-                                            <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#6366f1' }}>{org.cif_id || 'N/A'}</div>
+                                            <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#6366f1' }}>
+                                                <span key="org-cif">{org.cif_id || 'N/A'}</span>
+                                            </div>
                                         </div>
                                         <div className="detail-item">
                                             <div style={{ fontSize: '9px', color: '#64748b', textTransform: 'uppercase' }}>Inicio Op.</div>
-                                            <div style={{ fontSize: '12px' }}>{formatDate(org.operations_start_date)}</div>
+                                            <div style={{ fontSize: '12px' }}>
+                                                <span key="org-start-date">{formatDate(org.operations_start_date)}</span>
+                                            </div>
                                         </div>
                                         <div className="detail-item">
                                             <div style={{ fontSize: '9px', color: '#64748b', textTransform: 'uppercase' }}>Cambio Status</div>
-                                            <div style={{ fontSize: '12px' }}>{formatDate(org.last_status_change_date)}</div>
+                                            <div style={{ fontSize: '12px' }}>
+                                                <span key="org-status-date">{formatDate(org.last_status_change_date)}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div style={{ borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: '24px' }}>
                                     <h5 style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Domicilio Fiscal</h5>
-                                    <div style={{ fontSize: '13px', lineHeight: '1.6' }}>
-                                        <div style={{ fontWeight: 'bold', color: 'var(--primary-base)', marginBottom: '4px' }}>{org.vialidad_type} {org.vialidad_name} #{org.exterior_number} {org.interior_number && `Int. ${org.interior_number}`}</div>
-                                        <div style={{ color: '#cbd5e1' }}>{org.colony}</div>
-                                        <div style={{ color: '#cbd5e1' }}>{org.municipality}, {org.state}</div>
-                                        <div style={{ color: 'var(--primary-base)', fontWeight: 'bold', marginTop: '4px' }}>CP: {org.tax_domicile?.replace('CP: ', '')}</div>
+                                    <div style={{ fontSize: '13px', lineHeight: '1.6' }} className="notranslate" translate="no">
+                                        <div style={{ fontWeight: 'bold', color: 'var(--primary-base)', marginBottom: '4px' }}>
+                                            <span key="org-address-line1">{org.vialidad_type} {org.vialidad_name} #{org.exterior_number} {org.interior_number && `Int. ${org.interior_number}`}</span>
+                                        </div>
+                                        <div style={{ color: '#cbd5e1' }}>
+                                            <span key="org-colony">{org.colony}</span>
+                                        </div>
+                                        <div style={{ color: '#cbd5e1' }}>
+                                            <span key="org-city-state">{org.municipality}, {org.state}</span>
+                                        </div>
+                                        <div style={{ color: 'var(--primary-base)', fontWeight: 'bold', marginTop: '4px' }}>
+                                            <span key="org-cp">CP: {org.tax_domicile?.replace('CP: ', '')}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -814,9 +830,13 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                         <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 {regimes.map((r: any) => (
-                                    <div key={r.id} style={{ fontSize: '12px', padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
-                                        <div style={{ fontWeight: 'bold', color: 'white' }}>{r.regime_name}</div>
-                                        <div style={{ color: '#94a3b8', fontSize: '10px', marginTop: '4px' }}>Iniciado el: {formatDate(r.start_date)}</div>
+                                    <div key={r.id} style={{ fontSize: '12px', padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '4px solid #10b981' }} className="notranslate" translate="no">
+                                        <div style={{ fontWeight: 'bold', color: 'white' }}>
+                                            <span key={`regime-name-${r.id}`}>{r.regime_name}</span>
+                                        </div>
+                                        <div style={{ color: '#94a3b8', fontSize: '10px', marginTop: '4px' }}>
+                                            Iniciado el: <span key={`regime-date-${r.id}`}>{formatDate(r.start_date)}</span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -841,10 +861,16 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                         <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 {obligations.map((o: any) => (
-                                    <div key={o.id} style={{ fontSize: '11px', padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '4px solid #818cf8' }}>
-                                        <div style={{ fontWeight: 'bold', color: 'white' }}>{o.description}</div>
-                                        <div style={{ color: '#64748b', fontSize: '10px', marginTop: '4px' }}>{o.due_date_description}</div>
-                                        <div style={{ color: '#94a3b8', fontSize: '10px' }}>Desde: {formatDate(o.start_date)}</div>
+                                    <div key={o.id} style={{ fontSize: '11px', padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '4px solid #818cf8' }} className="notranslate" translate="no">
+                                        <div style={{ fontWeight: 'bold', color: 'white' }}>
+                                            <span key={`obligation-desc-${o.id}`}>{o.description}</span>
+                                        </div>
+                                        <div style={{ color: '#64748b', fontSize: '10px', marginTop: '4px' }}>
+                                            <span key={`obligation-due-${o.id}`}>{o.due_date_description}</span>
+                                        </div>
+                                        <div style={{ color: '#94a3b8', fontSize: '10px' }}>
+                                            Desde: <span key={`obligation-start-${o.id}`}>{formatDate(o.start_date)}</span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

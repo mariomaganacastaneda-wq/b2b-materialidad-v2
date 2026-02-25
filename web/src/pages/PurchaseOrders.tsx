@@ -275,11 +275,21 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'PENDING_REVIEW': return { bg: 'rgba(234, 179, 8, 0.1)', text: '#facc15', border: 'rgba(234, 179, 8, 0.2)', icon: <Clock size={12} /> };
-            case 'APPROVED': return { bg: 'rgba(16, 185, 129, 0.1)', text: '#34d399', border: 'rgba(16, 185, 129, 0.2)', icon: <CheckCircle size={12} /> };
-            case 'CONVERTED_TO_PROFORMA': return { bg: 'rgba(99, 102, 241, 0.1)', text: '#818cf8', border: 'rgba(99, 102, 241, 0.2)', icon: <FileCheck size={12} /> };
-            case 'REJECTED': return { bg: 'rgba(239, 68, 68, 0.1)', text: '#f87171', border: 'rgba(239, 68, 68, 0.2)', icon: <AlertTriangle size={12} /> };
-            default: return { bg: 'rgba(148, 163, 184, 0.1)', text: '#94a3b8', border: 'rgba(148, 163, 184, 0.2)', icon: <div /> };
+            case 'PENDING_REVIEW': return { bg: 'rgba(234, 179, 8, 0.1)', text: '#facc15', border: 'rgba(234, 179, 8, 0.2)', label: 'PENDING REVIEW' };
+            case 'APPROVED': return { bg: 'rgba(16, 185, 129, 0.1)', text: '#34d399', border: 'rgba(16, 185, 129, 0.2)', label: 'APPROVED' };
+            case 'CONVERTED_TO_PROFORMA': return { bg: 'rgba(99, 102, 241, 0.1)', text: '#818cf8', border: 'rgba(99, 102, 241, 0.2)', label: 'CONVERTED TO PROFORMA' };
+            case 'REJECTED': return { bg: 'rgba(239, 68, 68, 0.1)', text: '#f87171', border: 'rgba(239, 68, 68, 0.2)', label: 'REJECTED' };
+            default: return { bg: 'rgba(148, 163, 184, 0.1)', text: '#94a3b8', border: 'rgba(148, 163, 184, 0.2)', label: status };
+        }
+    };
+
+    const StatusIcon = ({ status, size = 12 }: { status: string, size?: number }) => {
+        switch (status) {
+            case 'PENDING_REVIEW': return <Clock size={size} />;
+            case 'APPROVED': return <CheckCircle size={size} />;
+            case 'CONVERTED_TO_PROFORMA': return <FileCheck size={size} />;
+            case 'REJECTED': return <AlertTriangle size={size} />;
+            default: return null;
         }
     };
 
@@ -311,9 +321,11 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                     <div>
                         <h2 style={{ fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <FileText size={20} style={{ color: 'var(--primary-color)' }} />
-                            Gestor de Órdenes de Compra
+                            <span>Gestor de Órdenes de Compra</span>
                         </h2>
-                        <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>OCs recibidas para {selectedOrg.name}</p>
+                        <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
+                            OCs recibidas para <span style={{ fontWeight: '600' }}>{selectedOrg.name}</span>
+                        </p>
                     </div>
 
                     <div style={{ position: 'relative' }}>
@@ -331,7 +343,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', cursor: uploading ? 'not-allowed' : 'pointer', opacity: uploading ? 0.7 : 1 }}
                         >
                             {uploading ? <RefreshCw size={16} className="spin" /> : <UploadCloud size={16} />}
-                            {uploading ? 'Procesando (AI)...' : 'Subir OC (PDF)'}
+                            <span>{uploading ? 'Procesando (AI)...' : 'Subir OC (PDF)'}</span>
                         </label>
                     </div>
                 </div>
@@ -365,7 +377,6 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                     <div
                                         key={order.id}
                                         onClick={async () => {
-                                            // Fetch Items if selecting
                                             if (!isSelected) {
                                                 const items = await loadOrderDetails(order.id);
                                                 setViewingOrder({ ...order, items });
@@ -389,19 +400,22 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                                                     <span>FOLIO OC</span>
-                                                    <span style={{ fontWeight: 'normal' }}>{order.emission_date ? new Date(order.emission_date).toLocaleDateString() : '--'}</span>
+                                                    <span style={{ fontWeight: 'normal' }}>
+                                                        {order.emission_date ? new Date(order.emission_date).toLocaleDateString() : '--'}
+                                                    </span>
                                                 </div>
                                                 <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    {/* Si el po_number parece una descripción (muy largo), mostrar el folio alternativo del OCR data o un genérico */}
-                                                    {(order.po_number && order.po_number.length > 25 && order.po_number.includes(' '))
-                                                        ? (order.raw_ocr_data?.summary?.po_number || 'S/F')
-                                                        : (order.po_number || 'S/N')}
+                                                    <span>
+                                                        {(order.po_number && order.po_number.length > 25 && order.po_number.includes(' '))
+                                                            ? (order.raw_ocr_data?.summary?.po_number || 'S/F')
+                                                            : (order.po_number || 'S/N')}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '20px', backgroundColor: statusInfo.bg, border: `1px solid ${statusInfo.border}`, color: statusInfo.text, fontSize: '10px', fontWeight: '600' }}>
-                                                    {statusInfo.icon}
-                                                    {order.status.replace(/_/g, ' ')}
+                                                    <StatusIcon status={order.status} />
+                                                    <span>{statusInfo.label}</span>
                                                 </div>
                                                 <button
                                                     onClick={(e) => handleDeleteOrder(e, order.id)}
@@ -417,12 +431,12 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                             <div style={{ fontSize: '12px' }}>
                                                 <div style={{ color: '#64748b', fontSize: '10px' }}>CLIENTE (EMISIÓN OC)</div>
                                                 <div style={{ color: '#e2e8f0', fontWeight: '700', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                    {order.issuer ? order.issuer.name : (order.client_name || 'Sin identificar')}
+                                                    <span>{order.issuer ? order.issuer.name : (order.client_name || 'Sin identificar')}</span>
                                                 </div>
                                             </div>
 
                                             <div style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '4px', borderLeft: '2px solid var(--primary-color)' }}>
-                                                {order.description || order.notes || 'Sin descripción'}
+                                                <span>{order.description || order.notes || 'Sin descripción'}</span>
                                             </div>
                                         </div>
 
@@ -430,14 +444,13 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                             <div>
                                                 <div style={{ color: '#64748b', fontSize: '10px' }}>RECEPTOR / PROVEEDOR</div>
                                                 <div style={{ color: 'var(--primary-light-30, #818cf8)', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                    {/* Mostrar MEX EPIC si la IA lo detectó, o la org seleccionada */}
-                                                    {order.raw_ocr_data?.summary?.issuer?.split('(')[0] || selectedOrg.name}
+                                                    <span>{order.raw_ocr_data?.summary?.issuer?.split('(')[0] || selectedOrg.name}</span>
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
                                                 <div style={{ color: '#64748b', fontSize: '10px' }}>TOTAL ({order.currency})</div>
                                                 <div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '16px' }}>
-                                                    {formatCurrency(order.grand_total, order.currency)}
+                                                    <span>{formatCurrency(order.grand_total, order.currency)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -456,180 +469,195 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
             </div>
 
             {/* Columna Derecha: Detalles Visuales y Conversión */}
-            {viewingOrder && (
-                <div className="glass-card fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)', animation: 'slideRight 0.3s ease' }}>
-                    <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 'bold' }}>Detalle de Orden <span style={{ color: 'var(--primary-color)' }}>#{viewingOrder.po_number || 'S/N'}</span></h3>
-                        <button onClick={() => setViewingOrder(null)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}><X size={18} /></button>
-                    </div>
+            <div
+                className="glass-card"
+                style={{
+                    display: viewingOrder ? 'flex' : 'none',
+                    flexDirection: 'column',
+                    height: 'calc(100vh - 180px)',
+                    animation: 'slideRight 0.3s ease',
+                    overflow: 'hidden'
+                }}
+            >
+                {viewingOrder && (
+                    <>
+                        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Detalle de Orden <span style={{ color: 'var(--primary-color)' }}>#{viewingOrder.po_number || 'S/N'}</span>
+                            </h3>
+                            <button onClick={() => setViewingOrder(null)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
+                                <X size={18} />
+                            </button>
+                        </div>
 
-                    <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                        {/* AI Validation Messages */}
-                        {((viewingOrder.validation_messages && viewingOrder.validation_messages.length > 0) ||
-                            (viewingOrder.raw_ocr_data?.validation_messages && viewingOrder.raw_ocr_data.validation_messages.length > 0)) && (
-                                <div style={{ padding: '16px', backgroundColor: 'rgba(234, 179, 8, 0.05)', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)' }}>
-                                    <h4 style={{ fontSize: '11px', color: '#facc15', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
-                                        <AlertTriangle size={14} />
-                                        OBSERVACIONES DE VALIDACIÓN (IA)
-                                    </h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                        {(viewingOrder.validation_messages || viewingOrder.raw_ocr_data?.validation_messages).map((msg: any, idx: number) => {
-                                            let icon = 'ℹ️';
-                                            let color = '#94a3b8';
-                                            if (msg.level === 'warning') { icon = '⚠️'; color = '#facc15'; }
-                                            if (msg.level === 'fix') { icon = '🔧'; color = '#38bdf8'; }
-                                            if (msg.level === 'error') { icon = '❌'; color = '#f87171'; }
-                                            if (msg.level === 'info') { icon = '✅'; color = '#10b981'; }
+                            {/* AI Validation Messages */}
+                            {((viewingOrder.validation_messages && viewingOrder.validation_messages.length > 0) ||
+                                (viewingOrder.raw_ocr_data?.validation_messages && viewingOrder.raw_ocr_data.validation_messages.length > 0)) && (
+                                    <div style={{ padding: '16px', backgroundColor: 'rgba(234, 179, 8, 0.05)', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)' }}>
+                                        <h4 style={{ fontSize: '11px', color: '#facc15', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
+                                            <AlertTriangle size={14} />
+                                            <span>OBSERVACIONES DE VALIDACIÓN (IA)</span>
+                                        </h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                            {(viewingOrder.validation_messages || viewingOrder.raw_ocr_data?.validation_messages || []).map((msg: any, idx: number) => {
+                                                let icon = 'ℹ️';
+                                                let color = '#94a3b8';
+                                                if (msg.level === 'warning') { icon = '⚠️'; color = '#facc15'; }
+                                                if (msg.level === 'fix') { icon = '🔧'; color = '#38bdf8'; }
+                                                if (msg.level === 'error') { icon = '❌'; color = '#f87171'; }
+                                                if (msg.level === 'info') { icon = '✅'; color = '#10b981'; }
 
-                                            return (
-                                                <div key={idx} style={{ fontSize: '12px', color: color, display: 'flex', gap: '8px' }}>
-                                                    <span>{icon}</span>
-                                                    <span>{msg.message}</span>
-                                                </div>
-                                            );
-                                        })}
+                                                return (
+                                                    <div key={`${viewingOrder.id}-msg-${idx}`} style={{ fontSize: '12px', color: color, display: 'flex', gap: '8px' }}>
+                                                        <span>{icon}</span>
+                                                        <span>{msg.message}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
+                                )}
+
+                            {/* Metadata Card */}
+                            <div style={{ padding: '16px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <h4 style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Información Fiscal Extraída</h4>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <div style={{ gridColumn: 'span 2' }}>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>CLIENTE (RECEPTOR)</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '500' }}><span>{viewingOrder.client_name || '---'}</span></div>
+                                        <div style={{ fontSize: '11px', color: '#94a3b8' }}><span>{viewingOrder.client_rfc || ''} | {viewingOrder.client_regime_code || ''}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>USO CFDI</div>
+                                        <div style={{ fontSize: '11px', color: '#e2e8f0' }}><span>{viewingOrder.usage_cfdi_code || '---'}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>MÉTODO / FORMA PAGO</div>
+                                        <div style={{ fontSize: '11px', color: '#e2e8f0' }}><span>{viewingOrder.payment_method || '---'} / {viewingOrder.payment_form || '---'}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>FECHA DE EMISIÓN</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '500' }}><span>{viewingOrder.emission_date}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>SUBTOTAL</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '500' }}><span>{formatCurrency(viewingOrder.subtotal, viewingOrder.currency)}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>IMPUESTOS</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '500' }}><span>{formatCurrency(viewingOrder.tax_total, viewingOrder.currency)}</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '10px', color: '#64748b' }}>TOTAL</div>
+                                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}><span>{formatCurrency(viewingOrder.grand_total, viewingOrder.currency)}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Items Table */}
+                            <div>
+                                <h4 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    Partidas <span style={{ padding: '2px 8px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.1)', fontSize: '10px' }}>{viewingOrder.items?.length || 0}</span>
+                                </h4>
+
+                                <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+                                        <thead style={{ backgroundColor: 'rgba(0,0,0,0.3)', color: '#94a3b8' }}>
+                                            <tr>
+                                                <th style={{ padding: '8px 12px', textAlign: 'left' }}>Descripción</th>
+                                                <th style={{ padding: '8px 12px', textAlign: 'center' }}>Cant.</th>
+                                                <th style={{ padding: '8px 12px', textAlign: 'right' }}>P.U.</th>
+                                                <th style={{ padding: '8px 12px', textAlign: 'right' }}>Importe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {viewingOrder.items?.map((item: any, idx: number) => (
+                                                <tr key={item.id || `${viewingOrder.id}-item-${idx}`} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                                    <td style={{ padding: '8px 12px', color: '#e2e8f0', maxWidth: '200px' }}>
+                                                        <div style={{ fontWeight: '500' }}><span>{item.description}</span></div>
+                                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                                                            {item.sat_product_key && (
+                                                                <div style={{ fontSize: '9px', color: '#818cf8', backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: '2px 4px', borderRadius: '4px' }}>
+                                                                    <span>SAT: {item.sat_product_key}</span>
+                                                                </div>
+                                                            )}
+                                                            {item.sat_match_score !== undefined && item.sat_match_score !== null && (
+                                                                <div style={{
+                                                                    fontSize: '9px',
+                                                                    color: item.sat_match_score < 0.5 ? '#facc15' : '#34d399',
+                                                                    backgroundColor: item.sat_match_score < 0.5 ? 'rgba(234, 179, 8, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                                                                    padding: '2px 4px',
+                                                                    borderRadius: '4px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '2px'
+                                                                }}>
+                                                                    <span>{Math.round(item.sat_match_score * 100)}% Match</span>
+                                                                </div>
+                                                            )}
+                                                            {item.sat_search_hint && item.sat_match_score < 0.4 && (
+                                                                <div style={{ fontSize: '9px', color: '#94a3b8', fontStyle: 'italic', width: '100%' }}>
+                                                                    <span>Tip: {item.sat_search_hint}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td style={{ padding: '8px 12px', textAlign: 'center', color: '#94a3b8' }}><span>{item.quantity} {item.unit_measure}</span></td>
+                                                    <td style={{ padding: '8px 12px', textAlign: 'right', color: '#94a3b8' }}><span>{formatCurrency(item.unit_price, viewingOrder.currency)}</span></td>
+                                                    <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: '500', color: '#cbd5e1' }}><span>{formatCurrency(item.total_amount, viewingOrder.currency)}</span></td>
+                                                </tr>
+                                            ))}
+                                            {(!viewingOrder.items || viewingOrder.items.length === 0) && (
+                                                <tr>
+                                                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>No se extrajeron partidas detalladas.</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Original Document Details */}
+                            {viewingOrder.source_file_url && (
+                                <div style={{ marginTop: 'auto', padding: '12px', backgroundColor: 'rgba(14, 165, 233, 0.1)', border: '1px solid rgba(14, 165, 233, 0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.open(viewingOrder.source_file_url, '_blank')}>
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'rgba(14, 165, 233, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#38bdf8' }}>
+                                        <FileText size={16} />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '12px', fontWeight: '500', color: '#e0f2fe' }}>Ver Documento Original</div>
+                                        <div style={{ fontSize: '10px', color: '#7dd3fc' }}>Abre el PDF fuente de esta orden</div>
+                                    </div>
+                                    <Eye size={14} style={{ marginLeft: 'auto', color: '#38bdf8' }} />
                                 </div>
                             )}
 
-                        {/* Metadata Card */}
-                        <div style={{ padding: '16px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h4 style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Información Fiscal Extraída</h4>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                <div style={{ gridColumn: 'span 2' }}>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>CLIENTE (RECEPTOR)</div>
-                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{viewingOrder.client_name || '---'}</div>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{viewingOrder.client_rfc || ''} | {viewingOrder.client_regime_code || ''}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>USO CFDI</div>
-                                    <div style={{ fontSize: '11px', color: '#e2e8f0' }}>{viewingOrder.usage_cfdi_code || '---'}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>MÉTODO / FORMA PAGO</div>
-                                    <div style={{ fontSize: '11px', color: '#e2e8f0' }}>{viewingOrder.payment_method || '---'} / {viewingOrder.payment_form || '---'}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>FECHA DE EMISIÓN</div>
-                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{viewingOrder.emission_date}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>SUBTOTAL</div>
-                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{formatCurrency(viewingOrder.subtotal, viewingOrder.currency)}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>IMPUESTOS</div>
-                                    <div style={{ fontSize: '13px', fontWeight: '500' }}>{formatCurrency(viewingOrder.tax_total, viewingOrder.currency)}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#64748b' }}>TOTAL</div>
-                                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(viewingOrder.grand_total, viewingOrder.currency)}</div>
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Items Table */}
-                        <div>
-                            <h4 style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                Partidas <span style={{ padding: '2px 8px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.1)', fontSize: '10px' }}>{viewingOrder.items?.length || 0}</span>
-                            </h4>
-
-                            <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
-                                    <thead style={{ backgroundColor: 'rgba(0,0,0,0.3)', color: '#94a3b8' }}>
-                                        <tr>
-                                            <th style={{ padding: '8px 12px', textAlign: 'left' }}>Descripción</th>
-                                            <th style={{ padding: '8px 12px', textAlign: 'center' }}>Cant.</th>
-                                            <th style={{ padding: '8px 12px', textAlign: 'right' }}>P.U.</th>
-                                            <th style={{ padding: '8px 12px', textAlign: 'right' }}>Importe</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {viewingOrder.items?.map((item: any) => (
-                                            <tr key={item.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                                                <td style={{ padding: '8px 12px', color: '#e2e8f0', maxWidth: '200px' }}>
-                                                    <div style={{ fontWeight: '500' }}>{item.description}</div>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
-                                                        {item.sat_product_key && (
-                                                            <div style={{ fontSize: '9px', color: '#818cf8', backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: '2px 4px', borderRadius: '4px' }}>
-                                                                SAT: {item.sat_product_key}
-                                                            </div>
-                                                        )}
-                                                        {item.sat_match_score !== undefined && item.sat_match_score !== null && (
-                                                            <div style={{
-                                                                fontSize: '9px',
-                                                                color: item.sat_match_score < 0.5 ? '#facc15' : '#34d399',
-                                                                backgroundColor: item.sat_match_score < 0.5 ? 'rgba(234, 179, 8, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                                                                padding: '2px 4px',
-                                                                borderRadius: '4px',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '2px'
-                                                            }}>
-                                                                {Math.round(item.sat_match_score * 100)}% Match
-                                                            </div>
-                                                        )}
-                                                        {item.sat_search_hint && item.sat_match_score < 0.4 && (
-                                                            <div style={{ fontSize: '9px', color: '#94a3b8', fontStyle: 'italic', width: '100%' }}>
-                                                                Tip: {item.sat_search_hint}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td style={{ padding: '8px 12px', textAlign: 'center', color: '#94a3b8' }}>{item.quantity} {item.unit_measure}</td>
-                                                <td style={{ padding: '8px 12px', textAlign: 'right', color: '#94a3b8' }}>{formatCurrency(item.unit_price, viewingOrder.currency)}</td>
-                                                <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: '500', color: '#cbd5e1' }}>{formatCurrency(item.total_amount, viewingOrder.currency)}</td>
-                                            </tr>
-                                        ))}
-                                        {(!viewingOrder.items || viewingOrder.items.length === 0) && (
-                                            <tr>
-                                                <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>No se extrajeron partidas detalladas.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                        {/* Footer Actions */}
+                        <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '12px', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                            {viewingOrder.status === 'PENDING_REVIEW' && (
+                                <button
+                                    onClick={handleConvertToProforma}
+                                    className="primary-button"
+                                    style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                                >
+                                    <ArrowRight size={16} />
+                                    <span>Convertir en Proforma</span>
+                                </button>
+                            )}
+                            {viewingOrder.status === 'CONVERTED_TO_PROFORMA' && (
+                                <button disabled style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'not-allowed' }}>
+                                    <CheckCircle size={16} />
+                                    <span>Ya Convertida</span>
+                                </button>
+                            )}
                         </div>
-
-                        {/* Original Document Details */}
-                        {viewingOrder.source_file_url && (
-                            <div style={{ marginTop: 'auto', padding: '12px', backgroundColor: 'rgba(14, 165, 233, 0.1)', border: '1px solid rgba(14, 165, 233, 0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.open(viewingOrder.source_file_url, '_blank')}>
-                                <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'rgba(14, 165, 233, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#38bdf8' }}>
-                                    <FileText size={16} />
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '12px', fontWeight: '500', color: '#e0f2fe' }}>Ver Documento Original</div>
-                                    <div style={{ fontSize: '10px', color: '#7dd3fc' }}>Abre el PDF fuente de esta orden</div>
-                                </div>
-                                <Eye size={14} style={{ marginLeft: 'auto', color: '#38bdf8' }} />
-                            </div>
-                        )}
-
-                    </div>
-
-                    {/* Footer Actions */}
-                    <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '12px', backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                        {viewingOrder.status === 'PENDING_REVIEW' && (
-                            <button
-                                onClick={handleConvertToProforma}
-                                className="primary-button"
-                                style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                            >
-                                <ArrowRight size={16} />
-                                Convertir en Proforma
-                            </button>
-                        )}
-                        {viewingOrder.status === 'CONVERTED_TO_PROFORMA' && (
-                            <button disabled style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'not-allowed' }}>
-                                <CheckCircle size={16} />
-                                Ya Convertida
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </div>
 
         </div>
     );

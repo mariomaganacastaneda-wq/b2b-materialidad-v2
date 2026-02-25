@@ -5,7 +5,8 @@ import {
     Plus,
     Search,
     ArrowRight,
-    SearchX
+    SearchX,
+    FileEdit
 } from 'lucide-react';
 
 // Material Symbols mapping
@@ -13,7 +14,35 @@ const Icon = ({ name, className = "" }: { name: string, className?: string }) =>
     <span className={`material-symbols-outlined ${className}`} style={{ fontSize: 'inherit' }}>{name}</span>
 );
 
-const ProformaDashboard = () => {
+const getStatusColor = (status: string | null | undefined, isProforma: boolean = false) => {
+    if (isProforma) {
+        return "text-emerald-400 border-emerald-500/40 bg-emerald-500/20";
+    }
+
+    if (!status) return null;
+
+    const lower = status.toLowerCase();
+
+    if (['aceptada', 'completada', 'emitida', 'timbrada', 'firmado', 'entregada', 'procesado', 'procesada', 'validada'].includes(lower)) {
+        return "text-emerald-400 border-emerald-500/40 bg-emerald-500/20";
+    }
+
+    if (['en_revision', 'en_proceso', 'en_captura', 'negociando', 'enviada', 'procesando', 'prefactura_candidata', 'prefactura_pendiente', 'en_revision_vendedor', 'por_timbrar'].includes(lower)) {
+        return "text-amber-400 border-amber-500/40 bg-amber-500/20";
+    }
+
+    if (['solicitada', 'solicitado', 'requerida', 'requerido', 'solicitud', 'boceto'].includes(lower)) {
+        return "text-rose-400 border-rose-500/30 bg-rose-500/10";
+    }
+
+    if (['cancelada', 'rechazada', 'expirada'].includes(lower)) {
+        return "text-red-500 border-red-500/30 bg-red-500/10";
+    }
+
+    return null;
+};
+
+const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
     const navigate = useNavigate();
     const [quotations, setQuotations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -22,6 +51,7 @@ const ProformaDashboard = () => {
     const [statusFilter, setStatusFilter] = useState('ALL');
 
     const fetchQuotations = async () => {
+        if (!selectedOrg?.id) return;
         try {
             setLoading(true);
             // Query with joins to check materiality status
@@ -31,8 +61,19 @@ const ProformaDashboard = () => {
                     *,
                     organizations(name, rfc),
                     contracts(id),
-                    invoices(id, status, evidence(id))
+                    invoices(id, status, evidence(id)),
+                    purchase_orders(id),
+                    quotation_payments(amount),
+                    invoice_status,
+                    contract_status,
+                    evidence_status,
+                    related_quotation_status,
+                    is_contract_required,
+                    request_direct_invoice,
+                    req_quotation,
+                    req_evidence
                 `)
+                .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -46,7 +87,7 @@ const ProformaDashboard = () => {
 
     useEffect(() => {
         fetchQuotations();
-    }, []);
+    }, [selectedOrg?.id]);
 
     const filtered = quotations.filter(q => {
         const matchesSearch =
@@ -59,11 +100,40 @@ const ProformaDashboard = () => {
     });
 
     const getMaterialityStatus = (q: any) => {
-        const hasContract = q.contracts?.length > 0;
-        const hasInvoice = q.invoices?.length > 0;
-        const hasEvidence = q.invoices?.some((i: any) => i.evidence?.length > 0);
+        const hasPO = q.purchase_orders !== null;
 
-        return { hasContract, hasInvoice, hasEvidence };
+        const contractsList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
+        const invoicesList = Array.isArray(q.invoices) ? q.invoices : (q.invoices ? [q.invoices] : []);
+
+        const hasContract = contractsList.length > 0 || q.contract_status === 'firmado' || q.contract_status === 'completado' || q.is_contract_required;
+        const hasInvoice = invoicesList.length > 0 || q.invoice_status === 'emitida' || q.invoice_status === 'timbrada' || q.request_direct_invoice;
+        const hasEvidence = invoicesList.some((i: any) => {
+            const evList = Array.isArray(i.evidence) ? i.evidence : (i.evidence ? [i.evidence] : []);
+            return evList.length > 0;
+        }) || q.evidence_status === 'completada' || q.evidence_status === 'entregada' || q.req_evidence;
+        const hasQuotation = q.req_quotation || Boolean(q.related_quotation_status) || q.status === 'APROBADA' || invoicesList.length > 0;
+
+        let computedInvoiceStatus = q.invoice_status;
+        if (!computedInvoiceStatus && invoicesList.length > 0) {
+            computedInvoiceStatus = invoicesList[0].status;
+        }
+
+        let computedContractStatus = q.contract_status;
+        if (!computedContractStatus && contractsList.length > 0) {
+            computedContractStatus = contractsList[0].file_url ? 'firmado' : 'en_revision';
+        }
+
+        // Fallbacks para statusText (si fue requerido pero no tiene status = SOLICITADO)
+        const finalContractStatus = computedContractStatus || (q.is_contract_required ? 'solicitada' : null);
+        const finalInvoiceStatus = computedInvoiceStatus || (q.request_direct_invoice ? 'solicitada' : null);
+        const finalEvidenceStatus = q.evidence_status || (q.req_evidence ? 'solicitada' : null);
+        const finalQuotationStatus = q.related_quotation_status || (q.req_quotation ? 'solicitada' : null);
+
+        // Calcular porcentaje de pago
+        const totalPaid = (q.quotation_payments || []).reduce((acc: number, p: any) => acc + (p.amount || 0), 0);
+        const paymentPercentage = q.amount_total > 0 ? Math.min(Math.round((totalPaid / q.amount_total) * 100), 100) : 0;
+
+        return { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus };
     };
 
     return (
@@ -151,19 +221,29 @@ const ProformaDashboard = () => {
                                     <th className="p-5">Receptor / Concepto</th>
                                     <th className="p-5 w-32">Total</th>
                                     <th className="p-5 w-40 text-center">Estatus Fiscal</th>
-                                    <th className="p-5 w-56 text-center">Gatillos de Materialidad</th>
+                                    <th className="p-5 w-[660px] text-center">Gatillos de Materialidad</th>
                                     <th className="p-5 w-16"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {filtered.map(q => {
-                                    const { hasContract, hasInvoice, hasEvidence } = getMaterialityStatus(q);
+                                    const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus } = getMaterialityStatus(q);
 
                                     return (
                                         <tr key={q.id} className="hover:bg-white/5 transition-colors group">
                                             <td className="p-5">
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded text-xs border border-indigo-500/20 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                        title="Abrir Proforma"
+                                                    >
+                                                        <FileEdit className="w-4 h-4" />
+                                                    </button>
+                                                    <span
+                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                        className="cursor-pointer font-mono text-indigo-400 font-bold bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded text-xs border border-indigo-500/20 whitespace-nowrap transition-colors"
+                                                    >
                                                         {(() => {
                                                             const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
                                                             const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
@@ -202,42 +282,74 @@ const ProformaDashboard = () => {
                                                 </span>
                                             </td>
                                             <td className="p-5">
-                                                <div className="flex items-center justify-center gap-3">
+                                                <div className="flex items-start justify-between w-[640px] pt-1">
+                                                    <MaterialityIndicator
+                                                        icon="shopping_cart"
+                                                        label="O.C."
+                                                        active={hasPO}
+                                                        tooltip="Ver Orden de Compra de origen"
+                                                        onClick={() => q.from_po_id && navigate(`/ordenes-compra/${q.from_po_id}`)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                     <MaterialityIndicator
                                                         icon="receipt_long"
-                                                        label="PROF"
-                                                        active={true}
-                                                        tooltip="Ver/Editar Proforma"
-                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                        label="COT"
+                                                        active={hasQuotation}
+                                                        tooltip="Ver Cotizaciones"
+                                                        onClick={() => navigate(`/cotizaciones/${q.id}`)}
+                                                        statusText={finalQuotationStatus}
+                                                        colorOverride={getStatusColor(finalQuotationStatus)}
                                                     />
-                                                    <div className="h-px w-3 bg-white/10" />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                     <MaterialityIndicator
                                                         icon="description"
-                                                        label="COTI"
+                                                        label="CONT"
                                                         active={hasContract}
-                                                        tooltip="Ver/Editar Contrato"
-                                                        onClick={() => navigate(`/cotizaciones/${q.id}`)}
+                                                        tooltip="Ver Contratos"
+                                                        onClick={() => navigate(`/contratos/${q.id}`)}
+                                                        statusText={finalContractStatus}
+                                                        colorOverride={getStatusColor(finalContractStatus)}
                                                     />
-                                                    <div className="h-px w-3 bg-white/10" />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                     <MaterialityIndicator
                                                         icon="payments"
                                                         label="FACT"
                                                         active={hasInvoice}
                                                         tooltip="Ver/Editar Factura"
                                                         onClick={() => navigate(`/facturas/${q.id}`)}
+                                                        statusText={finalInvoiceStatus}
+                                                        colorOverride={getStatusColor(finalInvoiceStatus)}
                                                     />
-                                                    <div className="h-px w-3 bg-white/10" />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="account_balance_wallet"
+                                                        label={paymentPercentage > 0 ? `${paymentPercentage}%` : "PAGO"}
+                                                        active={paymentPercentage > 0}
+                                                        colorOverride={
+                                                            paymentPercentage === 0 ? "text-rose-400 border-rose-500/30 bg-rose-500/10" :
+                                                                paymentPercentage === 100 ? "text-emerald-400 border-emerald-500/40 bg-emerald-500/20" :
+                                                                    "text-amber-400 border-amber-500/40 bg-amber-500/20"
+                                                        }
+                                                        tooltip={`Pagado: ${paymentPercentage}%`}
+                                                        onClick={() => navigate(`/pagos/${q.id}`)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                     <MaterialityIndicator
                                                         icon="photo_camera"
                                                         label="EVI"
                                                         active={hasEvidence}
                                                         tooltip="Ver/Editar Evidencia"
                                                         onClick={() => navigate(`/evidencia/${q.id}`)}
+                                                        statusText={finalEvidenceStatus}
+                                                        colorOverride={getStatusColor(finalEvidenceStatus)}
                                                     />
                                                 </div>
                                             </td>
                                             <td className="p-5 text-right">
-                                                <button className="p-2 text-slate-600 hover:text-white transition-colors">
+                                                <button
+                                                    className="p-2 text-slate-600 hover:text-white transition-colors"
+                                                    onClick={() => navigate(`/proformas/${q.id}`)}
+                                                >
                                                     <ArrowRight size={18} />
                                                 </button>
                                             </td>
@@ -275,22 +387,28 @@ const ProformaDashboard = () => {
     );
 };
 
-const MaterialityIndicator = ({ icon, label, active, tooltip, onClick }: any) => (
+const MaterialityIndicator = ({ icon, label, active, tooltip, onClick, colorOverride, statusText }: any) => (
     <div
-        className={`flex flex-col items-center gap-1 group/ind relative cursor-pointer hover:-translate-y-0.5 transition-transform`}
+        className={`flex flex-col items-center gap-1 group/ind relative cursor-pointer hover:-translate-y-0.5 transition-transform w-[76px]`}
         title={tooltip}
         onClick={onClick}
     >
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${active
-            ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400 ring-4 ring-indigo-500/5'
-            : 'bg-slate-900 border-white/5 text-slate-700 opacity-40 hover:opacity-100 hover:border-white/20'
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${colorOverride ? colorOverride :
+            active
+                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400 ring-4 ring-indigo-500/5'
+                : 'bg-slate-900 border-white/5 text-slate-700 opacity-40 hover:opacity-100 hover:border-white/20'
             }`}>
             <Icon name={icon} className="text-lg" />
         </div>
-        <span className={`text-[7px] font-black uppercase tracking-widest ${active ? 'text-indigo-400' : 'text-slate-800'}`}>
+        <span className={`text-[7px] font-black uppercase tracking-widest ${colorOverride ? colorOverride.split(' ')[0] : (active ? 'text-indigo-400' : 'text-slate-500')}`}>
             {label}
         </span>
-        {active && (
+        {statusText && (
+            <span className={`text-[6px] font-bold uppercase tracking-wider px-1 py-0.5 rounded -mt-0.5 whitespace-nowrap ${colorOverride ? colorOverride : (active ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-800 text-slate-500')}`}>
+                {statusText}
+            </span>
+        )}
+        {active && !statusText && (
             <div className="absolute -top-1 -right-1">
                 <span className="flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>

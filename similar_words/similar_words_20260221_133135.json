@@ -1,0 +1,3211 @@
+{
+  "metadata": {
+    "model": "claude-haiku-4-5-20251001",
+    "timestamp": "2026-02-21T13:31:35.134574",
+    "total_records": 457,
+    "total_tokens": 59478,
+    "cost_usd": 0.16,
+    "elapsed_minutes": 4.5
+  },
+  "results": [
+    {
+      "code": "01000000",
+      "similar_words": "mascotas, animales domésticos, accesorios para mascotas, tienda de mascotas, pet shop, artículos para animales",
+      "original_name": "Mascotas, Animales Domésticos y Accesorios (División 01)",
+      "level": "DIVISION",
+      "parent_name": ""
+    },
+    {
+      "code": "01010000",
+      "similar_words": "mascotas y accesorios, productos para mascotas, equipamiento animal, suministros para mascotas, tienda de animales",
+      "original_name": "[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101)",
+      "level": "GROUP",
+      "parent_name": "Mascotas, Animales Domésticos y Accesorios (División 01)"
+    },
+    {
+      "code": "01010100",
+      "similar_words": "mascotas domésticas, animales de compañía, accesorios de mascotas, productos animales, equipos para mascotas",
+      "original_name": "[SINTÉTICO] CLASS - 01010100",
+      "level": "CLASS",
+      "parent_name": "[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101)"
+    },
+    {
+      "code": "10000000",
+      "similar_words": "material vivo, animales vivos, plantas vivas, material biológico, organismos vivos, recursos naturales vivos",
+      "original_name": "Material Vivo Animal y Vegetal (División 10)",
+      "level": "DIVISION",
+      "parent_name": ""
+    },
+    {
+      "code": "10100000",
+      "similar_words": "animales de granja, ganadería, animales de corral, crianza de animales, ganado vivo, animales de producción",
+      "original_name": "Animales vivos de granja y relacionados (Grupo 1010)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10101500",
+      "similar_words": "animales de corral, ganadería, crianza de animales, ganado vivo, animales de granja, producción animal",
+      "original_name": "Animales vivos de granja",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10101501",
+      "similar_words": "gato vivo, felino, minino, gato de granja, gato doméstico, felino vivo",
+      "original_name": "Gatos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101502",
+      "similar_words": "perro vivo, canino, cachorro, perro de granja, perro doméstico, can vivo",
+      "original_name": "Perros",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101504",
+      "similar_words": "visón vivo, visón de granja, visón en pie, animal de peletería, visón para reproducción",
+      "original_name": "Visón",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101505",
+      "similar_words": "rata viva, roedor, rata de granja, rata doméstica, rata en pie",
+      "original_name": "Ratas",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101506",
+      "similar_words": "caballo vivo, equino, caballo de granja, caballo en pie, yegua, potro",
+      "original_name": "Caballos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101507",
+      "similar_words": "oveja viva, borrego, carnero, ovino, oveja de granja, lana en pie",
+      "original_name": "Ovejas",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101508",
+      "similar_words": "cabra viva, chivo, caprino, cabra de granja, cabra en pie, chiva",
+      "original_name": "Cabras",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101509",
+      "similar_words": "asno vivo, burro, mula, equino de carga, asno de granja, burro en pie",
+      "original_name": "Asnos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101510",
+      "similar_words": "ratón vivo, roedor, rata, ratería, cría de ratones, ratones de laboratorio, roedores pequeños",
+      "original_name": "Ratones",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101511",
+      "similar_words": "cerdo vivo, marrano, puerco, lechón, cochinada, cría de cerdos, ganado porcino",
+      "original_name": "Cerdos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101512",
+      "similar_words": "conejo vivo, conejera, cría de conejos, conejo de granja, gazapo, conejitos, conejos para reproducción",
+      "original_name": "Conejos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101513",
+      "similar_words": "cobaya viva, conejillo de indias, cuy, cría de cobayas, cobaya para laboratorio, roedor doméstico",
+      "original_name": "Cobayas o conejillos de indias",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101514",
+      "similar_words": "primate vivo, mono, chimpancé, macaco, primate de laboratorio, simio, cría de primates",
+      "original_name": "Primates",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101515",
+      "similar_words": "armadillo vivo, cría de armadillos, armadillos para granja, animal exótico, armadillo silvestre",
+      "original_name": "Armadillos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101516",
+      "similar_words": "vaca viva, toro, becerro, res, ganado bovino, ternero, cría de vacas, ganado lechero",
+      "original_name": "Ganado vacuno",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101517",
+      "similar_words": "camello vivo, dromedario, cría de camellos, camello de carga, animal exótico, camello para granja",
+      "original_name": "Camellos",
+      "level": "PRODUCT",
+      "parent_name": "Animales vivos de granja"
+    },
+    {
+      "code": "10101601",
+      "similar_words": "pollo vivo, pollito, gallina viva, gallo, ave de corral, cría de pollos, pollo para engorda",
+      "original_name": "Pollos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Pájaros y aves de corral vivos"
+    },
+    {
+      "code": "10101602",
+      "similar_words": "pato vivo, patita, cría de patos, pato de granja, ave acuática, pato para reproducción",
+      "original_name": "Patos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Pájaros y aves de corral vivos"
+    },
+    {
+      "code": "10101603",
+      "similar_words": "pavo vivo, guajolote, pavita, cría de pavos, pavo de granja, ave grande, guajolota",
+      "original_name": "Pavos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Pájaros y aves de corral vivos"
+    },
+    {
+      "code": "10101604",
+      "similar_words": "ganso vivo, oca, cría de gansos, ganso de granja, ave acuática, gansito",
+      "original_name": "Gansos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Pájaros y aves de corral vivos"
+    },
+    {
+      "code": "10101605",
+      "similar_words": "faisán vivo, cría de faisanes, faisán de granja, ave de caza, faisanería, ave exótica",
+      "original_name": "Faisanes vivos",
+      "level": "PRODUCT",
+      "parent_name": "Pájaros y aves de corral vivos"
+    },
+    {
+      "code": "10101700",
+      "similar_words": "pez vivo, pescado vivo, peces de granja, acuicultura, piscicultura, cría de peces, peces para reproducción",
+      "original_name": "Peces vivos",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10101701",
+      "similar_words": "salmon en vivo, salmon fresco vivo, piscicultura salmon, salmon de cultivo, salmon para reproduccion",
+      "original_name": "Salmones vivos",
+      "level": "PRODUCT",
+      "parent_name": "Peces vivos"
+    },
+    {
+      "code": "10101702",
+      "similar_words": "trucha en vivo, trucha fresca viva, trucha de cultivo, piscicultura trucha, trucha para reproduccion",
+      "original_name": "Trucha viva",
+      "level": "PRODUCT",
+      "parent_name": "Peces vivos"
+    },
+    {
+      "code": "10101703",
+      "similar_words": "tilapia viva, tilapia en vivo, tilapia de cultivo, tilapia fresca, piscicultura tilapia",
+      "original_name": "Tilapia viva",
+      "level": "PRODUCT",
+      "parent_name": "Peces vivos"
+    },
+    {
+      "code": "10101704",
+      "similar_words": "carpa viva, carpa en vivo, carpa de cultivo, carpa fresca, piscicultura carpa",
+      "original_name": "Carpa viva",
+      "level": "PRODUCT",
+      "parent_name": "Peces vivos"
+    },
+    {
+      "code": "10101705",
+      "similar_words": "anguila viva, anguilas en vivo, anguila de cultivo, anguila fresca, piscicultura anguila",
+      "original_name": "Anguilas vivas",
+      "level": "PRODUCT",
+      "parent_name": "Peces vivos"
+    },
+    {
+      "code": "10101800",
+      "similar_words": "mariscos vivos, invertebrados acuaticos, crustaceos vivos, moluscos vivos, marisco fresco vivo",
+      "original_name": "Mariscos e invertebrados acuáticos vivos",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10101801",
+      "similar_words": "camaron vivo, camarones frescos, camaron de cultivo, camaron para reproduccion, piscicultura camaron",
+      "original_name": "Camarón vivo",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101802",
+      "similar_words": "almeja viva, almejas frescas, almeja de cultivo, almeja para reproduccion, molusco vivo",
+      "original_name": "Almejas vivas",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101803",
+      "similar_words": "mejillon vivo, mejillones frescos, mejillon de cultivo, mejillon para reproduccion, molusco vivo",
+      "original_name": "Mejillones vivos",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101804",
+      "similar_words": "ostra viva, ostras frescas, ostra de cultivo, ostra para reproduccion, molusco vivo",
+      "original_name": "Ostras vivas",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101805",
+      "similar_words": "cangrejo vivo, cangrejos frescos, cangrejo de cultivo, cangrejo para reproduccion, crustaceo vivo",
+      "original_name": "Cangrejos vivos",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101806",
+      "similar_words": "abalone vivo, abulon fresco, abulon de cultivo, abulon para reproduccion, molusco vivo",
+      "original_name": "Abulones vivos",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101807",
+      "similar_words": "pulpo vivo, pulpo fresco, pulpo de cultivo, pulpo para reproduccion, cefalopodo vivo",
+      "original_name": "Pulpo vivo",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101808",
+      "similar_words": "calamar vivo, calamares frescos, calamar de cultivo, calamar para reproduccion, cefalopodo vivo",
+      "original_name": "Calamar vivo",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101809",
+      "similar_words": "sanguijuela viva, sanguijuelas frescas, sanguijuela para reproduccion, sanguijuela medicinal, invertebrado acuatico",
+      "original_name": "Sanguijuelas",
+      "level": "PRODUCT",
+      "parent_name": "Mariscos e invertebrados acuáticos vivos"
+    },
+    {
+      "code": "10101900",
+      "similar_words": "insectos vivos, cría de insectos, insectario, cultivo de insectos, biología insectos",
+      "original_name": "Insectos vivos",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10101901",
+      "similar_words": "mariposas vivas, cría mariposas, mariposa monarca, lepidópteros, invernadero mariposas",
+      "original_name": "Mariposas",
+      "level": "PRODUCT",
+      "parent_name": "Insectos vivos"
+    },
+    {
+      "code": "10101902",
+      "similar_words": "escarabajos vivos, coleópteros, crianza escarabajos, escarabajo rinoceronte, escarabajo japonés",
+      "original_name": "Escarabajos",
+      "level": "PRODUCT",
+      "parent_name": "Insectos vivos"
+    },
+    {
+      "code": "10101903",
+      "similar_words": "abejas vivas, colmena, abeja melífera, apicultura, núcleo abejas, reina abeja",
+      "original_name": "Abejas",
+      "level": "PRODUCT",
+      "parent_name": "Insectos vivos"
+    },
+    {
+      "code": "10101904",
+      "similar_words": "gusanos seda, sericicultura, larva seda, capullo seda, cría gusanos",
+      "original_name": "Gusanos de seda",
+      "level": "PRODUCT",
+      "parent_name": "Insectos vivos"
+    },
+    {
+      "code": "10102000",
+      "similar_words": "animales salvajes, fauna silvestre, animales exóticos vivos, vida silvestre, animales fauna",
+      "original_name": "Animales salvajes vivos",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10102001",
+      "similar_words": "elefantes vivos, cría elefantes, elefante africano, elefante asiático, paquidermo",
+      "original_name": "Elefantes",
+      "level": "PRODUCT",
+      "parent_name": "Animales salvajes vivos"
+    },
+    {
+      "code": "10102002",
+      "similar_words": "zorros vivos, zorro rojo, cría zorros, zorro plateado, vulpino",
+      "original_name": "Zorros vivos",
+      "level": "PRODUCT",
+      "parent_name": "Animales salvajes vivos"
+    },
+    {
+      "code": "10102100",
+      "similar_words": "huevos incubación, huevos fértiles, huevos para empollar, huevos aves, huevos reproductores",
+      "original_name": "Huevos de aves para incubar",
+      "level": "CLASS",
+      "parent_name": "Animales vivos de granja y relacionados (Grupo 1010)"
+    },
+    {
+      "code": "10111301",
+      "similar_words": "juguetes mascotas, juguetes perro, juguetes gato, accesorios diversión mascota, entretenimiento mascotas",
+      "original_name": "Juguetes para mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111302",
+      "similar_words": "aseo mascotas, champú perro, champú gato, productos higiene mascota, cuidado pelaje, baño mascota",
+      "original_name": "Productos para el aseo y cuidado de mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111303",
+      "similar_words": "recogedores heces, bolsas caca perro, pala recogedor, bandeja sanitaria gato, equipo limpieza mascota",
+      "original_name": "Equipo para el manejo de desperdicios de las mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111304",
+      "similar_words": "comederos mascotas, bebederos perro, platos gato, tazones alimento, comedero automático, fuente agua mascota",
+      "original_name": "Tazones o equipo para alimentación de mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111305",
+      "similar_words": "medicina mascotas, medicamento perro, medicamento gato, tratamiento veterinario, pastillas mascota, inyectable mascota, antibiótico mascota",
+      "original_name": "Tratamientos medicados para mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111306",
+      "similar_words": "kit adiestramiento perro, entrenamiento mascota, correa adiestramiento, collar entrenamiento, juguete entrenamiento, accesorios adiestramiento",
+      "original_name": "Kits para el entrenamiento de mascotas domésticas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10111307",
+      "similar_words": "cobija perro, manta mascota, cama mascota, cobija gato, frazada mascota, colchoneta mascota",
+      "original_name": "Cobijas para mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Accesorios, equipo y tratamientos para los animales domésticos"
+    },
+    {
+      "code": "10120000",
+      "similar_words": "alimento ganado, pienso ganadero, forraje, concentrado ganadero, suplemento ganadero, nutrición ganadera",
+      "original_name": "Pienso para ganado y relacionados (Grupo 1012)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10121500",
+      "similar_words": "pienso bovino, alimento vacas, concentrado ganadero, balanceado ganado, suplemento ganadero, nutrición ganadera",
+      "original_name": "Pienso para ganado",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10121501",
+      "similar_words": "salvado trigo, afrecho trigo, subproducto trigo, salvadillo, harina trigo integral",
+      "original_name": "Salvado de trigo puro",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121502",
+      "similar_words": "avena forraje, avena grano, avena para ganado, avena verde, avena seca",
+      "original_name": "Avena para forraje",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121503",
+      "similar_words": "maíz forraje, maíz verde, maíz ensilado, maíz grano, maíz para ganado",
+      "original_name": "Maíz para forraje",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121504",
+      "similar_words": "sorgo forraje, sorgo grano, sorgo verde, sorgo ensilado, sorgo para ganado",
+      "original_name": "Sorgo para forraje",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121505",
+      "similar_words": "heno alfalfa, heno pasto, heno seco, forraje seco, paja heno",
+      "original_name": "Heno",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121506",
+      "similar_words": "torta soya, torta girasol, torta canola, subproducto oleaginoso, pasta oleaginosa",
+      "original_name": "Tortas oleaginosas",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121507",
+      "similar_words": "forraje mezcla, alimento compuesto ganado, balanceado forraje, concentrado forraje, mezcla forraje",
+      "original_name": "Forraje compuesto",
+      "level": "PRODUCT",
+      "parent_name": "Pienso para ganado"
+    },
+    {
+      "code": "10121601",
+      "similar_words": "alimento vivo aves, larva mosca, gusano alimento, artemia, dafnia, alimento vivo pollo",
+      "original_name": "Alimento vivo para aves",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para pájaros y aves de corral"
+    },
+    {
+      "code": "10121602",
+      "similar_words": "alpiste canario, semilla alpiste, alpiste puro, alpiste para pájaros, alpiste grano",
+      "original_name": "Alpiste",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para pájaros y aves de corral"
+    },
+    {
+      "code": "10121603",
+      "similar_words": "snack para aves, premios para pájaros, golosinas avícolas, botana de pájaros, treats para aves",
+      "original_name": "Botanas o comida recreacional para aves",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para pájaros y aves de corral"
+    },
+    {
+      "code": "10121604",
+      "similar_words": "alimento gallinas, concentrado avícola, balanceado aves, pienso avícola, comida pollos",
+      "original_name": "Alimento avícola",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para pájaros y aves de corral"
+    },
+    {
+      "code": "10121700",
+      "similar_words": "alimento acuático, comida peces, pienso piscícola, nutrición peces, alimento acuicultura",
+      "original_name": "Alimento para peces",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10121701",
+      "similar_words": "salmuera peces, carnada fresca, alimento vivo peces, camarones congelados, artemia",
+      "original_name": "Salmuera fresca o congelada",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para peces"
+    },
+    {
+      "code": "10121702",
+      "similar_words": "pellet peces, alimento granulado acuario, balanceado peces, gránulos piscícola, comida peces bolsa",
+      "original_name": "Alimento granulado para peces",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para peces"
+    },
+    {
+      "code": "10121703",
+      "similar_words": "alimento escamas peces, hojuelas acuario, comida peces flakes, alimento flotante, escamas piscícolas",
+      "original_name": "Alimento en hojuelas para peces",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para peces"
+    },
+    {
+      "code": "10121800",
+      "similar_words": "alimento mascotas, comida perros gatos, pienso mascota, balanceado perros, nutrición felina canina",
+      "original_name": "Alimento para perros y gatos",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10121801",
+      "similar_words": "croquetas perros, alimento seco perro, balanceado perro, kibble, comida perro bolsa",
+      "original_name": "Comida seca para perros",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121802",
+      "similar_words": "comida lata perro, alimento húmedo perro, paté perro, comida perro lata, alimento enlatado perro",
+      "original_name": "Comida húmeda para perros",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121803",
+      "similar_words": "leche mascota, leche perro gato, sustituto leche, leche cachorro, leche gatito",
+      "original_name": "Leche para perros o gatos",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121804",
+      "similar_words": "croquetas gatos, alimento seco gato, balanceado gato, kibble gato, comida gato bolsa",
+      "original_name": "Comida seca para gatos",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121805",
+      "similar_words": "comida lata gato, alimento húmedo gato, paté gato, comida gato lata, alimento enlatado gato",
+      "original_name": "Comida húmeda para gatos",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121806",
+      "similar_words": "snack perro gato, premios mascota, golosinas perro, treats gato, hueso perro, galleta mascota",
+      "original_name": "Botanas o comida recreacional para gatos o perros",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para perros y gatos"
+    },
+    {
+      "code": "10121900",
+      "similar_words": "alimento roedores, comida hamster, pienso conejo, nutrición ratón, alimento pequeños animales",
+      "original_name": "Alimento para roedores",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10121901",
+      "similar_words": "pellet roedores, gránulos hamster, alimento granulado conejo, balanceado roedor, comida hamster bolsa",
+      "original_name": "Comida granulada para roedores",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para roedores"
+    },
+    {
+      "code": "10122000",
+      "similar_words": "alimento reptil, comida iguana, comida serpiente, pienso reptiles, nutricion reptil",
+      "original_name": "Alimento para reptiles",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10122001",
+      "similar_words": "pellet reptil, granulado iguana, alimento seco reptil, croqueta reptil, grano comida serpiente",
+      "original_name": "Comida granulada para reptiles",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para reptiles"
+    },
+    {
+      "code": "10122002",
+      "similar_words": "comida blanda reptil, alimento humedo iguana, papilla reptil, comida fresca serpiente, alimento gelatinoso",
+      "original_name": "Comida húmeda para reptiles",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para reptiles"
+    },
+    {
+      "code": "10122003",
+      "similar_words": "insectos vivos reptil, grillos iguana, larvas serpiente, alimento vivo, presas vivas",
+      "original_name": "Comida viva para reptiles",
+      "level": "PRODUCT",
+      "parent_name": "Alimento para reptiles"
+    },
+    {
+      "code": "10122100",
+      "similar_words": "alimento animales diversos, comida fauna variada, pienso mixto, nutricion animales varios, alimento fauna",
+      "original_name": "Comida para animales variados",
+      "level": "CLASS",
+      "parent_name": "Pienso para ganado y relacionados (Grupo 1012)"
+    },
+    {
+      "code": "10122101",
+      "similar_words": "alimento cerdo, comida puerco, pienso porcino, nutricion porcina, concentrado cerdo",
+      "original_name": "Comida para cerdos",
+      "level": "PRODUCT",
+      "parent_name": "Comida para animales variados"
+    },
+    {
+      "code": "10122102",
+      "similar_words": "alimento vison, comida vison, pienso vison, nutricion vison, concentrado vison",
+      "original_name": "Comida para visones",
+      "level": "PRODUCT",
+      "parent_name": "Comida para animales variados"
+    },
+    {
+      "code": "10122103",
+      "similar_words": "alimento mono, comida primate, pienso primate, nutricion mono, concentrado primate",
+      "original_name": "Comida para monos",
+      "level": "PRODUCT",
+      "parent_name": "Comida para animales variados"
+    },
+    {
+      "code": "10122104",
+      "similar_words": "alimento conejo, comida conejo, pienso conejo, nutricion lagomorfo, concentrado conejo",
+      "original_name": "Comida para conejos",
+      "level": "PRODUCT",
+      "parent_name": "Comida para animales variados"
+    },
+    {
+      "code": "10130000",
+      "similar_words": "jaulas animales, contenedores fauna, recipientes mascota, estructuras alojamiento, infraestructura animal",
+      "original_name": "Recipientes para animales y relacionados (Grupo 1013)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10131500",
+      "similar_words": "corral ganado, estancia animal, refugio ganadero, construccion animal, alojamiento fauna",
+      "original_name": "Cobertizos para animales",
+      "level": "CLASS",
+      "parent_name": "Recipientes para animales y relacionados (Grupo 1013)"
+    },
+    {
+      "code": "10131506",
+      "similar_words": "establo vaca, corral ganado, estancia bovino, construccion establo, infraestructura ganadera",
+      "original_name": "Establos para ganado",
+      "level": "PRODUCT",
+      "parent_name": "Cobertizos para animales"
+    },
+    {
+      "code": "10131507",
+      "similar_words": "caseta mascota, perrera, gatil, casita perro, refugio mascota",
+      "original_name": "Casas para mascotas domesticadas",
+      "level": "PRODUCT",
+      "parent_name": "Cobertizos para animales"
+    },
+    {
+      "code": "10131508",
+      "similar_words": "cama perro, colchon mascota, cama gato, lecho animal, colchoneta mascota",
+      "original_name": "Camas para mascotas",
+      "level": "PRODUCT",
+      "parent_name": "Cobertizos para animales"
+    },
+    {
+      "code": "10131600",
+      "similar_words": "jaula animal, corral mascota, contenedor fauna, jaula pajaro, transportin mascota",
+      "original_name": "Recipientes para animales",
+      "level": "CLASS",
+      "parent_name": "Recipientes para animales y relacionados (Grupo 1013)"
+    },
+    {
+      "code": "10131601",
+      "similar_words": "jaula para pájaros, jaula para aves, jaula para mascotas, accesorios de jaula, comedero jaula, bebedero jaula",
+      "original_name": "Jaulas o sus accesorios",
+      "level": "PRODUCT",
+      "parent_name": "Recipientes para animales"
+    },
+    {
+      "code": "10131602",
+      "similar_words": "perrera, caseta para perro, casa para perro, refugio canino, perrera de madera, perrera de plástico",
+      "original_name": "Perreras",
+      "level": "PRODUCT",
+      "parent_name": "Recipientes para animales"
+    },
+    {
+      "code": "10131603",
+      "similar_words": "transportín para mascotas, caja de transporte animal, jaula de viaje, transportador de mascotas, mochila para mascota",
+      "original_name": "Equipaje para el transporte de animales",
+      "level": "PRODUCT",
+      "parent_name": "Recipientes para animales"
+    },
+    {
+      "code": "10131604",
+      "similar_words": "correa para perro, traílla, collar y correa, correa de cuero, correa extensible, correa de nylon",
+      "original_name": "Correas para perros",
+      "level": "PRODUCT",
+      "parent_name": "Recipientes para animales"
+    },
+    {
+      "code": "10131700",
+      "similar_words": "hábitat mascotas, ambiente para animales, jaulas y accesorios, terrarios y acuarios, recipientes animales",
+      "original_name": "Hábitat para animales",
+      "level": "CLASS",
+      "parent_name": "Recipientes para animales y relacionados (Grupo 1013)"
+    },
+    {
+      "code": "10131701",
+      "similar_words": "terrario para reptiles, terrario para serpientes, terrario para lagartos, terrario de vidrio, hábitat reptiles",
+      "original_name": "Terrarios",
+      "level": "PRODUCT",
+      "parent_name": "Hábitat para animales"
+    },
+    {
+      "code": "10131702",
+      "similar_words": "acuario para peces, pecera, acuario de vidrio, acuario decorativo, tanque para peces, acuario con filtro",
+      "original_name": "Acuarios",
+      "level": "PRODUCT",
+      "parent_name": "Hábitat para animales"
+    },
+    {
+      "code": "10140000",
+      "similar_words": "talabartería, artículos ecuestres, equipo para caballos, accesorios de montar, equipamiento ecuestre",
+      "original_name": "Talabartería y relacionados (Grupo 1014)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10141500",
+      "similar_words": "talabartería, artículos de cuero ecuestre, equipos de montar, accesorios para caballos, productos ecuestres",
+      "original_name": "Talabartería",
+      "level": "CLASS",
+      "parent_name": "Talabartería y relacionados (Grupo 1014)"
+    },
+    {
+      "code": "10141501",
+      "similar_words": "silla de montar, silla inglesa, silla vaquera, silla de montar de cuero, montura para caballo",
+      "original_name": "Sillas de montar",
+      "level": "PRODUCT",
+      "parent_name": "Talabartería"
+    },
+    {
+      "code": "10141502",
+      "similar_words": "fusta, látigo, fusta de cuero, látigo de montar, rebenque, fusta para caballo",
+      "original_name": "Fustas y látigos",
+      "level": "PRODUCT",
+      "parent_name": "Talabartería"
+    },
+    {
+      "code": "10141503",
+      "similar_words": "herradura para caballo, herradura de acero, herradura de hierro, clavos para herradura, herrado",
+      "original_name": "Herraduras para caballo",
+      "level": "PRODUCT",
+      "parent_name": "Talabartería"
+    },
+    {
+      "code": "10141504",
+      "similar_words": "herradura para mula, herradura de mula, herrado de mula, clavos para mula, herraje de mula",
+      "original_name": "Herraduras para mula",
+      "level": "PRODUCT",
+      "parent_name": "Talabartería"
+    },
+    {
+      "code": "10141505",
+      "similar_words": "sillín, pelero, asiento de montar, sillín de cuero, cojinete para montar, almohadilla de silla",
+      "original_name": "Sillín o pelero",
+      "level": "PRODUCT",
+      "parent_name": "Talabartería"
+    },
+    {
+      "code": "10141600",
+      "similar_words": "arnés para caballo, arnés de cuero, arnés de tiro, equipamiento de tiro, arnés ecuestre",
+      "original_name": "Arneses",
+      "level": "CLASS",
+      "parent_name": "Talabartería y relacionados (Grupo 1014)"
+    },
+    {
+      "code": "10141601",
+      "similar_words": "brida caballo, brida cuero, brida metal, sujetador arnés, brida equina",
+      "original_name": "Bridas",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141602",
+      "similar_words": "yugo buey, yugo madera, yugo animal, arnés yugo, equipo yugo",
+      "original_name": "Yugos",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141603",
+      "similar_words": "bocado caballo, bocado metal, freno bocado, pieza bocado, bocado equino",
+      "original_name": "Bocados para caballos",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141604",
+      "similar_words": "rienda caballo, rienda cuero, rienda equina, control rienda, rienda montar",
+      "original_name": "Riendas",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141605",
+      "similar_words": "estribo caballo, estribo metal, estribo equino, accesorio estribo, estribo montura",
+      "original_name": "Estribos",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141606",
+      "similar_words": "correa animal, traílla cuero, correa equina, sujetador correa, traílla animal",
+      "original_name": "Correas o traíllas",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141607",
+      "similar_words": "arnés cuello, arnés animal, arnés equino, arnés caballo, equipo cuello",
+      "original_name": "Arneses de cuello para animales",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141608",
+      "similar_words": "arnés completo, accesorio arnés, equipo arnés, pieza arnés, arnés repuesto",
+      "original_name": "Arneses o sus accesorios",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141609",
+      "similar_words": "sujetador animal, sujetador equino, hebilla arnés, cierre sujetador, clip sujetador",
+      "original_name": "Sujetadores",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141610",
+      "similar_words": "bozal caballo, bozal animal, bozal equino, protector bozal, bozal metal",
+      "original_name": "Bozales",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10141611",
+      "similar_words": "soporte correa, anilla soporte, hebilla soporte, accesorio soporte, pieza soporte",
+      "original_name": "Soportes para correas",
+      "level": "PRODUCT",
+      "parent_name": "Arneses"
+    },
+    {
+      "code": "10150000",
+      "similar_words": "semilla vegetal, plántula, semilla agrícola, material vegetal, propagación plantas",
+      "original_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10151500",
+      "similar_words": "semilla plántula, semilla cultivo, semilla huerta, propagación vegetal, semilla germinada",
+      "original_name": "Semillas y plántulas vegetales",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10151501",
+      "similar_words": "semilla frijol, plántula frijol, frijol siembra, semilla legumbre, frijol grano",
+      "original_name": "Semillas o plántulas de fríjol",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151502",
+      "similar_words": "semilla zanahoria, plántula zanahoria, zanahoria siembra, semilla hortaliza, zanahoria cultivo",
+      "original_name": "Semillas o plántulas de zanahoria",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151503",
+      "similar_words": "plantula apio, semilla apio, apio para sembrar, planta apio, apio vivero",
+      "original_name": "Semillas o plántulas de apio",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151504",
+      "similar_words": "semilla chile, plantula chile, chile para sembrar, planta chile, chile vivero",
+      "original_name": "Semillas o plántulas de chiles",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151505",
+      "similar_words": "semilla calabacin, plantula calabacin, calabacin para sembrar, planta calabacin, calabacin vivero",
+      "original_name": "Semillas o plántulas de calabacín",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151506",
+      "similar_words": "semilla alverja, plantula alverja, alverja para sembrar, planta alverja, arveja vivero",
+      "original_name": "Semillas o plántulas de alverja",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151507",
+      "similar_words": "semilla pepino, plantula pepino, pepino para sembrar, planta pepino, pepino vivero",
+      "original_name": "Semillas o plántulas de pepino cohombro",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151508",
+      "similar_words": "semilla berenjena, plantula berenjena, berenjena para sembrar, planta berenjena, berenjena vivero",
+      "original_name": "Semillas o plántulas de berenjena",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151509",
+      "similar_words": "semilla endivia, plantula endivia, endivia para sembrar, planta endivia, endivia vivero",
+      "original_name": "Semillas o plántulas de endivias",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151510",
+      "similar_words": "semilla ajo, plantula ajo, ajo para sembrar, planta ajo, ajo vivero",
+      "original_name": "Semillas o plántulas de ajo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151511",
+      "similar_words": "semilla puerro, plantula puerro, puerro para sembrar, planta puerro, puerro vivero",
+      "original_name": "Semillas o plántulas de puerro",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151512",
+      "similar_words": "semilla lechuga, plantula lechuga, lechuga para sembrar, planta lechuga, lechuga vivero",
+      "original_name": "Semillas o plántulas de lechuga",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151513",
+      "similar_words": "semilla maiz, plantula maiz, maiz para sembrar, planta maiz, maiz vivero",
+      "original_name": "Semillas o plántulas de maíz",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151514",
+      "similar_words": "semilla melon, plantula melon, melon para sembrar, planta melon, melon vivero",
+      "original_name": "Semillas o plántulas de melón",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151515",
+      "similar_words": "semilla cebolla, plantula cebolla, cebolla para sembrar, planta cebolla, cebolla vivero",
+      "original_name": "Semillas o plántulas cebolla",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151516",
+      "similar_words": "semilla soya, plantula soya, soya para sembrar, planta soya, soya vivero",
+      "original_name": "Semillas o plántulas de soya",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151517",
+      "similar_words": "semilla espinaca, plantula espinaca, espinaca para sembrar, planta espinaca, espinaca vivero",
+      "original_name": "Semillas o plántulas de espinaca",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151518",
+      "similar_words": "semilla tomate, plántula tomate, jitomate semilla, semillero tomate, plantín tomate, germinado tomate, semilla jitomate",
+      "original_name": "Semillas o plántulas de tomate",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151519",
+      "similar_words": "semilla nabo, plántula nabo, nabo para siembra, semillero nabo, plantín nabo, germinado nabo, semilla nabos",
+      "original_name": "Semillas o plántulas de nabo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151520",
+      "similar_words": "semilla acelga, plántula acelga, acelga para siembra, semillero acelga, plantín acelga, germinado acelga, semilla acelgas",
+      "original_name": "Semillas o plántulas de acelga",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151521",
+      "similar_words": "semilla pimiento, plántula pimiento, pimiento morrón semilla, semillero pimiento, plantín pimiento, germinado pimiento, semilla chile morrón",
+      "original_name": "Semillas o plántulas de pimiento morrón",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151522",
+      "similar_words": "semilla remolacha, plántula remolacha, remolacha para siembra, semillero remolacha, plantín remolacha, germinado remolacha, semilla betabel",
+      "original_name": "Semillas o plántulas de remolacha",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151523",
+      "similar_words": "semilla coliflor, plántula coliflor, coliflor para siembra, semillero coliflor, plantín coliflor, germinado coliflor, semilla col flor",
+      "original_name": "Semillas o plántulas de coliflor",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151524",
+      "similar_words": "semilla perejil, plántula perejil, perejil para siembra, semillero perejil, plantín perejil, germinado perejil, semilla perejiles",
+      "original_name": "Semillas o plántulas de perejil",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151525",
+      "similar_words": "semilla brócoli, plántula brócoli, brócoli para siembra, semillero brócoli, plantín brócoli, germinado brócoli, semilla brocoli",
+      "original_name": "Semillas o plántulas de brócoli",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151526",
+      "similar_words": "semilla repollo, plántula repollo, repollo para siembra, semillero repollo, plantín repollo, germinado repollo, semilla col",
+      "original_name": "Semillas o plántulas de repollo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151527",
+      "similar_words": "semilla papa, plántula papa, papa para siembra, semillero papa, plantín papa, tubérculo papa, semilla patata",
+      "original_name": "Semillas o plántulas de papa",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151528",
+      "similar_words": "semilla batata, plántula batata, batata para siembra, semillero batata, plantín batata, germinado batata, semilla camote",
+      "original_name": "Semillas o plántulas de batata",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151529",
+      "similar_words": "semilla calabaza, plántula calabaza, calabaza para siembra, semillero calabaza, plantín calabaza, germinado calabaza, semilla zapallo",
+      "original_name": "Semillas o plántulas de calabaza",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151530",
+      "similar_words": "semilla rábano, plántula rábano, rábano para siembra, semillero rábano, plantín rábano, germinado rábano, semilla rabanitos",
+      "original_name": "Semillas o plántulas de rábano",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151531",
+      "similar_words": "semilla bruselas, plántula bruselas, repollitos bruselas semilla, semillero bruselas, plantín bruselas, germinado bruselas, semilla col bruselas",
+      "original_name": "Semillas o plántulas de repollitos de bruselas",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151532",
+      "similar_words": "semilla ahuyama, plántula ahuyama, ahuyama para siembra, semillero ahuyama, plantín ahuyama, germinado ahuyama, semilla zapallo",
+      "original_name": "Semillas o plántulas de ahuyama",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151533",
+      "similar_words": "semilla okra, plantula okra, okra para siembra, semilla de quimbombo, quimbombo semilla",
+      "original_name": "Semillas o plántulas de okra",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151534",
+      "similar_words": "semilla melon, plantula melon cantalupo, semilla cantalupo, melon para siembra, semilla melón chino",
+      "original_name": "Semillas o plántulas de melón cantalupo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151535",
+      "similar_words": "semilla cacahuate, plantula mani, semilla de mani, cacahuate para siembra, semilla cacahuete",
+      "original_name": "Semillas o plántulas de maní",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151536",
+      "similar_words": "semilla caigua, plantula caigua, semilla de achojcha, caigua para siembra, semilla de cicla",
+      "original_name": "Semillas o plántulas de caigua",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151537",
+      "similar_words": "semilla esparrago, plantula esparrago, esparrago para siembra, semilla de esparrago blanco, semilla esparrago verde",
+      "original_name": "Semillas o plántulas de espárrago",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151538",
+      "similar_words": "semilla garbanzo, plantula garbanzo, garbanzo para siembra, semilla de garbanzo blanco, semilla garbanzo negro",
+      "original_name": "Semillas o plántulas de garbanzo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151539",
+      "similar_words": "semilla haba, plantula haba, haba para siembra, semilla de haba blanca, semilla habichuela",
+      "original_name": "Semillas o plántulas de haba",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas vegetales"
+    },
+    {
+      "code": "10151600",
+      "similar_words": "semillas cereal, semillas grano, semillas para siembra cereal, semillas cultivo cereal, semillas trigo maiz",
+      "original_name": "Semillas de cereales",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10151601",
+      "similar_words": "semilla trigo, plantula trigo, trigo para siembra, semilla trigo harinero, semilla trigo cristalino",
+      "original_name": "Semillas de trigo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151602",
+      "similar_words": "semilla canola, plantula canola, canola para siembra, semilla de colza, semilla canola hibrida",
+      "original_name": "Semillas de canola",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151603",
+      "similar_words": "semilla cebada, plantula cebada, cebada para siembra, semilla cebada cervecera, semilla cebada maltera",
+      "original_name": "Semillas de cebada",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151604",
+      "similar_words": "semilla mijo, plantula mijo, mijo para siembra, semilla de mijo blanco, semilla mijo dorado",
+      "original_name": "Semillas de mijo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151605",
+      "similar_words": "semilla avena, plantula avena, avena para siembra, semilla avena blanca, semilla avena negra",
+      "original_name": "Semillas de avena",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151606",
+      "similar_words": "semilla ajonjoli, plantula ajonjoli, ajonjoli para siembra, semilla sesamo, semilla de sesamo blanco",
+      "original_name": "Semillas de ajonjolí",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151607",
+      "similar_words": "semilla linaza, plantula linaza, linaza para siembra, semilla de lino, semilla linaza dorada",
+      "original_name": "Semillas de linaza",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151608",
+      "similar_words": "ricino, semilla ricino, aceite ricino semilla, castor bean, semilla para aceite",
+      "original_name": "Semillas de aceite de ricino",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151609",
+      "similar_words": "maíz semilla, semilla maíz, maíz grano, semilla para siembra maíz, maíz criollo",
+      "original_name": "Semillas de maíz",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151610",
+      "similar_words": "centeno semilla, semilla centeno, centeno grano, semilla forraje centeno, centeno para siembra",
+      "original_name": "Semillas de centeno",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151611",
+      "similar_words": "sorgo semilla, semilla sorgo, sorgo grano, sorgo forrajero, semilla sorgo dulce",
+      "original_name": "Semillas de sorgo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151612",
+      "similar_words": "kiwicha semilla, semilla kiwicha, kiwicha plántula, amaranto kiwicha, kiwicha grano",
+      "original_name": "Semillas o plántulas de kiwicha",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151613",
+      "similar_words": "quinoa semilla, semilla quinoa, quinoa plántula, quinua semilla, semilla para siembra quinoa",
+      "original_name": "Semillas o plántulas de quínoa",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cereales"
+    },
+    {
+      "code": "10151700",
+      "similar_words": "semilla forraje, semilla pasto, semilla hierba, plántula forraje, semilla ganadería",
+      "original_name": "Semillas y plántulas de hierba y forraje",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10151701",
+      "similar_words": "arroz semilla, semilla arroz, arroz grano, semilla para siembra arroz, arroz paddy",
+      "original_name": "Semillas o plántulas de arroz",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151702",
+      "similar_words": "trébol semilla, semilla trébol, trébol plántula, trébol forraje, semilla trébol rojo",
+      "original_name": "Semillas o plántulas de trébol",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151703",
+      "similar_words": "alfalfa semilla, semilla alfalfa, alfalfa plántula, semilla forraje alfalfa, alfalfa heno",
+      "original_name": "Semillas o plántulas de alfalfa",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151704",
+      "similar_words": "pasto semilla, semilla pasto, pasto plántula, semilla césped, semilla grama",
+      "original_name": "Semillas o plántulas de pasto",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151705",
+      "similar_words": "veza semilla, semilla veza, guija semilla, gachas semilla, veza plántula",
+      "original_name": "Semillas o plántulas de veza (gachas / guija)",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151706",
+      "similar_words": "guar semilla, semilla guar, guar plántula, guar goma, semilla para goma guar",
+      "original_name": "Semillas o plántulas de guar",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de hierba y forraje"
+    },
+    {
+      "code": "10151801",
+      "similar_words": "pimienta semilla, semilla pimienta, pimienta plántula, pimienta negra semilla, semilla condimento",
+      "original_name": "Semillas o plántulas de pimienta",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151802",
+      "similar_words": "vainilla semilla, plántula vainilla, orquídea vainilla, vaina vainilla, cultivo vainilla",
+      "original_name": "Semillas o plántulas de vainilla",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151803",
+      "similar_words": "canela semilla, plántula canela, árbol canela, cultivo canela, canela en rama semilla",
+      "original_name": "Semillas o plántulas de canela",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151804",
+      "similar_words": "clavo semilla, plántula clavo, clavo de olor semilla, cultivo clavo, árbol clavo",
+      "original_name": "Semillas o plántulas de clavo de olor",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151805",
+      "similar_words": "cilantro semilla, plántula cilantro, culantro semilla, cultivo cilantro, cilantro fresco semilla",
+      "original_name": "Semillas o plántulas de cilantro",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151806",
+      "similar_words": "jengibre semilla, plántula jengibre, raíz jengibre semilla, cultivo jengibre, rizoma jengibre",
+      "original_name": "Semillas o plántulas de jengibre",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151807",
+      "similar_words": "azafrán semilla, plántula azafrán, crocus semilla, cultivo azafrán, azafrán mexicano semilla",
+      "original_name": "Semillas o plántulas de azafrán",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151808",
+      "similar_words": "tomillo semilla, plántula tomillo, tomillo fresco semilla, cultivo tomillo, hierba tomillo",
+      "original_name": "Semillas o plántulas de tomillo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151809",
+      "similar_words": "curry semilla, plántula curry, mezcla curry semilla, cultivo curry, hierba curry",
+      "original_name": "Semillas o plántulas de curry",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151810",
+      "similar_words": "mostaza semilla, plántula mostaza, mostaza negra semilla, cultivo mostaza, mostaza amarilla",
+      "original_name": "Semillas o plántulas de mostaza",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151811",
+      "similar_words": "ginseng semilla, plántula ginseng, ginseng asiático semilla, cultivo ginseng, raíz ginseng",
+      "original_name": "Semillas o plántulas de ginseng",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151812",
+      "similar_words": "champiñón semilla, plántula champiñón, seta semilla, cultivo champiñón, micelio champiñón",
+      "original_name": "Semillas o plántulas de champiñones",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151813",
+      "similar_words": "sacha inchi semilla, plántula sacha inchi, maní inca semilla, cultivo sacha inchi, inchi semilla",
+      "original_name": "Semillas o plántulas de sacha inchi",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151814",
+      "similar_words": "achiote semilla, plántula achiote, bija semilla, cultivo achiote, colorante achiote",
+      "original_name": "Semillas o plántulas de achiote",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151815",
+      "similar_words": "kudzu semilla, plántula kudzu, kuzu semilla, cultivo kudzu, raíz kudzu",
+      "original_name": "Semillas o plántulas de kudzu",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151816",
+      "similar_words": "albahaca semilla, plántula albahaca, albahaca fresca semilla, cultivo albahaca, hierba albahaca",
+      "original_name": "Semillas o plántulas de albahaca",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151817",
+      "similar_words": "semilla anis, plantula anis, anis para siembra, semilla condimento anis, anis grano",
+      "original_name": "Semillas o plántulas de anís",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y plántulas de especias"
+    },
+    {
+      "code": "10151900",
+      "similar_words": "semillas flores, bulbos flores, plantulas florales, esquejes ornamentales, material propagacion flores",
+      "original_name": "Semillas, bulbos, plántulas y esquejes de flores",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10151901",
+      "similar_words": "semilla tulipan, bulbo tulipan, plantula tulipan, esqueje tulipan, tulipan para siembra",
+      "original_name": "Semillas, bulbos, plántulas o esquejes de tulipán",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151902",
+      "similar_words": "semilla rosa, plantula rosa, esqueje rosa, rosa para siembra, propagacion rosa",
+      "original_name": "Semillas, plántulas o esquejes de rosa",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151903",
+      "similar_words": "semilla narciso, bulbo narciso, plantula narciso, esqueje narciso, narciso para siembra",
+      "original_name": "Semillas, bulbos, plántulas o esquejes de narciso",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151904",
+      "similar_words": "semilla girasol, girasol siembra, semilla helianto, girasol ornamental, semilla girasol aceite",
+      "original_name": "Semillas de girasol",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151905",
+      "similar_words": "bulbo jacinto, tallo jacinto, plantula jacinto, jacinto siembra, jacinto bulboso",
+      "original_name": "Bulbos o tallos de jacinto",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151906",
+      "similar_words": "bulbo lirio, semilla lirio, plantula lirio, lirio siembra, lirio bulboso",
+      "original_name": "Bulbos de lirio",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10151907",
+      "similar_words": "semilla veza, plantula veza, veza siembra, esqueje veza, veza forrajera",
+      "original_name": "Semillas o plántulas de veza",
+      "level": "PRODUCT",
+      "parent_name": "Semillas, bulbos, plántulas y esquejes de flores"
+    },
+    {
+      "code": "10152000",
+      "similar_words": "semillas arboles, esquejes arboles, semillas arbustos, propagacion arboles, material arboles arbustos",
+      "original_name": "Semillas y esquejes de árboles y arbustos",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10152001",
+      "similar_words": "semilla frutal, esqueje frutal, plantula frutal, semilla arbol frutal, propagacion frutales",
+      "original_name": "Semillas o esquejes de árboles frutales",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152002",
+      "similar_words": "semilla conífera, esqueje conífera, plantula conífera, semilla pino, semilla abeto",
+      "original_name": "Semillas o esquejes de coníferas",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152003",
+      "similar_words": "semilla frutos secos, esqueje nogal, semilla nuez, semilla almendra, arbol frutos secos",
+      "original_name": "Semillas o esquejes de árboles de frutos secos",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152004",
+      "similar_words": "plantula latifoliado, semilla latifoliado, esqueje latifoliado, arbol hoja ancha, propagacion latifoliados",
+      "original_name": "Plántulas de latifoliados",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152005",
+      "similar_words": "plantula conífera, semilla conífera, esqueje pino, plantula pino, propagacion coníferas",
+      "original_name": "Plántulas de coníferas",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152006",
+      "similar_words": "semilla de pino, yema de pino, propagacion pino, vivero pino, plantula pino",
+      "original_name": "Semillas o yemas de pino",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152007",
+      "similar_words": "semilla algarrobo, yema algarrobo, propagacion algarrobo, vivero algarrobo, plantula algarrobo",
+      "original_name": "Semillas o yemas de algarrobo",
+      "level": "PRODUCT",
+      "parent_name": "Semillas y esquejes de árboles y arbustos"
+    },
+    {
+      "code": "10152100",
+      "similar_words": "residuos semilla, subproductos semilla, desechos semilla, rechazo semilla, material residual vegetal",
+      "original_name": "Residuos que no sean de piensos",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10152101",
+      "similar_words": "residuo babool, extraccion babool, torta babool, subproducto babool, rechazo babool",
+      "original_name": "Extracción de los residuos de semilla de babool",
+      "level": "PRODUCT",
+      "parent_name": "Residuos que no sean de piensos"
+    },
+    {
+      "code": "10152102",
+      "similar_words": "residuo colza, torta colza, subproducto colza, rechazo colza, desecho colza",
+      "original_name": "Residuos de semilla de colza",
+      "level": "PRODUCT",
+      "parent_name": "Residuos que no sean de piensos"
+    },
+    {
+      "code": "10152103",
+      "similar_words": "residuo linaza, torta linaza, subproducto linaza, rechazo linaza, desecho linaza",
+      "original_name": "Residuo de semillas de linaza",
+      "level": "PRODUCT",
+      "parent_name": "Residuos que no sean de piensos"
+    },
+    {
+      "code": "10152104",
+      "similar_words": "torta neem, residuo neem, subproducto neem, rechazo neem, desecho neem",
+      "original_name": "Torta de neem",
+      "level": "PRODUCT",
+      "parent_name": "Residuos que no sean de piensos"
+    },
+    {
+      "code": "10152201",
+      "similar_words": "semilla algodon, plantula algodon, vivero algodon, propagacion algodon, semillero algodon",
+      "original_name": "Semillas o plántulas de algodón",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cultivos fibrosos y semilleros"
+    },
+    {
+      "code": "10152202",
+      "similar_words": "semilla lino, plantula lino, vivero lino, propagacion lino, semillero lino",
+      "original_name": "Semillas o plántulas de lino",
+      "level": "PRODUCT",
+      "parent_name": "Semillas de cultivos fibrosos y semilleros"
+    },
+    {
+      "code": "10152300",
+      "similar_words": "semilla leguminosa, plantula leguminosa, vivero leguminosa, semillero leguminosa, propagacion leguminosa",
+      "original_name": "Plántulas y semillas de leguminosas",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10152400",
+      "similar_words": "semilla tuberculo, plantula tuberculo, vivero tuberculo, semillero tuberculo, propagacion tuberculo",
+      "original_name": "Plántulas y semillas de tubérculos",
+      "level": "CLASS",
+      "parent_name": "Semillas y plántulas vegetales y relacionados (Grupo 1015)"
+    },
+    {
+      "code": "10160000",
+      "similar_words": "arboles arbustos, vivero plantas, material vegetal, propagacion plantas, ornamentales",
+      "original_name": "Árboles y arbustos y relacionados (Grupo 1016)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10161501",
+      "similar_words": "arbol aceituno, olivo, plantula olivo, vivero olivo, propagacion olivo",
+      "original_name": "Aceitunos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161502",
+      "similar_words": "planta de cafe, cafetal, arbusto cafetero, semilla de cafe, cultivo de cafe",
+      "original_name": "Cafetos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161503",
+      "similar_words": "planta de cacao, cacaotal, arbusto cacaotero, semilla de cacao, cultivo de cacao",
+      "original_name": "Cacaoteros",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161504",
+      "similar_words": "arbol de manzana, manzanal, frutal de manzana, semilla de manzano, cultivo de manzana",
+      "original_name": "Manzanos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161505",
+      "similar_words": "arbol de pera, peraleda, frutal de pera, semilla de pero, cultivo de pera",
+      "original_name": "Peros",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161506",
+      "similar_words": "arbol de naranja, naranjal, citrico naranja, semilla de naranjo, cultivo de naranja",
+      "original_name": "Naranjos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161507",
+      "similar_words": "arbusto rododendro, flor rododendro, planta ornamental rododendro, rododendro rosa, cultivo rododendro",
+      "original_name": "Rododendros",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161508",
+      "similar_words": "planta de te, tebal, arbusto de te, semilla de te, cultivo de te, planta de infusion",
+      "original_name": "Plantas de te",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161509",
+      "similar_words": "arbol conífera, conífero, arbol de madera blanda, pino y abeto, cultivo de coníferas",
+      "original_name": "Coníferas",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161510",
+      "similar_words": "arbol pícea, abeto rojo, pícea europea, arbol de navidad, cultivo de pícea",
+      "original_name": "Abetos rojos (píceas)",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161511",
+      "similar_words": "arbol de pino, pinada, arbol maderero pino, semilla de pino, cultivo de pino, pino silvestre",
+      "original_name": "Pinos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161512",
+      "similar_words": "arbol abeto, abetal, arbol de madera abeto, semilla de abeto, cultivo de abeto",
+      "original_name": "Abetos",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161513",
+      "similar_words": "arbol palmera, palmeral, planta tropical palmera, semilla de palmera, cultivo de palmera",
+      "original_name": "Palmeras",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161514",
+      "similar_words": "arbol casuarina, casuarineta, arbol de madera casuarina, semilla de casuarina, cultivo casuarina",
+      "original_name": "Casuarina",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161515",
+      "similar_words": "arbol cipres, cipreseda, arbol ornamental cipres, semilla de cipres, cultivo de cipres",
+      "original_name": "Ciprés",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161516",
+      "similar_words": "arbol eucalipto, eucaliptal, arbol maderero eucalipto, semilla de eucalipto, cultivo de eucalipto",
+      "original_name": "Eucalipto",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161517",
+      "similar_words": "quinua planta, arbusto quinua, semilla quinua, cultivo quinua, quinoa",
+      "original_name": "Árbol de quinua",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161518",
+      "similar_words": "magnolio ornamental, árbol magnolio, flor magnolio, magnolio blanco, magnolio rosa",
+      "original_name": "Magnolio",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161519",
+      "similar_words": "mioporo planta, arbusto mioporo, mioporo ornamental, mioporo flores",
+      "original_name": "Mioporo",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161520",
+      "similar_words": "acalifa roja, acalifa planta, arbusto acalifa, acalifa ornamental, acalifa hojas",
+      "original_name": "Acalifa",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161521",
+      "similar_words": "madreselva cabo, tecomaria capensis, enredadera tecomaria, flor tecomaria, madreselva naranja",
+      "original_name": "Tecomaria capensis o madreselva del cabo",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161522",
+      "similar_words": "croton bolaina, arbusto croton, croton planta, bolaina ornamental, croton hojas",
+      "original_name": "Arbusto croton bolaina",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161523",
+      "similar_words": "abutillón planta, arbusto abutillón, abutillón flores, abutillón ornamental, flor linterna",
+      "original_name": "Abutillón",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161524",
+      "similar_words": "ficus árbol, ficus planta, ficus benjamina, ficus ornamental, ficus interior",
+      "original_name": "Ficus",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161525",
+      "similar_words": "lúcumo fruta, árbol lúcumo, lúcumo peruano, lúcumo cultivo, fruto lúcumo",
+      "original_name": "Lúcumo",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161526",
+      "similar_words": "aguacatal plantación, árbol aguacate, cultivo aguacate, aguacatal producción, huerta aguacate",
+      "original_name": "Aguacatal",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161527",
+      "similar_words": "guanábano árbol, guanábano fruta, cultivo guanábano, árbol guanábana, fruto guanábano",
+      "original_name": "Guanábano",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161528",
+      "similar_words": "carambolo árbol, carambolo fruta, árbol carambola, cultivo carambolo, fruto carambolo",
+      "original_name": "Carambolo",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161529",
+      "similar_words": "ciruelo árbol, ciruelo fruta, cultivo ciruelo, árbol ciruela, fruto ciruelo",
+      "original_name": "Ciruelo",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161530",
+      "similar_words": "árbol quince, membrillo árbol, cultivo membrillo, fruto quince, árbol membrillero",
+      "original_name": "Árbol de quince",
+      "level": "PRODUCT",
+      "parent_name": "Árboles y arbustos"
+    },
+    {
+      "code": "10161600",
+      "similar_words": "plantas flores, flores ornamentales, plantas florales, flores cultivo, plantas decorativas",
+      "original_name": "Plantas florales",
+      "level": "CLASS",
+      "parent_name": "Árboles y arbustos y relacionados (Grupo 1016)"
+    },
+    {
+      "code": "10161602",
+      "similar_words": "flor de nochebuena, nochebuena, poinsetia, flor roja navideña, planta navideña",
+      "original_name": "Poinsettias",
+      "level": "PRODUCT",
+      "parent_name": "Plantas florales"
+    },
+    {
+      "code": "10161604",
+      "similar_words": "azalea, flor azalea, arbusto florido, azalea japonesa, planta azalea",
+      "original_name": "Azaleas",
+      "level": "PRODUCT",
+      "parent_name": "Plantas florales"
+    },
+    {
+      "code": "10161605",
+      "similar_words": "cactus, cacto, suculenta, nopal, planta desértica",
+      "original_name": "Cactos",
+      "level": "PRODUCT",
+      "parent_name": "Plantas florales"
+    },
+    {
+      "code": "10161606",
+      "similar_words": "ageratum, flor ageratum, ageratum morado, flor púrpura pequeña, planta ageratum",
+      "original_name": "Ageratum púrpura",
+      "level": "PRODUCT",
+      "parent_name": "Plantas florales"
+    },
+    {
+      "code": "10161800",
+      "similar_words": "plantas verdes, plantas de interior, plantas sin flores, follaje, plantas de ornato",
+      "original_name": "Plantas sin flor",
+      "level": "CLASS",
+      "parent_name": "Árboles y arbustos y relacionados (Grupo 1016)"
+    },
+    {
+      "code": "10161801",
+      "similar_words": "helecho, helecho de interior, helecho ornamental, planta helecho, follaje helecho",
+      "original_name": "Helechos",
+      "level": "PRODUCT",
+      "parent_name": "Plantas sin flor"
+    },
+    {
+      "code": "10161802",
+      "similar_words": "hiedra, enredadera, hiedra inglesa, planta trepadora, ivy",
+      "original_name": "Hiedras",
+      "level": "PRODUCT",
+      "parent_name": "Plantas sin flor"
+    },
+    {
+      "code": "10161803",
+      "similar_words": "filodendro, filodendron, planta filodendro, filodendro trepador, planta de interior",
+      "original_name": "Filodendros",
+      "level": "PRODUCT",
+      "parent_name": "Plantas sin flor"
+    },
+    {
+      "code": "10161804",
+      "similar_words": "liquen, liquenes, musgo liquen, planta liquen, organismo liquen",
+      "original_name": "Líquenes",
+      "level": "PRODUCT",
+      "parent_name": "Plantas sin flor"
+    },
+    {
+      "code": "10161805",
+      "similar_words": "vid, enredadera, planta trepadora, vid ornamental, rama trepadora",
+      "original_name": "Vides",
+      "level": "PRODUCT",
+      "parent_name": "Plantas sin flor"
+    },
+    {
+      "code": "10161900",
+      "similar_words": "flores secas, productos secos, arreglos secos, decoración seca, flores deshidratadas",
+      "original_name": "Productos florales secos",
+      "level": "CLASS",
+      "parent_name": "Árboles y arbustos y relacionados (Grupo 1016)"
+    },
+    {
+      "code": "10161901",
+      "similar_words": "vaina seca, vainas, semillas secas, vaina de decoración, productos secos",
+      "original_name": "Vainas secas",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161902",
+      "similar_words": "follaje seco, hojas secas, ramas secas, decoración follaje, plantas deshidratadas",
+      "original_name": "Follaje seco",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161903",
+      "similar_words": "helecho seco, helechos deshidratados, helecho decorativo, follaje seco helecho, arreglo seco",
+      "original_name": "Helechos secos",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161905",
+      "similar_words": "ramas secas, tallos secos, madera seca decorativa, ramas decorativas, tallos deshidratados",
+      "original_name": "Ramas y tallos secos",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161906",
+      "similar_words": "pasto seco, gramínea deshidratada, decoración con pastos, arreglo floral seco, pasto ornamental",
+      "original_name": "Penachos de gramíneas secos",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161907",
+      "similar_words": "flores prensadas, flor deshidratada, flores aplastadas, arreglo floral prensado, flores secas aplastadas",
+      "original_name": "Flores secas prensadas",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10161908",
+      "similar_words": "pétalos deshidratados, pétalos de flor seca, pétalos decorativos, pétalos para arreglos, pétalos desecados",
+      "original_name": "Pétalos secos",
+      "level": "PRODUCT",
+      "parent_name": "Productos florales secos"
+    },
+    {
+      "code": "10170000",
+      "similar_words": "fertilizantes naturales, nutrientes para cultivo, abonos para plantas, enmiendas orgánicas, mejoradores de suelo",
+      "original_name": "Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10171500",
+      "similar_words": "abono natural, fertilizante orgánico, nutrientes de plantas, enmienda para cultivo, mejorador de tierra",
+      "original_name": "Abonos orgánicos y nutrientes para plantas",
+      "level": "CLASS",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017)"
+    },
+    {
+      "code": "10171501",
+      "similar_words": "guano, estiércol de animal, abono animal, excremento para plantas, gallinaza",
+      "original_name": "Estiércol o guano",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171502",
+      "similar_words": "regulador de crecimiento, auxinas, giberelinas, estimulante de plantas, promotor de raíces",
+      "original_name": "Hormonas para plantas",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171503",
+      "similar_words": "harina de pescado, polvo de pescado, abono de pescado, fertilizante de pescado, subproducto pesquero",
+      "original_name": "Harina de pescado",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171504",
+      "similar_words": "fertilizante, abono para plantas, enmienda de suelo, mejorador de tierra, nutriente para cultivo",
+      "original_name": "Abono",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171505",
+      "similar_words": "fertilizante foliar, nutriente foliar, spray para plantas, abono líquido, nutrición foliar",
+      "original_name": "Nutriente foliar",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171506",
+      "similar_words": "humus de lombriz, tierra negra, materia orgánica, compost maduro, sustrato orgánico",
+      "original_name": "Humus",
+      "level": "PRODUCT",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171600",
+      "similar_words": "fertilizante químico, abono sintético, nutrientes minerales, fertilizante industrial, abono de laboratorio",
+      "original_name": "Abonos químicos y nutrientes para plantas",
+      "level": "CLASS",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017)"
+    },
+    {
+      "code": "10171601",
+      "similar_words": "fertilizante con nitrógeno, nitrato, urea, abono nitrogenado, nutriente nitrogenado",
+      "original_name": "Fertilizante nitrogenado",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171602",
+      "similar_words": "fertilizante potásico, potasa, abono de potasio, nutriente potásico, cloruro de potasio",
+      "original_name": "Fertilizante de potasio",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171603",
+      "similar_words": "fertilizante fosfatado, superfosfato, abono de fósforo, nutriente fosfórico, roca fosfórica",
+      "original_name": "Fertilizante de fósforo",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171604",
+      "similar_words": "sulfuro abono, sulfato fertilizante, azufre para plantas, nutriente sulfurado, abono con azufre",
+      "original_name": "Fertilizante de sulfuro",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171605",
+      "similar_words": "NPK, mezcla NPK, abono triple, nitrogeno fosforo potasio, fertilizante balanceado",
+      "original_name": "Mezclas de nitrógeno – fósforo – potasio – npk",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171606",
+      "similar_words": "silice pura, silicio fertilizante, acido silicico, abono siliceo, nutriente silice",
+      "original_name": "Fertilizarte de sílice puro",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171607",
+      "similar_words": "magnesio abono, sulfato de magnesio, magnesiano fertilizante, nutriente magnesio, abono con mag",
+      "original_name": "Fertilizante con magnesio",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171608",
+      "similar_words": "microelementos, micros, oligoelementos, fertilizante micro, nutrientes menores",
+      "original_name": "Fertilizante micro elemento",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171609",
+      "similar_words": "fosfato silice, silicato fosfato, abono fosforico, nutriente fosfato siliceo, fertilizante compuesto",
+      "original_name": "Fertilizante fosfato de sílice",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171610",
+      "similar_words": "potasio silice, silicato potasio, abono potasico, nutriente potasio siliceo, fertilizante potasio",
+      "original_name": "Fertilizante potasio de sílice",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171611",
+      "similar_words": "calcio abono, carbonato calcio, cal agricola, nutriente calcio, fertilizante calcareo",
+      "original_name": "Fertilizante de calcio",
+      "level": "PRODUCT",
+      "parent_name": "Abonos químicos y nutrientes para plantas"
+    },
+    {
+      "code": "10171700",
+      "similar_words": "mata maleza, desyerbante, herbicida agricola, control maleza, producto desmalezador",
+      "original_name": "Herbicidas",
+      "level": "CLASS",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017)"
+    },
+    {
+      "code": "10171701",
+      "similar_words": "mata maleza, desyerbante, herbicida selectivo, control de hierba, producto antimaleza",
+      "original_name": "Matamalezas",
+      "level": "PRODUCT",
+      "parent_name": "Herbicidas"
+    },
+    {
+      "code": "10171702",
+      "similar_words": "fungicida, antimicótico, control hongos, fungicida agricola, producto antifungal",
+      "original_name": "Fungicidas",
+      "level": "PRODUCT",
+      "parent_name": "Herbicidas"
+    },
+    {
+      "code": "10171800",
+      "similar_words": "mejora suelo, enmienda suelo, corrector suelo, acondicionador tierra, producto suelo",
+      "original_name": "Acondicionadores de suelos",
+      "level": "CLASS",
+      "parent_name": "Abonos orgánicos y nutrientes para plantas y relacionados (Grupo 1017)"
+    },
+    {
+      "code": "10171801",
+      "similar_words": "enmienda organica, compost, materia organica, acondicionador natural, mejora suelo biologica",
+      "original_name": "Acondicionador orgánico de suelos",
+      "level": "PRODUCT",
+      "parent_name": "Acondicionadores de suelos"
+    },
+    {
+      "code": "10171802",
+      "similar_words": "enmienda mineral, corrector inorganico, acondicionador mineral, mejora suelo quimica, producto mineral",
+      "original_name": "Acondicionador inorgánico de suelos",
+      "level": "PRODUCT",
+      "parent_name": "Acondicionadores de suelos"
+    },
+    {
+      "code": "10190000",
+      "similar_words": "pesticida, insecticida, repelente plagas, control de plagas, producto antiplagas",
+      "original_name": "Pesticidas o repelentes de plagas y relacionados (Grupo 1019)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10191500",
+      "similar_words": "plaguicida, veneno para plagas, desinfectante, fumigación, control de plagas, pesticida agrícola, spray anti-plagas",
+      "original_name": "Pesticidas o repelentes de plagas",
+      "level": "CLASS",
+      "parent_name": "Pesticidas o repelentes de plagas y relacionados (Grupo 1019)"
+    },
+    {
+      "code": "10191506",
+      "similar_words": "veneno para ratones, raticida, trampa de roedores, control de ratas, mata ratas, rodenticida, veneno para ratería",
+      "original_name": "Mata – roedores",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191507",
+      "similar_words": "espanta pájaros, ahuyentador de aves, repelente aviar, control de aves, protección contra pájaros, dispositivo anti-pájaros",
+      "original_name": "Repelentes de aves",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191508",
+      "similar_words": "termicida, protección de termitas, tratamiento anti-termitas, veneno para termitas, barrera anti-termitas, fumigación de termitas",
+      "original_name": "Protectores contra termitas",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191509",
+      "similar_words": "veneno para insectos, spray insecticida, mata insectos, desinsectante, control de plagas insectiles, fumigación de insectos, insecticida agrícola",
+      "original_name": "Insecticidas",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191510",
+      "similar_words": "abamectina pura, principio activo abamectina, abamectina concentrado, abamectina polvo, abamectina líquido",
+      "original_name": "Abamectina",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191511",
+      "similar_words": "fipronil puro, principio activo fipronil, fipronil concentrado, fipronil polvo, fipronil líquido",
+      "original_name": "Fipronil",
+      "level": "PRODUCT",
+      "parent_name": "Pesticidas o repelentes de plagas"
+    },
+    {
+      "code": "10191700",
+      "similar_words": "trampa para plagas, dispositivo control plagas, equipo anti-plagas, herramienta control animal, aparato para plagas, sistema de trampas",
+      "original_name": "Dispositivos para control de plagas",
+      "level": "CLASS",
+      "parent_name": "Pesticidas o repelentes de plagas y relacionados (Grupo 1019)"
+    },
+    {
+      "code": "10191701",
+      "similar_words": "trampa para animales, trampa de roedores, jaula trampa, trampa viva, captura de animales, trampa para mamíferos",
+      "original_name": "Trampas para control animal",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10191703",
+      "similar_words": "trampa para moscas, trampa para mosquitos, trampa para insectos voladores, mata moscas eléctrico, trampa adhesiva insectos, cazador de insectos",
+      "original_name": "Trampas para el control de insectos voladores",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10191704",
+      "similar_words": "mata moscas eléctrico, raqueta mata moscas, mata insectos, cazador de moscas, trampa electrónica moscas, mata mosquitos",
+      "original_name": "Matamoscas",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10191705",
+      "similar_words": "lazo para animales, trampa de lazo, nudo corredizo, captura con lazo, lazo de caza, trampa de cuello",
+      "original_name": "Lazos",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10191706",
+      "similar_words": "cepo para roedores, trampa de cepo, cepo para animales, cepo de resorte, trampa mecánica, cepo para ratones",
+      "original_name": "Cepos",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10191707",
+      "similar_words": "repelente ultrasónico, ahuyentador ultrasónico, dispositivo ultrasónico plagas, repelente sónico, aparato ultrasónico pestes, espanta plagas electrónico",
+      "original_name": "Repelente ultrasónico de pestes",
+      "level": "PRODUCT",
+      "parent_name": "Dispositivos para control de plagas"
+    },
+    {
+      "code": "10200000",
+      "similar_words": "rosales azules, rosales lavanda, rosales púrpura, rosas de color azul, rosas lavanda, plantas ornamentales azules, flores vivas de color",
+      "original_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)",
+      "level": "GROUP",
+      "parent_name": "Material Vivo Animal y Vegetal (División 10)"
+    },
+    {
+      "code": "10201500",
+      "similar_words": "rosa azul, rosa lavanda, rosa púrpura, flores azules vivas, rosas de color morado, plantas ornamentales azules, rosales tonos fríos",
+      "original_name": "Rosales vivos azules o lavanda o púrpura",
+      "level": "CLASS",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)"
+    },
+    {
+      "code": "10201501",
+      "similar_words": "rosa allure, rosa sterling 95, rosal variedad allure, flor allure sterling, rosa de corte allure",
+      "original_name": "Rosal vivo allure o sterling 95",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201502",
+      "similar_words": "rosa amnesia, rosal amnesia, flor amnesia, rosa variedad amnesia, amnesia de corte",
+      "original_name": "Rosal vivo amnesia",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201503",
+      "similar_words": "rosa augusta louise, rosal augusta louise, flor augusta louise, rosa variedad augusta, augusta louise de corte",
+      "original_name": "Rosal vivo augusta louise",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201504",
+      "similar_words": "rosa avant garde, rosal avant garde, flor avant garde, rosa variedad avant, avant garde de corte",
+      "original_name": "Rosal vivo avant garde",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201505",
+      "similar_words": "rosa blue bird, rosal blue bird, flor blue bird, rosa azul pájaro, blue bird de corte",
+      "original_name": "Rosal vivo blue bird",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201506",
+      "similar_words": "rosa curiosa, rosal curiosa, flor curiosa, rosa variedad curiosa, curiosa de corte",
+      "original_name": "Rosal vivo curiosa",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201507",
+      "similar_words": "rosa cool water, rosal cool water, flor cool water, rosa agua fresca, cool water de corte",
+      "original_name": "Rosal vivo cool water",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201508",
+      "similar_words": "rosa delilah, rosal delilah, flor delilah, rosa variedad delilah, delilah de corte",
+      "original_name": "Rosal vivo delilah",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201509",
+      "similar_words": "rosa double party, rosal double party, flor double party, rosa doble fiesta, double party de corte",
+      "original_name": "Rosal vivo double party",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201510",
+      "similar_words": "rosa faith, rosal faith, flor faith, rosa variedad faith, faith de corte",
+      "original_name": "Rosal vivo faith",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201511",
+      "similar_words": "rosa mami blue, rosa mammy blue, rosal mami blue, flor mami blue, mami blue de corte",
+      "original_name": "Rosal vivo mami blue o mammy blue",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201512",
+      "similar_words": "rosa marítimo, rosal marítimo, flor marítimo, rosa variedad marítimo, marítimo de corte",
+      "original_name": "Rosal vivo marítimo",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201513",
+      "similar_words": "rosa milano, rosal milano, flor milano, rosa variedad milano, milano de corte",
+      "original_name": "Rosal vivo milano",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201514",
+      "similar_words": "rosa mistery, rosal mistery, flor mistery, rosa variedad mistery, mistery de corte",
+      "original_name": "Rosal vivo mistery",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201515",
+      "similar_words": "rosa ocean song, rosa boyfriend, flor azul lavanda, rosa viva púrpura, ramo azul",
+      "original_name": "Rosal vivo ocean song o boyfriend",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201516",
+      "similar_words": "rosa cezanne, rosa púrpura viva, flor cezanne, rosa lavanda oscuro, ramo púrpura",
+      "original_name": "Rosal vivo cezanne púrpura",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201517",
+      "similar_words": "rosa purple fragrance, rosa fragancia púrpura, flor aromática púrpura, rosa viva perfumada, ramo fragancia",
+      "original_name": "Rosal vivo purple fragrance",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201518",
+      "similar_words": "rosa sanaa, flor sanaa, rosa viva sanaa, ramo sanaa, rosa azul lavanda",
+      "original_name": "Rosal vivo sanaa",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201519",
+      "similar_words": "rosa silverstone, flor silverstone, rosa viva plateada, ramo silverstone, rosa gris plateado",
+      "original_name": "Rosal vivo silverstone",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201520",
+      "similar_words": "rosa soulmate, flor soulmate, rosa viva soulmate, ramo soulmate, rosa púrpura oscuro",
+      "original_name": "Rosal vivo soulmate",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201521",
+      "similar_words": "rosa stranger, flor stranger, rosa viva stranger, ramo stranger, rosa azul intenso",
+      "original_name": "Rosal vivo stranger",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201522",
+      "similar_words": "rosa tinted blue, rosa azul teñida, flor azul tinta, rosa viva azul, ramo azul tintado",
+      "original_name": "Rosal vivo tinted blue",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201523",
+      "similar_words": "rosa two faces, flor two faces, rosa bicolor, rosa viva two faces, ramo dos tonos",
+      "original_name": "Rosal vivo two faces",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura"
+    },
+    {
+      "code": "10201600",
+      "similar_words": "rosa chocolate, rosa marrón, rosa café, flor marrón, ramo chocolate",
+      "original_name": "Rosales vivos chocolate o marrón",
+      "level": "CLASS",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)"
+    },
+    {
+      "code": "10201601",
+      "similar_words": "rosa black lava, rosa negra, flor black lava, rosa viva negra, ramo negro oscuro",
+      "original_name": "Rosal vivo black lava",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201602",
+      "similar_words": "rosa cimarrón, flor cimarrón, rosa viva cimarrón, ramo cimarrón, rosa marrón oscuro",
+      "original_name": "Rosal vivo cimarron",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201603",
+      "similar_words": "rosa coffee break, rosa café, flor coffee break, rosa viva café, ramo marrón café",
+      "original_name": "Rosal vivo coffee break",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201604",
+      "similar_words": "rosa estelle, flor estelle, rosa viva estelle, ramo estelle, rosa marrón chocolate",
+      "original_name": "Rosal vivo estelle",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201605",
+      "similar_words": "rosa gypsy leonidas, flor gypsy, rosa leonidas, rosa viva gypsy, ramo gypsy marrón",
+      "original_name": "Rosal vivo gypsy leonidas",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201606",
+      "similar_words": "rosa leonidas, rosal leonidas, rosa viva marrón, rosa chocolate leonidas, flor leonidas",
+      "original_name": "Rosal vivo leonidas",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201607",
+      "similar_words": "rosa matilda, rosal matilda, rosa viva chocolate, rosa marrón matilda, flor matilda",
+      "original_name": "Rosal vivo matilda",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201608",
+      "similar_words": "rosa sunny leonidas, rosal sunny, rosa viva sunny, rosa chocolate sunny, flor sunny leonidas",
+      "original_name": "Rosal vivo sunny leonidas",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201609",
+      "similar_words": "rosa terra nostra, rosal terra nostra, rosa viva marrón, rosa chocolate terra, flor terra nostra",
+      "original_name": "Rosal vivo terra nostra",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201610",
+      "similar_words": "rosa terracotta, rosal terracotta, rosa viva terracota, rosa marrón terracotta, flor terracotta",
+      "original_name": "Rosal vivo terracotta",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos chocolate o marrón"
+    },
+    {
+      "code": "10201700",
+      "similar_words": "rosales crema, rosas vivas crema, rosales color crema, flores crema, rosas claras",
+      "original_name": "Rosales vivos crema",
+      "level": "CLASS",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)"
+    },
+    {
+      "code": "10201701",
+      "similar_words": "rosa advenire, rosal advenire, rosa viva crema, rosa advenire crema, flor advenire",
+      "original_name": "Rosal vivo advenire",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201702",
+      "similar_words": "rosa alex, rosal alex, rosa viva alex, rosa crema alex, flor alex",
+      "original_name": "Rosal vivo alex",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201703",
+      "similar_words": "rosa antique brass, rosal antique brass, rosa viva brass, rosa metálica antique, flor antique brass",
+      "original_name": "Rosal vivo antique brass",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201704",
+      "similar_words": "rosa aubade, rosal aubade, rosa viva aubade, rosa crema aubade, flor aubade",
+      "original_name": "Rosal vivo aubade",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201705",
+      "similar_words": "rosa beach, rosal beach, rosa viva beach, rosa crema beach, flor beach",
+      "original_name": "Rosal vivo beach",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201706",
+      "similar_words": "rosa belle pearl, rosal belle pearl, rosa viva perla, rosa crema pearl, flor belle pearl",
+      "original_name": "Rosal vivo belle pearl",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201707",
+      "similar_words": "rosa blush andes, rosal blush, rosa viva blush, rosa andes crema, flor blush andes",
+      "original_name": "Rosal vivo blush de los andes",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201708",
+      "similar_words": "rosa camel, rosal camel, rosa viva camel, rosa crema camel, flor camel",
+      "original_name": "Rosal vivo camel",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201709",
+      "similar_words": "rosa caramel antique, rosal caramel, rosa viva caramel, rosa antike crema, flor caramel antique",
+      "original_name": "Rosal vivo caramel antike o caramel antique",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201710",
+      "similar_words": "rosa champagne, rosal crema champagne, flor champagne, planta rosa champagne, rosal vivo",
+      "original_name": "Rosal vivo champagne",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201711",
+      "similar_words": "rosa clear ocean, rosal crema azul, flor clear ocean, planta rosa ocean, rosal vivo",
+      "original_name": "Rosal vivo clear ocean",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201712",
+      "similar_words": "rosa combo, rosal crema combo, flor combo, planta rosa variada, rosal vivo",
+      "original_name": "Rosal vivo combo",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201713",
+      "similar_words": "rosa creme de la creme, rosal crema premium, flor creme, planta rosa elegante, rosal vivo",
+      "original_name": "Rosal vivo creme de la creme",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201714",
+      "similar_words": "rosa emanuella, rosal crema emanuella, flor emanuella, planta rosa emanuella, rosal vivo",
+      "original_name": "Rosal vivo emanuella",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201715",
+      "similar_words": "rosa evolution, rosal crema evolution, flor evolution, planta rosa evolution, rosal vivo",
+      "original_name": "Rosal vivo evolution",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201716",
+      "similar_words": "rosa fedora, rosal crema fedora, flor fedora, planta rosa fedora, rosal vivo",
+      "original_name": "Rosal vivo fedora",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201717",
+      "similar_words": "rosa fenice, rosal crema fenice, flor fenice, planta rosa fenice, rosal vivo",
+      "original_name": "Rosal vivo fenice",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201718",
+      "similar_words": "rosa french vanilla, rosal crema vainilla, flor french vanilla, planta rosa vanilla, rosal vivo",
+      "original_name": "Rosal vivo french vanilla",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201719",
+      "similar_words": "rosa hollywood, rosal crema hollywood, flor hollywood, planta rosa hollywood, rosal vivo",
+      "original_name": "Rosal vivo hollywood",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201720",
+      "similar_words": "rosa ilios, rosal crema ilios, flor ilios, planta rosa ilios, rosal vivo",
+      "original_name": "Rosal vivo ilios",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201721",
+      "similar_words": "rosa jelena, rosal crema jelena, flor jelena, planta rosa jelena, rosal vivo",
+      "original_name": "Rosal vivo jelena",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201722",
+      "similar_words": "rosa kameleon, rosal crema kameleon, flor kameleon, planta rosa kameleon, rosal vivo",
+      "original_name": "Rosal vivo kameleon",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201723",
+      "similar_words": "rosa kentucky, rosal crema kentucky, flor kentucky, planta rosa kentucky, rosal vivo",
+      "original_name": "Rosal vivo kentucky",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201724",
+      "similar_words": "rosa kings pride, rosal crema kings pride, flor kings pride, planta rosa pride, rosal vivo",
+      "original_name": "Rosal vivo kings pride",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201725",
+      "similar_words": "rosa viva latin fusion, planta rosal crema, rosal decorativo, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo latin fusion",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201726",
+      "similar_words": "rosa viva lemon dream, rosal amarillo crema, planta rosal limon, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo lemon dream",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201727",
+      "similar_words": "rosa viva magic moka, rosal marron crema, planta rosal chocolate, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo magic moka",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201728",
+      "similar_words": "rosa viva mamamia, rosal crema intenso, planta rosal decorativo, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo mamamia",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201729",
+      "similar_words": "rosa viva message, rosal crema claro, planta rosal vivo, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo message",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201730",
+      "similar_words": "rosa viva muneca, rosal crema suave, planta rosal delicado, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo muneca o munieca",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201731",
+      "similar_words": "rosa viva parfum, rosal aroma crema, planta rosal fragante, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo parfum de rosas",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201732",
+      "similar_words": "rosa viva porcelina, rosal blanco crema, planta rosal palido, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo porcelina",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201733",
+      "similar_words": "rosa viva privilege, rosal crema premium, planta rosal exclusivo, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo privilege",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201734",
+      "similar_words": "rosa viva quicksand, rosal arena crema, planta rosal neutro, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo quicksand",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201735",
+      "similar_words": "rosa viva rollercoaster, rosal crema dinamico, planta rosal vistoso, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo rollercoaster",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201736",
+      "similar_words": "rosa viva romantic, rosal crema romantico, planta rosal curiosa, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo romantic curiosa",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201737",
+      "similar_words": "rosa viva safari, rosal naranja crema, planta rosal exotico, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo safari",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201738",
+      "similar_words": "rosa viva sahara, rosal dorado crema, planta rosal caido, rosa decorativa, flor viva",
+      "original_name": "Rosal vivo sahara",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201739",
+      "similar_words": "rosa viva sandy, rosal crema arenoso, planta rosal femma, rosa de jardin, flor viva",
+      "original_name": "Rosal vivo sandy femma",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201740",
+      "similar_words": "rosal talea, rosa talea, planta rosal talea, flor talea, rosal vivo variedad talea",
+      "original_name": "Rosal vivo talea",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201741",
+      "similar_words": "rosal timeless, rosa timeless, planta rosal timeless, flor timeless, rosal vivo variedad timeless",
+      "original_name": "Rosal vivo timeless",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201742",
+      "similar_words": "rosal transition, rosa transition, planta rosal transition, flor transition, rosal vivo variedad transition",
+      "original_name": "Rosal vivo transition",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201743",
+      "similar_words": "rosal trump, rosa trump, planta rosal trump, flor trump, rosal vivo variedad trump",
+      "original_name": "Rosal vivo trump",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201744",
+      "similar_words": "rosal twin, rosa twin, planta rosal twin, flor twin, rosal vivo variedad twin",
+      "original_name": "Rosal vivo twin",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201745",
+      "similar_words": "rosal vendela, rosa vendela, planta rosal vendela, flor vendela, rosal vivo variedad vendela",
+      "original_name": "Rosal vivo vendela",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201746",
+      "similar_words": "rosal virginia, rosa virginia, planta rosal virginia, flor virginia, rosal vivo variedad virginia",
+      "original_name": "Rosal vivo virginia",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos crema"
+    },
+    {
+      "code": "10201800",
+      "similar_words": "rosales verdes, rosales lima, rosales color verde, rosales tonos lima, plantas rosales verdes",
+      "original_name": "Rosales vivos verdes o lima",
+      "level": "CLASS",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)"
+    },
+    {
+      "code": "10201801",
+      "similar_words": "rosal amandine, rosa amandine, planta rosal amandine, flor amandine, rosal verde amandine",
+      "original_name": "Rosal vivo amandine",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201802",
+      "similar_words": "rosal caipirinha, rosa caipirinha, planta rosal caipirinha, flor caipirinha, rosal verde caipirinha",
+      "original_name": "Rosal vivo caipirinha",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201803",
+      "similar_words": "rosal green fashion, rosa green fashion, planta rosal green fashion, flor green fashion, rosal verde fashion",
+      "original_name": "Rosal vivo green fashion",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201804",
+      "similar_words": "rosal green tea, rosa green tea, planta rosal green tea, flor green tea, rosal verde tea",
+      "original_name": "Rosal vivo green tea",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201805",
+      "similar_words": "rosal jade, rosa jade, planta rosal jade, flor jade, rosal verde jade",
+      "original_name": "Rosal vivo jade",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201806",
+      "similar_words": "rosal limbo, rosa limbo, planta rosal limbo, flor limbo, rosal verde limbo",
+      "original_name": "Rosal vivo limbo",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201807",
+      "similar_words": "rosal limena, rosal limenia, rosa limena, planta rosal limena, flor limena, rosal verde limena",
+      "original_name": "Rosal vivo limena o limenia",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201808",
+      "similar_words": "rosa limona, rosal limón, rosa verde limón, flor limona, rosa viva limona",
+      "original_name": "Rosal vivo limona",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201809",
+      "similar_words": "rosa old dutch, rosal holandés, rosa antigua, flor old dutch, rosa viva old dutch",
+      "original_name": "Rosal vivo old dutch",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201810",
+      "similar_words": "rosa super green, rosal verde intenso, rosa verde super, flor super green, rosa viva super green",
+      "original_name": "Rosal vivo super green",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201811",
+      "similar_words": "rosa sweet green, rosal verde dulce, rosa verde sweet, flor sweet green, rosa viva sweet green",
+      "original_name": "Rosal vivo sweet green",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201812",
+      "similar_words": "rosa viva, rosal viva, flor viva, rosa viva viva, rosal variedad viva",
+      "original_name": "Rosal vivo viva",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201813",
+      "similar_words": "rosa zazu, rosal zazu, flor zazu, rosa viva zazu, rosal variedad zazu",
+      "original_name": "Rosal vivo zazu",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos verdes o lima"
+    },
+    {
+      "code": "10201900",
+      "similar_words": "rosa rosado claro, rosal rosa pálido, flores rosadas claras, rosa pastel, rosal tonalidad rosada",
+      "original_name": "Rosales vivos rosado claro",
+      "level": "CLASS",
+      "parent_name": "Rosales vivos azules o lavanda o púrpura y relacionados (Grupo 1020)"
+    },
+    {
+      "code": "10201901",
+      "similar_words": "rosa anna, rosal anna, flor anna, rosa viva anna, rosal variedad anna",
+      "original_name": "Rosal vivo anna",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201902",
+      "similar_words": "rosa bella vita, rosal bella vita, flor bella vita, rosa viva bella vita, rosal variedad bella vita",
+      "original_name": "Rosal vivo bella vita",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201903",
+      "similar_words": "rosa bridal dream, rosal bridal dream, flor bridal dream, rosa viva bridal dream, rosal variedad bridal dream",
+      "original_name": "Rosal vivo bridal dream",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201904",
+      "similar_words": "rosa candy bianca, rosal candy bianca, flor candy bianca, rosa viva candy bianca, rosal variedad candy bianca",
+      "original_name": "Rosal vivo candy bianca",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201905",
+      "similar_words": "rosa caress, rosal caress, flor caress, rosa viva caress, rosal variedad caress",
+      "original_name": "Rosal vivo caress",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201906",
+      "similar_words": "rosa carolina, rosal carolina, flor carolina, rosa viva carolina, rosal variedad carolina",
+      "original_name": "Rosal vivo carolina",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201907",
+      "similar_words": "rosa climax, rosal climax, flor climax, rosa viva climax, rosal variedad climax",
+      "original_name": "Rosal vivo climax",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201908",
+      "similar_words": "rosa danny, rosal danny, flor danny, rosa viva danny, rosal variedad danny",
+      "original_name": "Rosal vivo danny",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201909",
+      "similar_words": "rosa dolce vita, rosal rosado claro, rosa viva, planta rosal, rosa fresca",
+      "original_name": "Rosal vivo dolce vita",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201910",
+      "similar_words": "rosa elite, rosal elite rosado, rosa viva elite, planta rosa, rosal premium",
+      "original_name": "Rosal vivo elite",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201911",
+      "similar_words": "rosa emma, rosal emma rosado, rosa viva emma, planta rosal emma, rosa fresca emma",
+      "original_name": "Rosal vivo emma",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201912",
+      "similar_words": "rosa engagement, rosal engagement rosado, rosa viva engagement, planta rosal, rosa para boda",
+      "original_name": "Rosal vivo engagement",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201913",
+      "similar_words": "rosa esther, rosal esther rosado, rosa viva esther, planta rosal esther, rosa fresca esther",
+      "original_name": "Rosal vivo esther",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201914",
+      "similar_words": "rosa excalibur, rosal excalibur rosado, rosa viva excalibur, planta rosal, rosa premium excalibur",
+      "original_name": "Rosal vivo excalibur",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201915",
+      "similar_words": "rosa exciting, rosal exciting rosado, rosa viva exciting, planta rosal exciting, rosa fresca exciting",
+      "original_name": "Rosal vivo exciting",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201916",
+      "similar_words": "rosa first lady, rosal first lady rosado, rosa viva first lady, planta rosal, rosa elegante",
+      "original_name": "Rosal vivo first lady",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201917",
+      "similar_words": "rosa geraldine, rosal geraldine rosado, rosa viva geraldine, planta rosal geraldine, rosa fresca",
+      "original_name": "Rosal vivo geraldine",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201918",
+      "similar_words": "rosa gotcha, rosal gotcha rosado, rosa viva gotcha, planta rosal gotcha, rosa fresca gotcha",
+      "original_name": "Rosal vivo gotcha",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201919",
+      "similar_words": "rosa harmonie, rosal harmonie rosado, rosa viva harmonie, planta rosal, rosa armonía",
+      "original_name": "Rosal vivo harmonie",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201920",
+      "similar_words": "rosa heaven, rosal heaven rosado, rosa viva heaven, planta rosal heaven, rosa celestial",
+      "original_name": "Rosal vivo heaven",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201921",
+      "similar_words": "rosa high and elegant, rosal elegante rosado, rosa viva elegante, planta rosal, rosa sofisticada",
+      "original_name": "Rosal vivo high and elegant",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201922",
+      "similar_words": "rosa katherine, rosal katherine rosado, rosa viva katherine, planta rosal katherine, rosa fresca",
+      "original_name": "Rosal vivo katherine",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201923",
+      "similar_words": "rosa king kong, rosal king kong rosado, rosa viva grande, planta rosal gigante, rosa robusta",
+      "original_name": "Rosal vivo king kong",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201924",
+      "similar_words": "rosa livia, flor livia, planta rosada livia, rosal variedad livia, rosa viva livia",
+      "original_name": "Rosal vivo livia",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201925",
+      "similar_words": "rosa lorena, flor lorena, planta rosada lorena, rosal variedad lorena, rosa viva lorena",
+      "original_name": "Rosal vivo lorena",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201926",
+      "similar_words": "rosa lovely, flor lovely, planta rosada lovely, rosal variedad lovely, rosa viva lovely",
+      "original_name": "Rosal vivo lovely",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201927",
+      "similar_words": "rosa maaike, flor maaike, planta rosada maaike, rosal variedad maaike, rosa viva maaike",
+      "original_name": "Rosal vivo maaike",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201928",
+      "similar_words": "rosa marilyn, flor marilyn, planta rosada marilyn, rosal variedad marilyn, rosa viva marilyn",
+      "original_name": "Rosal vivo marilyn",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201929",
+      "similar_words": "rosa marlise, flor marlise, planta rosada marlise, rosal variedad marlise, rosa viva marlise",
+      "original_name": "Rosal vivo marlise",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201930",
+      "similar_words": "rosa miranda, rosa ausimmon, flor miranda, planta rosada miranda, rosal variedad miranda",
+      "original_name": "Rosal vivo miranda o ausimmon",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201931",
+      "similar_words": "rosa mona lisa, flor mona lisa, planta rosada mona lisa, rosal variedad mona lisa, rosa viva mona lisa",
+      "original_name": "Rosal vivo mona lisa",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201932",
+      "similar_words": "rosa nirvana, flor nirvana, planta rosada nirvana, rosal variedad nirvana, rosa viva nirvana",
+      "original_name": "Rosal vivo nirvana",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201933",
+      "similar_words": "rosa o hara, flor o hara, planta rosada o hara, rosal variedad o hara, rosa viva o hara",
+      "original_name": "Rosal vivo o hara",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201934",
+      "similar_words": "rosa ole, flor ole, planta rosada ole, rosal variedad ole, rosa viva ole",
+      "original_name": "Rosal vivo ole",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201935",
+      "similar_words": "rosa olga, flor olga, planta rosada olga, rosal variedad olga, rosa viva olga",
+      "original_name": "Rosal vivo olga",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201936",
+      "similar_words": "rosa pacifica, flor pacifica, planta rosada pacifica, rosal variedad pacifica, rosa viva pacifica",
+      "original_name": "Rosal vivo pacífica",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201937",
+      "similar_words": "rosa party mix, flor party mix, planta rosada party mix, rosal variedad party mix, rosa viva party mix",
+      "original_name": "Rosal vivo party mix",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    },
+    {
+      "code": "10201938",
+      "similar_words": "rosa peckoubo, rosa pekcoubo, flor peckoubo, planta rosada peckoubo, rosal variedad peckoubo",
+      "original_name": "Rosal vivo peckoubo o pekcoubo",
+      "level": "PRODUCT",
+      "parent_name": "Rosales vivos rosado claro"
+    }
+  ]
+}

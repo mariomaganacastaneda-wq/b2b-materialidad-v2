@@ -1,0 +1,51 @@
+﻿code,name,level,parent_name,similar_words,num_synonyms
+01000000,"Mascotas, Animales Domésticos y Accesorios (División 01)",DIVISION,,"mascotas, animales domesticos, accesorios para mascotas, perros, gatos, mascotas en general",6
+50000000,"Alimentos, Bebidas y Tabaco (División 50)",DIVISION,,"alimentos, bebidas, comida, bebida, tabaco, productos alimenticios, víveres",7
+01010000,[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101),GROUP,"Mascotas, Animales Domésticos y Accesorios (División 01)","mascotas domesticas, animales de compania, accesorios mascota, productos para mascotas",4
+46150000,Equipo de control de masas y relacionados (Grupo 4615),GROUP,"Defensa, Seguridad y Vigilancia (División 46)","control de masas, equipo seguridad, vigilancia, defensa, equipo control multitudes",5
+01010100,[SINTÉTICO] CLASS - 01010100,CLASS,[SINTÉTICO] CLASS - 01010100 y relacionados (Grupo 0101),"mascotas varias, animales domesticos varios, accesorios mascotas variados",3
+31311300,Conjuntos empernados de tubería,CLASS,Conjuntos de tubería soldada de solvente y relacionados (Grupo 3131),"tuberia empernada, conjuntos tuberia, tuberias con pernos, accesorios tuberia, conexiones tuberia",5
+50402700,Apios,CLASS,Aguacates y relacionados (Grupo 5040),"apio, apios frescos, verdura apio, hortaliza apio, apio verde",5
+01010101,No existe en el catálogo,PRODUCT,[SINTÉTICO] CLASS - 01010100,"producto mascota no especificado, articulo mascota general, item mascota varios",3
+10212203,Aster viva verde japonés,PRODUCT,Aster viva,"aster japones, flor aster verde, aster viva, flores decorativas, aster fresco",5
+10225804,Sicilia viva peruana,PRODUCT,Sicilia viva,"sicilia peruana, flor sicilia, flores frescas, sicilia viva, flores decorativas",5
+10302775,Rosal cortado fresco tara,PRODUCT,Rosas cortadas frescas amarillos,"rosal cortado, rosa fresca, rosal tara, flores rosas, rosa amarilla fresca",5
+10318324,Leucospermum cortado fresco utriculosum,PRODUCT,leucospermum cortado fresco,"leucospermum cortado, flor leucospermum, flores frescas, leucospermum fresco, flores decorativas",5
+10402448,Rosal cortado seco paz,PRODUCT,Rosas cortadas secas rojos o burgundy,"rosal seco, rosa seca, rosal rojo seco, flores secas, rosa burgundy seca",5
+10417916,Amaryllis cortada seca calyptratum,PRODUCT,Amaryllis cortada seca,"amaryllis seca, flor amaryllis, amaryllis cortada, flores secas, amaryllis decorativa",5
+11131506,Lana sin procesar,PRODUCT,"Cuero, pieles o materiales textiles de animales","lana sin procesar, lana cruda, fibra lana, lana natural, material textil animal",5
+20111701,Instrumentos audiovisuales para inspección de pozos,PRODUCT,Accesorios de perforación y explotación,"camara inspeccion pozo, sonda audiovisual pozo, equipo vision pozo, inspeccion visual perforacion, camara fondo pozo",5
+23153420,Máquina para el ensamble de cables y alambres,PRODUCT,Ensambladoras,"maquina ensamble cable, equipo armado alambre, maquina torcido cable, ensambladora de cables, equipo union alambres",5
+25172001,Sistemas de suspensión para automóviles,PRODUCT,Componentes de sistema de suspensión,"suspension auto, sistema amortiguador, kit suspension vehiculo, componente suspension coche, amortiguadores y resortes",5
+27111732,Destornillador que no saca chispas,PRODUCT,Llaves inglesas y guías,"destornillador antiexplosivo, destornillador sin chispa, herramienta no chispeante, destornillador seguridad, destornillador intrinsecamente seguro",5
+30261603,Lámina de latón enrollado en frío c 464,PRODUCT,Láminas de latón,"lamina laton frio, plancha laton enrollada, hoja laton c464, laton en rollo, lamina metalica laton",5
+31161607,Pernos de expansión,PRODUCT,Pernos,"perno expansion, tornillo expansion, perno anclaje, tuerca expansion, perno taconite",5
+31311212,Ensambles de tubería remachada de cobre,PRODUCT,Conjuntos de tubería remachada,"tuberia remachada cobre, conjunto tubo cobre, ensamble tuberia cobre, tubo remachado, sistema tuberias cobre",5
+32141016,Tubos múltiples,PRODUCT,Tubos electrónicos,"tubo multiple, tubo multiples electronico, tubo vacio multiple, tubo catodico, tubo rayos catodicos",5
+40171516,Tubo no ferroso para uso comercial,PRODUCT,Tubos y tuberías comerciales,"tubo no ferroso comercial, tuberia cobre comercial, tubo aluminio comercial, tubo bronce comercial, tuberia no magnetica",5
+41106703,Instrumento de medición de crecimiento de las plantas o auxanómetro,PRODUCT,Equipos y accesorios de laboratorio botánico,"auxanometro, medidor crecimiento planta, instrumento auxanometrico, equipo medicion plantas, sensor crecimiento vegetal",5
+41121819,Botella de gotero y tapa de gotero,PRODUCT,Artículos de vidrio o plástico y suministros generales de laboratorio,"botella gotero, frasco gotero, tapa gotero, dispensador gotero, cuenta gotas laboratorio",5
+42191606,Brazos de techo para instalaciones médicas,PRODUCT,Sistemas de construcción de facilidad médica,"brazo techo medico, soporte techo hospital, sistema suspension medico, brazo articulo medico, equipo montaje techo",5
+42294531,Lente láser para uso oftálmico,PRODUCT,Instrumentos de especialidad oftálmica y productos relacionados,"lente laser oftalmico, lente laser ojo, optica laser medica, lente quirurgico laser, instrumento laser oftalmologia",5
+43232606,Software de cumplimiento (compliance),PRODUCT,Software específico para la industria,"software compliance, programa cumplimiento normativo, sft. cumplimiento, sistema normatividad, software regulatorio",5
+47101566,Filtro de medios múltiples,PRODUCT,Equipo para el tratamiento y suministro de agua,"filtro multiples medios, filtro agua multiple, sistema filtracion agua, filtro arena carbon, equipo purificacion agua",5
+50301593,Manzana blanco transparente,PRODUCT,Manzanas,"manzana blanca, manzana transparente, manzana criolla, manzana de mesa, variedad blanca",5
+50307036,Manzana estrella,PRODUCT,Frutas Nominant,"manzana estrella, manzana tipo estrella, manzana carambolo, manzana exótica, fruta estrella",5
+50315862,Ciruela quetsch orgánica,PRODUCT,Ciruelas orgánicas,"ciruela quetsch, ciruela orgánica, ciruela morada, ciruela seca, ciruela deshidratada",5
+50325448,Pera crimson stark seca,PRODUCT,Peras secas,"pera crimson, pera stark, pera seca, pera deshidratada, pera roja seca",5
+50335210,Maracuyá  wing- stemmed orgánicas secas,PRODUCT,Maracuyás orgánicas secas,"maracuyá orgánico, maracuyá seco, fruta de la pasión seca, maracuyá deshidratado, passion fruit seco",5
+50344701,Mora negra congeladas,PRODUCT,Moras mulberry congeladas,"mora congelada, mora negra, mora mulberry, mora congelada orgánica, frutos rojos congelados",5
+50354414,Mandarina miel congelada orgánica,PRODUCT,Mandarinas orgánicas congeladas,"mandarina congelada, mandarina orgánica, mandarina miel, mandarina deshidratada, cítrico congelado",5
+50363610,Uva charbono en lata o en frasco,PRODUCT,Uvas para vino en lata o en frasco,"uva charbono, uva en lata, uva enlatada, uva para vino, uva en frasco",5
+50373302,Toronja duncan orgánica en lata o en frasco,PRODUCT,Toronjas orgánicas en lata o en frasco,"toronja duncan, toronja orgánica, toronja enlatada, toronja en frasco, pomelo orgánico",5
+50402208,Cebolla tokyo ensalada,PRODUCT,Cebollas de ensalada,"cebolla tokyo, cebolla de ensalada, cebolla blanca, cebolla morada, cebolla fresca",5
+50414017,Pápalo delgado orgánico,PRODUCT,Hierbas orgánicas,"pápalo orgánico, pápalo fresco, hierba aromática, condimento mexicano, pápalo delgado",5
+50425510,Pimentón melrose seco,PRODUCT,Pimientos Secos,"pimentón seco, pimiento melrose, pimiento deshidratado, pimiento rojo seco, especia pimentón",5
+50436809,Hojas de plátano orgánica seca,PRODUCT,Vegetales Nominant orgánicos secos,"hoja de plátano, plátano seco, hoja orgánica, envoltorio natural, hoja deshidratada",5
+50451838,Frijoles monstoler ganzo salvaje orgánicos congelados,PRODUCT,Fríjoles orgánicos congelados,"frijol orgánico, frijol congelado, frijol ganzo, legumbre congelada, frijol monstoler",5
+50463405,Cocombro verde burpless buen sabor enlatado o envasado,PRODUCT,Cocombros en lata o en frasco,"cocombro enlatado, pepinillo burpless, pepinillo en lata, cocombro envasado, encurtido verde",5
+50475202,Cebolla alisia craig orgánica enlatada o envasada,PRODUCT,Cebollas orgánicas en lata o en frasco,"cebolla enlatada, cebolla en lata, cebolla orgánica envasada, cebolla conserva, cebolla frasco",5
+51141920,Diazepam,PRODUCT,Tranquilizantes y fármacos ansiolíticos y antimaniacos,"diazepam tabletas, diazepam inyectable, ansiolítico, tranquilizante, valium genérico",5
+52141501,Neveras para uso doméstico,PRODUCT,Electrodomésticos para cocina,"refri, refrigerador, nevera doméstica, heladera, congelador, equipo cocina",6
+60102306,Flanelógrafos,PRODUCT,Libros de lectura y recursos,"flanelógrafo educativo, tablero flanela, material didáctico tela, recurso escolar, flanelógrafo infantil",5
+60141009,Kits de ciencias para niños,PRODUCT,Juguetes,"kit ciencia niños, juego experimentos, kit educativo ciencias, laboratorio infantil, juguete científico",5

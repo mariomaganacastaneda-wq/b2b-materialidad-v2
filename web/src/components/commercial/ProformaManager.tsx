@@ -7,20 +7,39 @@ import paymentFormsData from '../../lib/payment_forms.json';
 
 // Material Symbols mapping to keep code clean
 const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
-    <span className={`material-symbols-outlined ${className}`} style={{ fontSize: 'inherit' }}>{name}</span>
+    <span className={`material-symbols-outlined notranslate ${className}`} translate="no" style={{ fontSize: 'inherit' }}>{name}</span>
 );
 
 // Utility for positioning portals
 const DropdownPortal = ({ children, anchor, width }: { children: React.ReactNode, anchor: DOMRect | null, width?: number }) => {
     if (!anchor) return null;
+
+    // Mejorar lÃ³gica de posicionamiento: detectar espacio arriba/abajo
+    const portalHeight = 500;
+    const margin = 8;
+    const spaceBelow = window.innerHeight - anchor.bottom - margin;
+    const spaceAbove = anchor.top - margin;
+
+    let topValue = anchor.bottom + 4;
+    let className = "slide-in-from-top-2";
+
+    if (spaceBelow < portalHeight && spaceAbove > portalHeight) {
+        topValue = anchor.top - portalHeight - 4;
+        className = "slide-in-from-bottom-2";
+    } else if (spaceBelow < portalHeight) {
+        // Centrar si no cabe bien en ninguno
+        topValue = Math.max(20, (window.innerHeight - portalHeight) / 2);
+        className = "zoom-in-95";
+    }
+
     return createPortal(
         <div
-            className="fixed z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+            className={`fixed z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in duration-200 ${className}`}
             style={{
-                top: Math.min(anchor.bottom + 4, window.innerHeight - 300),
+                top: topValue,
                 left: Math.min(anchor.left, window.innerWidth - (width || 250)),
                 width: width || anchor.width,
-                maxHeight: '300px'
+                maxHeight: `${portalHeight}px`
             }}
         >
             {children}
@@ -29,24 +48,34 @@ const DropdownPortal = ({ children, anchor, width }: { children: React.ReactNode
     );
 };
 
-const ConfigToggle = ({ label, sub, checked, onChange }: { label: string, sub: string, checked: boolean, onChange: (v: boolean) => void }) => (
-    <div className="flex items-center gap-4 group">
-        <div>
-            <p className="text-sm font-bold text-slate-700 leading-tight group-hover:text-[#1e40af] transition-colors">{label}</p>
-            <p className="text-[10px] text-slate-400 font-medium">{sub}</p>
+const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel }: { label: string, sub: string, checked: boolean, onChange: (v: boolean) => void, disabled?: boolean, statusLabel?: string }) => (
+    <div className={`flex flex-col gap-1.5 group ${disabled ? 'opacity-70' : ''}`}>
+        <div className="flex items-center justify-between gap-4">
+            <div>
+                <p className={`text-sm font-bold leading-tight transition-colors ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#1e40af]'}`}>{label}</p>
+                <p className="text-[10px] text-slate-400 font-medium">{sub}</p>
+            </div>
+            <label className={`relative inline-flex items-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={checked}
+                    onChange={e => { if (!disabled) onChange(e.target.checked) }}
+                    disabled={disabled}
+                />
+                <div className={`w-10 h-5 bg-slate-200 rounded-full peer ${disabled ? 'peer-checked:bg-slate-400' : 'peer-checked:bg-[#1e40af]'} after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner`} />
+                <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? (disabled ? 'text-slate-500' : 'text-[#1e40af]') : 'text-slate-400'}`}>
+                    {checked ? 'ON' : 'OFF'}
+                </span>
+            </label>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer">
-            <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={checked}
-                onChange={e => onChange(e.target.checked)}
-            />
-            <div className="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-[#1e40af] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner" />
-            <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? 'text-[#1e40af]' : 'text-slate-400'}`}>
-                {checked ? 'ON' : 'OFF'}
-            </span>
-        </label>
+        {statusLabel && checked && (
+            <div className="mt-1">
+                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest ${disabled ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+                    Estatus: {statusLabel}
+                </span>
+            </div>
+        )}
     </div>
 );
 
@@ -69,7 +98,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
         const stored = localStorage.getItem(storedKey);
         let parsed = stored ? JSON.parse(stored) : [];
 
-        // Demo para Albañilería (238130)
+        // Demo para AlbaÃ±ilerÃ­a (238130)
         if (activityCode === '238130' && parsed.length === 0) {
             parsed = ['MUROS DE BLOCK', 'ACABADO FINO'];
             localStorage.setItem(storedKey, JSON.stringify(parsed));
@@ -78,15 +107,22 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
         setSavedTags(parsed);
     }, [activityCode]);
 
-    // Reset filter when search changes
+    // Reset internal state when activity changes to avoid stale suggestions
+    useEffect(() => {
+        setSearch('');
+        setActiveTag(null);
+        setResults([]);
+    }, [activityCode]);
+
+    // React hooks logic correction (un-nesting)
     useEffect(() => {
         if (search) {
             setActiveCategory('TODOS');
-            if (search.length > 3) setActiveTag(null); // Desactivar tag si el usuario escribe algo específico
+            if (search.length > 3) setActiveTag(null); // Desactivar tag si el usuario escribe algo especÃ­fico
         }
     }, [search]);
 
-    // Extraer Smart Tags de los resultados de congruencia para máxima precisión
+    // Extraer Smart Tags de los resultados de congruencia para mÃ¡xima precisiÃ³n
     useEffect(() => {
         const generateSmartTags = async () => {
             if (!activityCode) {
@@ -154,7 +190,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
     useEffect(() => {
         const fetchResults = async () => {
-            // El motor de búsqueda prioritiza: 1. Tag Activo, 2. Búsqueda Manual, 3. Actividad Base
+            // El motor de bÃºsqueda prioritiza: 1. Tag Activo, 2. BÃºsqueda Manual, 3. Actividad Base
             let queryTag = activeTag || search;
 
             if (!queryTag && !activityCode && isOpen) return;
@@ -164,7 +200,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
             try {
                 let finalData: any[] = [];
 
-                // Capa de Traducción de Conceptos: Búsqueda Inversa por Tokens
+                // Capa de TraducciÃ³n de Conceptos: BÃºsqueda Inversa por Tokens
                 let inverseActivityCodes: string[] = [];
                 let inverseResults: any[] = [];
                 const searchCriteria = activeTag || search;
@@ -245,7 +281,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     }
                 }
 
-                // Combinar con búsqueda inversa (evitando duplicados)
+                // Combinar con bÃºsqueda inversa (evitando duplicados)
                 inverseResults.forEach(ir => {
                     if (!finalData.find((f: any) => f.code === ir.code)) {
                         finalData.push(ir);
@@ -254,7 +290,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
                 finalData.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-                // 2. Mega-Búsqueda Global (Si hay Tag o Búsqueda Manual)
+                // 2. Mega-BÃºsqueda Global (Si hay Tag o BÃºsqueda Manual)
                 const effectiveSearch = activeTag || search;
                 if (effectiveSearch || (finalData.length === 0 && isOpen)) {
                     let globalData = null;
@@ -267,14 +303,14 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             .limit(100);
                         globalData = data;
                     } else if (effectiveSearch) {
-                        // Búsqueda semántica usando la nueva función RPC (ordenado por relevancia GIN trigram)
+                        // BÃºsqueda semÃ¡ntica usando la nueva funciÃ³n RPC (ordenado por relevancia GIN trigram)
                         const { data } = await supabase.rpc('search_productos_sat', {
                             search_term: effectiveSearch,
                             max_results: 100
                         });
                         globalData = data;
                     } else if (activityDescription) {
-                        // Si no hay búsqueda pero sí actividad, usamos los primeros keywords para llenar el vacío
+                        // Si no hay bÃºsqueda pero sÃ­ actividad, usamos los primeros keywords para llenar el vacÃ­o
                         const keywords = smartTags.slice(0, 2).join(' ');
                         const query = supabase.from('cat_cfdi_productos_servicios').select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered');
                         if (keywords) {
@@ -300,13 +336,13 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 similar_words: p.similar_words,
                                 has_iva: p.includes_iva_transfered,
                                 has_ieps: p.includes_ieps_transfered,
-                                source: activeTag ? `Concepto: ${activeTag}` : (search ? 'Catálogo SAT' : 'Búsqueda Semántica')
+                                source: activeTag ? `Concepto: ${activeTag}` : (search ? 'CatÃ¡logo SAT' : 'BÃºsqueda SemÃ¡ntica')
                             }));
                         finalData = [...finalData, ...mapped];
                     }
                 }
                 // 3. Mapeo inverso de actividades para contexto (Solo para Global o Conceptos)
-                const globalIndices = finalData.map((d: any, i: number) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'Catálogo SAT' || d.source === 'Búsqueda Semántica' ? i : -1).filter((i: number) => i !== -1);
+                const globalIndices = finalData.map((d: any, i: number) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'CatÃ¡logo SAT' || d.source === 'BÃºsqueda SemÃ¡ntica' ? i : -1).filter((i: number) => i !== -1);
 
                 if (globalIndices.length > 0) {
                     const familyCodes = Array.from(new Set(globalIndices.map((i: number) => finalData[i].code.substring(0, 6))));
@@ -417,16 +453,19 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
             {isOpen && (
                 <DropdownPortal anchor={anchor} width={500}>
-                    <div className="flex flex-col h-full max-h-[400px] overflow-hidden">
-                        <div className="bg-slate-50 px-3 py-1.5 border-b border-slate-100 flex items-center gap-4 shrink-0">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Inteligencia SAT CFDI 4.0</span>
-                            <div className="flex-1 flex items-center gap-2 bg-white border border-slate-200 rounded px-2 h-6 hover:border-blue-400 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-50 transition-all group/inner-search">
-                                <Icon name="search" className="text-[10px] text-slate-300 group-focus-within/inner-search:text-blue-500" />
+                    <div className="flex flex-col h-full max-h-[500px] overflow-hidden">
+                        <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-4 shrink-0 shadow-sm relative z-10">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest whitespace-nowrap">Inteligencia SAT</span>
+                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">CFDI 4.0 Pro</span>
+                            </div>
+                            <div className="flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-3 h-10 hover:border-blue-400 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100/50 transition-all group/inner-search shadow-inner">
+                                <Icon name="search" className="text-sm text-slate-300 group-focus-within/inner-search:text-blue-500" />
                                 <input
                                     type="text"
                                     autoFocus
-                                    className="w-full bg-transparent border-none p-0 text-[10px] font-bold text-slate-600 focus:ring-0 placeholder:text-slate-300 placeholder:font-medium uppercase"
-                                    placeholder="Búsqueda personalizada..."
+                                    className="w-full bg-transparent border-none p-0 text-sm font-black text-slate-700 focus:ring-0 placeholder:text-slate-300 placeholder:font-medium uppercase tracking-tight"
+                                    placeholder="Â¿QuÃ© servicio estÃ¡s buscando?"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     onKeyDown={e => {
@@ -441,18 +480,23 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     }}
                                 />
                                 {search && (
-                                    <button onMouseDown={(e) => { e.preventDefault(); setSearch(''); }} className="text-slate-300 hover:text-slate-500">
-                                        <Icon name="close" className="text-[10px]" />
+                                    <button onMouseDown={(e) => { e.preventDefault(); setSearch(''); }} className="text-slate-300 hover:text-red-500 transition-colors">
+                                        <Icon name="close" className="text-xs" />
                                     </button>
                                 )}
                             </div>
-                            {loading && <div className="text-[9px] text-blue-500 font-bold animate-pulse">...</div>}
+                            {loading && (
+                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full animate-pulse">
+                                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                    <span className="text-[8px] font-black text-blue-500 uppercase">Procesando</span>
+                                </div>
+                            )}
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="text-slate-300 hover:text-slate-500 hover:bg-slate-200 p-1 rounded-full transition-colors flex items-center justify-center h-6 w-6"
-                                title="Cerrar búsqueda"
+                                className="text-slate-300 hover:text-slate-500 hover:bg-slate-200 p-1.5 rounded-full transition-all flex items-center justify-center h-8 w-8"
+                                title="Cerrar bÃºsqueda"
                             >
-                                <Icon name="close" className="text-[12px]" />
+                                <Icon name="close" className="text-lg" />
                             </button>
                         </div>
 
@@ -491,12 +535,12 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                         </div>
                                     )}
 
-                                    {/* Tags Temporales (Sesión actual) */}
+                                    {/* Tags Temporales (SesiÃ³n actual) */}
                                     {userTags.length > 0 && (
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2 px-1">
                                                 <Icon name="history" className="text-indigo-500 text-[10px]" />
-                                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">En esta sesión:</span>
+                                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">En esta sesiÃ³n:</span>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto no-scrollbar">
                                                 {userTags.filter(ut => !savedTags.includes(ut)).map(tag => (
@@ -548,10 +592,10 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             </div>
                         )}
 
-                        {/* Filtros de Categoría */}
+                        {/* Filtros de CategorÃ­a */}
                         {results.length > 0 && (
                             <div className="flex bg-slate-50/50 p-2 gap-2 border-b border-slate-100 overflow-x-auto no-scrollbar shrink-0">
-                                {['TODOS', 'PRINCIPAL', 'RELACIONADO', 'EJEMPLOS', 'ESTA BÚSQUEDA'].map(cat => (
+                                {['TODOS', 'PRINCIPAL', 'RELACIONADO', 'EJEMPLOS', 'ESTA BÃšSQUEDA'].map(cat => (
                                     <button
                                         key={cat}
                                         onMouseDown={(e) => { e.preventDefault(); setActiveCategory(cat); }}
@@ -560,7 +604,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                             : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-600'
                                             }`}
                                     >
-                                        {cat === 'ESTA BÚSQUEDA' ? (activeTag ? `CONCEPTO: ${activeTag}` : 'GLOBAL') : cat}
+                                        {cat === 'ESTA BÃšSQUEDA' ? (activeTag ? `CONCEPTO: ${activeTag}` : 'GLOBAL') : cat}
                                     </button>
                                 ))}
                             </div>
@@ -572,7 +616,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     <Icon name="search_off" className="text-3xl text-slate-200" />
                                     <div className="text-[10px] text-slate-400 italic text-center max-w-[200px]">
                                         No encontramos resultados para "{search || activeTag}". <br />
-                                        <span className="font-bold text-blue-500">Prueba con un concepto más general o busca otro tag.</span>
+                                        <span className="font-bold text-blue-500">Prueba con un concepto mÃ¡s general o busca otro tag.</span>
                                     </div>
                                 </div>
                             )}
@@ -581,7 +625,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 if (activeCategory === 'PRINCIPAL') return prod.source === 'Actividad Principal';
                                 if (activeCategory === 'RELACIONADO') return prod.source === 'Actividad Relacionada';
                                 if (activeCategory === 'EJEMPLOS') return prod.source === 'Sugerencia por Ejemplo';
-                                if (activeCategory === 'ESTA BÚSQUEDA') return prod.source.includes('Concepto:') || prod.source === 'Catálogo SAT' || prod.source === 'Búsqueda Semántica';
+                                if (activeCategory === 'ESTA BÃšSQUEDA') return prod.source.includes('Concepto:') || prod.source === 'CatÃ¡logo SAT' || prod.source === 'BÃºsqueda SemÃ¡ntica';
                                 return true;
                             }).map(prod => (
                                 <div
@@ -612,7 +656,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                             {prod.activityContext && (
                                                 <span className={`text-[6px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter flex items-center gap-1 shrink-0 ${prod.source === 'Sugerencia por Ejemplo' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-white'}`}>
                                                     <Icon name={prod.source === 'Sugerencia por Ejemplo' ? 'auto_awesome' : 'business_center'} className="text-[7px]" />
-                                                    {prod.source === 'Sugerencia por Ejemplo' ? 'INTENCIÓN: ' : 'ACTIVIDAD: '}{prod.activityContext}
+                                                    {prod.source === 'Sugerencia por Ejemplo' ? 'INTENCIÃ“N: ' : 'ACTIVIDAD: '}{prod.activityContext}
                                                 </span>
                                             )}
                                             {prod.score !== undefined && (
@@ -638,7 +682,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                         {results.length > 0 && !loading && (
                             <div className="bg-slate-50 px-3 py-1.5 border-t border-slate-100 shrink-0 flex justify-between">
                                 <span className="text-[8px] text-slate-400 font-bold">Mostrando {results.length} resultados potenciales</span>
-                                <span className="text-[8px] text-blue-500 font-black animate-pulse uppercase">Mega-Búsqueda Activa</span>
+                                <span className="text-[8px] text-blue-500 font-black animate-pulse uppercase">Mega-BÃºsqueda Activa</span>
                             </div>
                         )}
                     </div>
@@ -650,7 +694,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
 /**
  * Motor de Sugerencia de Unidades Inteligentes
-     * Analiza el nombre y código SAT para predecir la unidad de medida más probable.
+     * Analiza el nombre y cÃ³digo SAT para predecir la unidad de medida mÃ¡s probable.
      */
 const suggestUnit = (name: string, code: string): string => {
     const text = (name || '').toUpperCase()
@@ -663,7 +707,7 @@ const suggestUnit = (name: string, code: string): string => {
         return 'E48'; // Unidad de servicio
     }
 
-    // 2. Líquidos y Combustibles
+    // 2. LÃ­quidos y Combustibles
     if (['LITRO', 'LTR', 'ACEITE', 'AGUA', 'PINTURA', 'SOLVENTE', 'COMBUSTIBLE', 'GASOLINA', 'DIESEL', 'TAMBO'].some(k => text.includes(k))) {
         return 'LTR'; // Litro
     }
@@ -673,7 +717,7 @@ const suggestUnit = (name: string, code: string): string => {
         return 'KGM'; // Kilogramo
     }
 
-    // 4. Construcción y Peso Pesado
+    // 4. ConstrucciÃ³n y Peso Pesado
     if (['TONELADA', 'TNE', 'CEMENTO', 'ARENA', 'GRAVA', 'VARILLA', 'CONCRETO', 'ASFALTO'].some(k => text.includes(k))) {
         return 'TNE'; // Tonelada
     }
@@ -852,7 +896,7 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
 
     const currentUsage = usages.find(u => u.code === value) || { code: value, description: 'Cargando...' };
 
-    // Filtrar usos permitidos por el régimen del cliente
+    // Filtrar usos permitidos por el rÃ©gimen del cliente
     const filteredUsages = React.useMemo(() => {
         if (!clientRegime) return usages;
         return usages.filter(u => {
@@ -896,7 +940,7 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
                                 <div className="flex items-center gap-2 mb-0.5">
                                     <span className="text-[10px] font-black text-blue-600">{u.code}</span>
                                     <div className="flex gap-1">
-                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">FÍSICA</span>}
+                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">FÃSICA</span>}
                                         {u.applies_to_moral && <span className="text-[6px] font-black px-1 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">MORAL</span>}
                                     </div>
                                 </div>
@@ -912,6 +956,49 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
 
 
 
+const LogoWithFallback = ({ src, name }: { src: string; name?: string }) => {
+    const [error, setError] = useState(false);
+    if (error || !src) {
+        return <span className="text-[10px] text-blue-600 font-black">{name?.substring(0, 1) || 'M'}</span>;
+    }
+    return (
+        <img
+            src={src}
+            alt="Logo"
+            className="w-full h-full object-contain"
+            onError={() => setError(true)}
+        />
+    );
+};
+
+const AutoResizeTextarea = ({ value, onChange, className, placeholder, rows = 1 }: {
+    value: string;
+    onChange: (val: string) => void;
+    className?: string;
+    placeholder?: string;
+    rows?: number;
+}) => {
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, [value]);
+
+    return (
+        <textarea
+            ref={textareaRef}
+            className={className}
+            rows={rows}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+        />
+    );
+};
+
 interface ProformaManagerProps {
     selectedOrg: any;
 }
@@ -925,6 +1012,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const [clientRegimes, setClientRegimes] = useState<any[] | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [bankCatalog, setBankCatalog] = useState<any[]>([]);
+    const [bankSearch, setBankSearch] = useState('');
+    const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
+    const [bankAnchor, setBankAnchor] = useState<DOMRect | null>(null);
 
     const [formData, setFormData] = useState({
         clientName: '',
@@ -934,7 +1025,6 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         clientCP: '',
         clientRegime: '601',
         economicActivity: '',
-        receiptType: 'INGRESO',
         currency: 'MXN',
         paymentMethod: 'PUE',
         paymentForm: '03',
@@ -952,9 +1042,18 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         from_po_id: null as string | null,
         notes: '',
         description: '',
+        pre_invoice: '',
+        stamped_invoice: '',
+        invoice_notes: '',
         hasQuotation: false,
         hasContract: false,
         advancePayment: false,
+        req_quotation: true,
+        req_evidence: true,
+        invoice_status: null as string | null,
+        contract_status: null as string | null,
+        evidence_status: null as string | null,
+        related_quotation_status: null as string | null,
         items: [{ id: Date.now(), code: '', item_code: '', quantity: 1, unit: 'E48', description: '', unitPrice: 0, has_iva: true, has_ieps: false }],
         isSaving: false,
         saveError: null as string | null,
@@ -962,6 +1061,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     });
 
     const location = useLocation();
+
+    useEffect(() => {
+        fetchBankCatalog();
+    }, []);
+
+    const fetchBankCatalog = async () => {
+        const { data } = await supabase.from('cat_mexican_banks').select('*').order('name');
+        setBankCatalog(data || []);
+    };
 
     // Precargar datos de la orden de compra si viene en query param
     useEffect(() => {
@@ -986,10 +1094,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 }
 
                 const fullData = JSON.parse(decoded);
-                // Si es poParam simple, poData es el objeto directo. Si es po_full, está en .po_data
+                // Si es poParam simple, poData es el objeto directo. Si es po_full, estÃ¡ en .po_data
                 const poData = fullData.po_data || fullData;
 
-                if (!poData) throw new Error("No hay po_data en el parámetro");
+                if (!poData) throw new Error("No hay po_data en el parÃ¡metro");
 
                 setFormData(prev => {
                     const incomingItems = poData.items || [];
@@ -1074,8 +1182,29 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         if (selectedOrg?.id) {
             loadBankAccounts(selectedOrg.id);
             loadActivities(selectedOrg.id);
+            if (id === 'nueva') {
+                loadNextProformaNumber(selectedOrg.id);
+            }
         }
-    }, [selectedOrg]);
+    }, [selectedOrg, id]);
+
+    const loadNextProformaNumber = async (orgId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('quotations')
+                .select('proforma_number')
+                .eq('organization_id', orgId)
+                .order('proforma_number', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+
+            const nextNum = data && data.length > 0 && data[0].proforma_number ? data[0].proforma_number + 1 : 1;
+            setFormData(prev => ({ ...prev, proforma_number: nextNum }));
+        } catch (err) {
+            console.error('Error fetching next proforma number:', err);
+        }
+    };
 
     const loadPayments = async (quotationId: string) => {
         try {
@@ -1181,6 +1310,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 description: q.description || '',
                 notes: q.notes || '',
                 from_po_id: q.from_po_id || null,
+                req_quotation: q.req_quotation ?? true,
+                req_evidence: q.req_evidence ?? true,
+                is_contract_required: q.is_contract_required || false,
+                request_direct_invoice: q.request_direct_invoice || false,
+                economicActivity: q.economic_activity_code || prev.economicActivity,
+                invoice_status: q.invoice_status || null,
+                contract_status: q.contract_status || null,
+                evidence_status: q.evidence_status || null,
+                related_quotation_status: q.related_quotation_status || null,
 
                 items: items && items.length > 0 ? items.map((item: any) => ({
                     id: item.id,
@@ -1200,22 +1338,22 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     };
     const handlePreview = async () => {
         if (!selectedOrg) {
-            alert('No se ha seleccionado una organización emisora.');
+            alert('No se ha seleccionado una organizaciÃ³n emisora.');
             return;
         }
 
         try {
             console.log('Generando vista previa con:', { formData, subtotal, total });
 
-            // Resolver descripción de actividad económica si es un código
+            // Resolver descripciÃ³n de actividad econÃ³mica si es un cÃ³digo
             const activityDesc = orgActivities.find(a => a.activity_code === formData.economicActivity)?.description || formData.economicActivity;
 
-            // Etiquetas Fiscales Formateadas (Clave - Descripción)
+            // Etiquetas Fiscales Formateadas (Clave - DescripciÃ³n)
             const regList = clientRegimes !== null && clientRegimes.length > 0 ? clientRegimes : regimes;
             const regRecord = regList.find(r => r.code === formData.clientRegime);
             const regimeLabel = regRecord ? `${regRecord.code} - ${regRecord.name}` : formData.clientRegime;
 
-            const methodDict: Record<string, string> = { 'PUE': 'Pago en una sola exhibición', 'PPD': 'Pago en parcialidades o diferido' };
+            const methodDict: Record<string, string> = { 'PUE': 'Pago en una sola exhibiciÃ³n', 'PPD': 'Pago en parcialidades o diferido' };
             const paymentMethodLabel = formData.paymentMethod ? `${formData.paymentMethod} - ${methodDict[formData.paymentMethod] || 'Desconocido'}` : 'PUE';
 
             const pfRecord = paymentFormsData.find((pf: any) => String(pf.code).padStart(2, '0') === String(formData.paymentForm).padStart(2, '0'));
@@ -1271,14 +1409,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             saveSuccess: false,
             saveError: null
         }));
-        // Navegar a ruta de creación limpia (pero con estado actual)
+        // Navegar a ruta de creaciÃ³n limpia (pero con estado actual)
         navigate('/cotizaciones/nueva');
         alert('Proforma clonada. Ajuste el periodo y conceptos antes de guardar el nuevo registro.');
     };
 
     const handleSendEmail = async () => {
         if (!formData.clientEmail) {
-            alert('Por favor ingrese un correo electrónico para el cliente');
+            alert('Por favor ingrese un correo electrÃ³nico para el cliente');
             return;
         }
 
@@ -1287,13 +1425,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             // Simulando llamada a Edge Function
             console.log('Enviando proforma a:', formData.clientEmail);
 
-            // Aquí iría el llamado real:
+            // AquÃ­ irÃ­a el llamado real:
             // const { error } = await supabase.functions.invoke('send-proforma', {
             //     body: { proformaId: '...', email: formData.clientEmail }
             // });
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            alert('Proforma enviada con éxito a ' + formData.clientEmail);
+            alert('Proforma enviada con Ã©xito a ' + formData.clientEmail);
         } catch (error: any) {
             alert('Error al enviar: ' + error.message);
         } finally {
@@ -1343,7 +1481,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 client_address: formData.clientAddress,
                 client_regime_code: formData.clientRegime,
                 bank_account_id: formData.bank_account_id || undefined,
-                from_po_id: formData.from_po_id
+                from_po_id: formData.from_po_id,
+                req_quotation: formData.req_quotation,
+                req_evidence: formData.req_evidence,
+                economic_activity_code: formData.economicActivity,
+                invoice_status: formData.invoice_status,
+                contract_status: formData.contract_status,
+                evidence_status: formData.evidence_status,
+                related_quotation_status: formData.related_quotation_status
             };
 
             if (id && id !== 'nueva') {
@@ -1364,7 +1509,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 quotationId = quotation.id;
             }
 
-            // 2. Sincronizar Items (Borrar y Re-insertar para simplicidad en edición)
+            // 2. Sincronizar Items (Borrar y Re-insertar para simplicidad en ediciÃ³n)
             if (id && id !== 'nueva') {
                 const { error: dError } = await supabase
                     .from('quotation_items')
@@ -1392,8 +1537,115 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
             if (iError) throw iError;
 
+            // 3. Automated Sub-record Request Logic (Invoices, Contracts, Evidence)
+            try {
+                // Factura (Invoice)
+                let currentInvoiceId = null;
+                if (formData.request_direct_invoice && selectedOrg.id) {
+                    const invoicePayload = {
+                        organization_id: selectedOrg.id,
+                        quotation_id: quotationId,
+                        rfc_emisor: selectedOrg.rfc,
+                        rfc_receptor: formData.clientRFC,
+                        client_cp: formData.clientCP,
+                        client_regime: formData.clientRegime,
+                        cfdi_use: formData.usage,
+                        payment_method_id: formData.paymentMethod,
+                        payment_form_id: formData.paymentForm,
+                        amount_total: total,
+                        status: 'SOLICITUD'
+                    };
+
+                    const { data: invData, error: invError } = await supabase
+                        .from('invoices')
+                        .upsert(invoicePayload, { onConflict: 'quotation_id' })
+                        .select('id')
+                        .maybeSingle();
+
+                    if (invError) {
+                        console.error('Error creating invoice request:', invError);
+                        alert('Atención: Fallo al solicitar factura automática: ' + invError.message);
+                    } else if (invData) {
+                        currentInvoiceId = invData.id;
+                    }
+                } else if (!formData.request_direct_invoice) {
+                    // Try getting existing if toggle is false to handle evidence link
+                    const { data: exInv } = await supabase.from('invoices').select('id').eq('quotation_id', quotationId).maybeSingle();
+                    if (exInv) currentInvoiceId = exInv.id;
+                }
+
+                // Contrato (Contract)
+                let currentContractId = null;
+                if (formData.is_contract_required && selectedOrg.id) {
+                    // Check if contract already exists
+                    const { data: existingContract, error: fetchErr } = await supabase
+                        .from('contracts')
+                        .select('id')
+                        .eq('quotation_id', quotationId)
+                        .maybeSingle();
+
+                    if (fetchErr) console.error('Error fetching existing contract:', fetchErr);
+
+                    if (!existingContract) {
+                        const contractPayload = {
+                            organization_id: selectedOrg.id,
+                            quotation_id: quotationId,
+                            is_signed_representative: false,
+                            is_signed_vendor: false
+                        };
+                        const { data: newContract, error: contractError } = await supabase
+                            .from('contracts')
+                            .insert(contractPayload)
+                            .select('id')
+                            .maybeSingle();
+
+                        if (contractError) console.error('Error creating contract request:', contractError);
+                        else if (newContract) currentContractId = newContract.id;
+                    } else {
+                        currentContractId = existingContract.id;
+                    }
+                } else if (!formData.is_contract_required) {
+                    const { data: exCont } = await supabase.from('contracts').select('id').eq('quotation_id', quotationId).maybeSingle();
+                    if (exCont) currentContractId = exCont.id;
+                }
+
+                // Evidencia (Evidence) - Vinculamos a factura o a contrato si están disponibles
+                if (formData.req_evidence && selectedOrg.id && (currentInvoiceId || currentContractId)) {
+                    // Ver si ya existe evidencia vinculada a esta factura O a este contrato
+                    let evQuery = supabase.from('evidence').select('id');
+                    if (currentInvoiceId && currentContractId) {
+                        evQuery = evQuery.or(`invoice_id.eq.${currentInvoiceId},contract_id.eq.${currentContractId}`);
+                    } else if (currentInvoiceId) {
+                        evQuery = evQuery.eq('invoice_id', currentInvoiceId);
+                    } else {
+                        evQuery = evQuery.eq('contract_id', currentContractId);
+                    }
+
+                    const { data: existingEvidence, error: evFetchErr } = await evQuery.maybeSingle();
+
+                    if (evFetchErr && evFetchErr.code !== 'PGRST116') {
+                        console.error('Error checking evidence:', evFetchErr);
+                    }
+
+                    if (!existingEvidence) {
+                        const evidencePayload = {
+                            organization_id: selectedOrg.id,
+                            invoice_id: currentInvoiceId || null,
+                            contract_id: currentContractId || null,
+                            type: 'ENTREGA'
+                        };
+                        const { error: evError } = await supabase.from('evidence').insert(evidencePayload);
+                        if (evError) console.error('Error creating evidence request:', evError);
+                    }
+                }
+
+            } catch (autoErr) {
+                console.error('Error in automated sub-record creation:', autoErr);
+                // No bloquea el guardado de la proforma
+            }
+
             setFormData(prev => ({ ...prev, isSaving: false, saveSuccess: true }));
-            alert((id && id !== 'nueva') ? 'Proforma actualizada con éxito' : 'Proforma guardada con éxito');
+            alert((id && id !== 'nueva') ? 'Proforma actualizada con Ã©xito' : 'Proforma guardada con Ã©xito');
 
             if ((!id || id === 'nueva') && quotationId) {
                 navigate(`/cotizaciones/${quotationId}`);
@@ -1424,7 +1676,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         loadCatalogs();
     }, []);
 
-    // Actividades se cargan vía loadActivities arriba, o aquí si cambia de org en vivo
+    // Actividades se cargan vÃ­a loadActivities arriba, o aquÃ­ si cambia de org en vivo
     useEffect(() => {
         if (selectedOrg?.id) {
             loadActivities(selectedOrg.id);
@@ -1443,7 +1695,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             client.state
         ].filter(Boolean).join(', ');
 
-        // Intentar obtener los regímenes del cliente desde organization_regimes
+        // Intentar obtener los regÃ­menes del cliente desde organization_regimes
         const fetchRegimes = async () => {
             const { data: orgRegimes } = await supabase
                 .from('organization_regimes')
@@ -1451,7 +1703,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .eq('organization_id', client.id);
 
             if (orgRegimes && orgRegimes.length > 0) {
-                // Filtrar códigos válidos (no nulos) que existan en nuestro catálogo
+                // Filtrar cÃ³digos vÃ¡lidos (no nulos) que existan en nuestro catÃ¡logo
                 const specificRegimes = regimes.filter(r =>
                     orgRegimes.some((or: any) => or.regime_code === r.code)
                 );
@@ -1463,8 +1715,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         clientRegime: specificRegimes[0].code
                     }));
                 } else {
-                    // Si hay registros pero ninguno tiene código válido (ej. nulls ya corregidos o desconocidos)
-                    // mantenemos el catálogo completo pero mostramos advertencia o dejamos fallback
+                    // Si hay registros pero ninguno tiene cÃ³digo vÃ¡lido (ej. nulls ya corregidos o desconocidos)
+                    // mantenemos el catÃ¡logo completo pero mostramos advertencia o dejamos fallback
                     setClientRegimes([]);
                 }
             } else {
@@ -1482,7 +1734,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             clientCP: client.tax_domicile?.match(/\d{5}/)?.[0] || '',
             clientRegime: '601' // Fallback inicial
         });
-        setSearchTerm(''); // Limpiar búsqueda para que al volver a abrir se vea todo
+        setSearchTerm(''); // Limpiar bÃºsqueda para que al volver a abrir se vea todo
         setShowDropdown(false);
     };
 
@@ -1538,7 +1790,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     <div>
                         <h1 className="text-sm font-bold text-slate-800 leading-none">{selectedOrg?.name || "Generador de Proformas"}</h1>
                         <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider font-semibold">
-                            {selectedOrg ? `RFC: ${selectedOrg.rfc}` : "Módulo Comercial"}
+                            {selectedOrg ? `RFC: ${selectedOrg.rfc}` : "MÃ³dulo Comercial"}
                         </p>
                     </div>
                 </div>
@@ -1615,7 +1867,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <div className="col-span-2 space-y-3">
                                     <div className="relative client-selector-container">
                                         <div className="flex justify-between items-center mb-1">
-                                            <label className="block text-[9px] font-bold text-slate-400 uppercase font-mono">Nombre o Razón Social</label>
+                                            <label className="block text-[9px] font-bold text-slate-400 uppercase font-mono">Nombre o RazÃ³n Social</label>
                                         </div>
                                         <div className="relative">
                                             <input
@@ -1647,7 +1899,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         }}
                                                     >
                                                         <div className="text-xs font-bold text-slate-700 group-hover:text-blue-600 break-words line-clamp-2">{client.name}</div>
-                                                        <div className="text-[9px] text-slate-400 font-mono tracking-tighter">{client.rfc} • {client.contact_email || 'Sin email'}</div>
+                                                        <div className="text-[9px] text-slate-400 font-mono tracking-tighter">{client.rfc} â€¢ {client.contact_email || 'Sin email'}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1658,16 +1910,17 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         <div className="grid grid-cols-12 gap-3 items-center">
                                             <div className="col-span-8">
                                                 <input
-                                                    className="w-full border-none p-0 text-xs h-5 focus:ring-0 bg-transparent text-slate-700 cursor-default font-bold truncate"
+                                                    className="w-full border-none p-0 text-xs h-5 focus:ring-0 bg-transparent text-slate-700 cursor-default font-bold truncate notranslate"
                                                     placeholder="RFC Receptor"
                                                     type="text"
                                                     readOnly
                                                     value={formData.clientRFC}
+                                                    translate="no"
                                                     tabIndex={-1}
                                                 />
                                             </div>
                                             <div className="col-span-4 text-left">
-                                                <span className="text-[11px] text-slate-400 font-mono tracking-tighter">
+                                                <span key="client-cp" className="text-[11px] text-slate-400 font-mono tracking-tighter notranslate">
                                                     {formData.clientCP ? `CP: ${formData.clientCP}` : ''}
                                                 </span>
                                             </div>
@@ -1676,19 +1929,23 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             className="text-[11px] text-slate-500 leading-snug line-clamp-2 min-h-[2.2rem] py-0.5"
                                             title={formData.clientAddress}
                                         >
-                                            {formData.clientAddress || <span className="text-slate-300 italic">Sin dirección fiscal</span>}
+                                            <span key="client-address" className={!formData.clientAddress ? "text-slate-300 italic" : ""}>
+                                                {formData.clientAddress || 'Sin direcciÃ³n fiscal'}
+                                            </span>
                                         </div>
                                         <div className="text-[11px] text-slate-500 truncate py-0.5">
-                                            {formData.clientEmail || <span className="text-slate-300 italic text-[10px]">Sin correo electrónico</span>}
+                                            <span key="client-email" className={!formData.clientEmail ? "text-slate-300 italic text-[10px]" : ""}>
+                                                {formData.clientEmail || 'Sin correo electrÃ³nico'}
+                                            </span>
                                         </div>
 
                                     </div>
                                 </div>
 
-                                {/* Columna 3: Configuración Fiscal (Alineada con Nombre) */}
+                                {/* Columna 3: ConfiguraciÃ³n Fiscal (Alineada con Nombre) */}
                                 <div className="col-span-1 space-y-3">
                                     <div>
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Régimen Fiscal</label>
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">RÃ©gimen Fiscal</label>
                                         <select
                                             className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50"
                                             value={formData.clientRegime}
@@ -1698,7 +1955,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 <option key={r.code} value={r.code}>{r.code} - {r.name}</option>
                                             ))}
                                             {clientRegimes !== null && clientRegimes.length === 0 && (
-                                                <option value="" disabled>Sin regímenes asignados en CSF</option>
+                                                <option value="" disabled>Sin regÃ­menes asignados en CSF</option>
                                             )}
                                         </select>
                                     </div>
@@ -1724,13 +1981,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </select>
                                     </div>
                                     <div className="pt-0">
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Método de Pago</label>
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">MÃ©todo de Pago</label>
                                         <select
                                             className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
                                             value={formData.paymentMethod}
                                             onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
                                         >
-                                            <option value="PUE">PUE - PAGO EN UNA SOLA EXHIBICIÓN</option>
+                                            <option value="PUE">PUE - PAGO EN UNA SOLA EXHIBICIÃ“N</option>
                                             <option value="PPD">PPD - PAGO EN PARCIALIDADES O DIFERIDO</option>
                                         </select>
                                     </div>
@@ -1761,7 +2018,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
                                 <div className="flex items-center gap-2 pr-2">
                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight">Folio</span>
-                                    <span className="text-sm font-mono font-black text-[#1e40af]">
+                                    <span className="text-sm font-mono font-black text-[#1e40af] notranslate" translate="no">
                                         {`${selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF'}-${new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')}-${formData.proforma_number.toString().padStart(2, '0')}`}
                                     </span>
                                 </div>
@@ -1772,26 +2029,17 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div className="flex items-center gap-2 px-0 py-1">
                                         <div className="w-8 h-8 bg-white rounded border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
                                             {selectedOrg?.logo_url ? (
-                                                <img
+                                                <LogoWithFallback
                                                     src={selectedOrg.logo_url}
-                                                    alt="Logo"
-                                                    className="w-full h-full object-contain"
-                                                    onError={(e) => {
-                                                        const target = e.target as HTMLImageElement;
-                                                        target.style.display = 'none';
-                                                        const parent = target.parentElement;
-                                                        if (parent) {
-                                                            parent.innerHTML = `<span class="text-[10px] text-blue-600 font-black">${selectedOrg?.name?.substring(0, 1) || 'M'}</span>`;
-                                                        }
-                                                    }}
+                                                    name={selectedOrg.name}
                                                 />
                                             ) : (
                                                 <span className="text-[10px] text-blue-600 font-black">{selectedOrg?.name?.substring(0, 1) || 'M'}</span>
                                             )}
                                         </div>
                                         <div className="flex flex-col min-w-0 flex-1">
-                                            <span className="text-[11px] font-bold text-slate-700 leading-tight mb-1">{selectedOrg?.name || "MAGAÑA Y VIEIRA"}</span>
-                                            <span className="text-[9px] font-mono text-slate-400 tracking-tighter">{selectedOrg?.rfc}</span>
+                                            <span className="text-[11px] font-black text-slate-700 leading-tight truncate">{selectedOrg?.name || "MAGAÃ‘A Y VIEIRA"}</span>
+                                            <span className="text-[9px] font-mono text-slate-400 tracking-tighter notranslate" translate="no">{selectedOrg?.rfc}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1799,9 +2047,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div>
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Moneda</label>
                                         <select
-                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af] font-bold text-blue-700 bg-slate-50"
+                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af] font-bold text-blue-700 bg-slate-50 notranslate"
                                             value={formData.currency}
                                             onChange={e => setFormData({ ...formData, currency: e.target.value })}
+                                            translate="no"
                                         >
                                             <option value="MXN">MXN ($)</option>
                                             <option value="USD">USD ($)</option>
@@ -1810,11 +2059,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Cuenta de Depósito</label>
+                                    <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Cuenta de DepÃ³sito</label>
                                     <select
-                                        className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 font-medium"
+                                        className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 font-medium notranslate"
                                         value={formData.bank_account_id || ''}
                                         onChange={e => setFormData({ ...formData, bank_account_id: e.target.value })}
+                                        translate="no"
                                     >
                                         <option value="">Seleccionar cuenta...</option>
                                         {bankAccounts.filter(acc => acc.is_active).map(acc => (
@@ -1839,7 +2089,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
                                 <div className="h-6 w-px bg-slate-200 mx-2" />
                                 <div className="flex items-center gap-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad Económica:</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad EconÃ³mica:</label>
                                     <select
                                         className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-[#1e40af] focus:border-[#1e40af] bg-white min-w-[200px]"
                                         value={formData.economicActivity}
@@ -1867,10 +2117,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <thead className="sticky top-0 bg-white shadow-sm z-10">
                                     <tr className="bg-slate-50/80 text-slate-400 uppercase text-[9px] font-bold border-b border-slate-100">
                                         <th className="px-4 py-2 w-44 tracking-wider">Clave SAT</th>
-                                        <th className="px-4 py-2 w-32 tracking-wider">No. Identificación</th>
+                                        <th className="px-4 py-2 w-32 tracking-wider">No. IdentificaciÃ³n</th>
                                         <th className="px-4 py-2 w-24 text-center tracking-wider">Cant.</th>
                                         <th className="px-4 py-2 w-28 text-center tracking-wider">Unidad</th>
-                                        <th className="px-4 py-2 tracking-wider">Descripción del Servicio</th>
+                                        <th className="px-4 py-2 tracking-wider">DescripciÃ³n del Servicio</th>
                                         <th className="px-4 py-2 w-32 text-right tracking-wider">P. Unitario</th>
                                         <th className="px-4 py-2 w-32 text-right tracking-wider">Importe</th>
                                         <th className="px-4 py-2 w-12 text-center"></th>
@@ -1908,7 +2158,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             description: prod.name,
                                                             unit: suggested,
                                                             unitPrice: historicalPrice || newItems[idx].unitPrice,
-                                                            has_iva: true, // Siempre prendido por default como solicitó el usuario, ignorando la BD del SAT que está mayormente en false
+                                                            has_iva: true, // Siempre prendido por default como solicitÃ³ el usuario, ignorando la BD del SAT que estÃ¡ mayormente en false
                                                             has_ieps: prod.has_ieps ?? false
                                                         };
                                                         setFormData({ ...formData, items: newItems });
@@ -1949,17 +2199,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 />
                                             </td>
                                             <td className="px-4 py-2 align-middle">
-                                                <textarea
+                                                <AutoResizeTextarea
                                                     className="w-full border-none bg-transparent p-0 text-[11px] resize-none focus:ring-0 leading-tight focus:outline-none transition-all text-slate-600"
                                                     rows={1}
-                                                    style={{ minHeight: '1.5em' }}
+                                                    placeholder="DescripciÃ³n del concepto"
                                                     value={item.description}
-                                                    onChange={e => {
-                                                        updateItem(idx, 'description', e.target.value);
-                                                        // Auto-resize simple sin dependencias pesadas
-                                                        e.target.style.height = 'auto';
-                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                    }}
+                                                    onChange={val => updateItem(idx, 'description', val)}
                                                 />
                                                 <div className="flex gap-2 mt-1">
                                                     <button
@@ -1999,7 +2244,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             <div className="absolute -top-3 right-0">
                                                                 <span className="text-[7px] font-black text-emerald-500 uppercase flex items-center gap-0.5 animate-in fade-in zoom-in-90 duration-500">
                                                                     <Icon name="history" className="text-[8px]" />
-                                                                    HISTÓRICO
+                                                                    HISTÃ“RICO
                                                                 </span>
                                                             </div>
                                                         )}
@@ -2030,10 +2275,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#1e40af] text-[#1e40af] hover:bg-[#1e40af] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
                             >
                                 <Icon name="add" className="text-sm" />
-                                AÑADIR CONCEPTO
+                                AÃ‘ADIR CONCEPTO
                             </button>
                             <div className="flex items-center gap-6">
-                                <p className="text-[10px] text-slate-400 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rápidamente.</p>
+                                <p className="text-[10px] text-slate-400 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rÃ¡pidamente.</p>
                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full border border-slate-200">Conceptos: {formData.items.length}</span>
                             </div>
                         </div>
@@ -2047,71 +2292,77 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <Icon name="settings" className="text-[#1e40af]" />
                                 <h2 className="text-xs font-bold uppercase text-slate-500 tracking-wider">Configuración</h2>
                             </div>
-                            <div className="p-5 flex flex-wrap items-center justify-between gap-8">
-                                <ConfigToggle
-                                    label="Tiene Cotización"
-                                    sub="Vincular folio previo"
-                                    checked={formData.hasQuotation}
-                                    onChange={v => setFormData({ ...formData, hasQuotation: v })}
-                                />
-                                <ConfigToggle
-                                    label="Licitación / Concurso"
-                                    sub="Proceso formal"
-                                    checked={formData.is_licitation}
-                                    onChange={v => setFormData({ ...formData, is_licitation: v })}
-                                />
-                                <ConfigToggle
-                                    label="Requiere Contrato"
-                                    sub="Anexo legal PDF"
-                                    checked={formData.is_contract_required}
-                                    onChange={v => setFormData({ ...formData, is_contract_required: v, hasContract: v })}
-                                />
-                                <ConfigToggle
-                                    label="Factura Directa"
-                                    sub="Sin remisiones"
-                                    checked={formData.request_direct_invoice}
-                                    onChange={v => setFormData({ ...formData, request_direct_invoice: v })}
-                                />
-                                <ConfigToggle
-                                    label="Anticipo"
-                                    sub="Pago adelantado"
-                                    checked={formData.advancePayment}
-                                    onChange={v => setFormData({ ...formData, advancePayment: v })}
-                                />
-                                <div className="h-10 w-px bg-slate-100 hidden lg:block" />
-                                <div className="flex flex-1 gap-4">
-                                    <div className="flex-1">
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Periodo de Ejecución</label>
+                            <div className="p-8 space-y-8">
+                                {/* Toggles Column */}
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-6">
+                                    <ConfigToggle
+                                        label="Cotización"
+                                        sub="Requiere carga de PDF firmado"
+                                        checked={formData.req_quotation}
+                                        disabled={formData.related_quotation_status === 'aceptada' || formData.related_quotation_status === 'completada'}
+                                        statusLabel={formData.req_quotation ? (formData.related_quotation_status || 'solicitada') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, req_quotation: val, related_quotation_status: val ? (formData.related_quotation_status || 'solicitada') : null })}
+                                    />
+                                    <ConfigToggle
+                                        label="Contrato"
+                                        sub="Valida existencia de contrato"
+                                        checked={formData.is_contract_required}
+                                        disabled={formData.contract_status === 'firmado' || formData.contract_status === 'completado'}
+                                        statusLabel={formData.is_contract_required ? (formData.contract_status || 'solicitado') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, is_contract_required: val, contract_status: val ? (formData.contract_status || 'solicitado') : null })}
+                                    />
+                                    <ConfigToggle
+                                        label="Evidencia"
+                                        sub="Solicita fotos/docs de entrega"
+                                        checked={formData.req_evidence}
+                                        disabled={formData.evidence_status === 'completada' || formData.evidence_status === 'entregada'}
+                                        statusLabel={formData.req_evidence ? (formData.evidence_status || 'solicitada') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, req_evidence: val, evidence_status: val ? (formData.evidence_status || 'solicitada') : null })}
+                                    />
+                                    <ConfigToggle
+                                        label="Factura"
+                                        sub="Habilitar facturación inmediata"
+                                        checked={formData.request_direct_invoice}
+                                        disabled={formData.invoice_status === 'emitida' || formData.invoice_status === 'timbrada'}
+                                        statusLabel={formData.request_direct_invoice ? (formData.invoice_status || 'solicitada') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, request_direct_invoice: val, invoice_status: val ? (formData.invoice_status || 'solicitada') : null })}
+                                    />
+                                </div>
+
+                                {/* Inputs Row */}
+                                <div className="pt-6 border-t border-slate-50 flex flex-wrap lg:flex-nowrap items-end gap-6">
+                                    <div className="flex-1 min-w-[200px]">
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Periodo de Ejecución</label>
                                         <input
-                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af]"
+                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50/30 font-bold text-slate-700"
                                             placeholder="Ej: MARZO 2024"
                                             type="text"
                                             value={formData.execution_period}
                                             onChange={e => setFormData({ ...formData, execution_period: e.target.value })}
                                         />
                                     </div>
-                                    <div className="w-32">
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Secuencia</label>
-                                        <div className="flex items-center gap-1">
+                                    <div className="w-40">
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Secuencia de Proforma</label>
+                                        <div className="flex items-center gap-2 bg-slate-50/30 rounded-xl border border-slate-200 p-1">
                                             <input
-                                                className="w-12 border-slate-200 rounded-lg text-xs h-9 text-center focus:ring-[#1e40af] focus:border-[#1e40af]"
+                                                className="w-full border-none bg-transparent rounded-lg text-xs h-8 text-center focus:ring-0 font-bold"
                                                 type="number"
                                                 value={formData.proforma_number}
                                                 onChange={e => setFormData({ ...formData, proforma_number: parseInt(e.target.value) || 1 })}
                                             />
                                             <span className="text-xs font-bold text-slate-300">/</span>
                                             <input
-                                                className="w-12 border-slate-200 rounded-lg text-xs h-9 text-center focus:ring-[#1e40af] focus:border-[#1e40af]"
+                                                className="w-full border-none bg-transparent rounded-lg text-xs h-8 text-center focus:ring-0 font-bold"
                                                 type="number"
                                                 value={formData.total_proformas}
                                                 onChange={e => setFormData({ ...formData, total_proformas: parseInt(e.target.value) || 1 })}
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Ref. Contrato</label>
+                                    <div className="flex-1 min-w-[200px]">
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Referencia de Contrato</label>
                                         <input
-                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af]"
+                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50/30 font-bold text-slate-700"
                                             placeholder="Ej: AD-SM-001"
                                             type="text"
                                             value={formData.contract_reference}
@@ -2173,7 +2424,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </div>
                                     </div>
 
-                                    {/* Botón de Acción Principal */}
+                                    {/* BotÃ³n de AcciÃ³n Principal */}
                                     <button
                                         onClick={() => setIsPaymentModalOpen(true)}
                                         className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
@@ -2185,7 +2436,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     {/* Historial de Pagos (Compacto) */}
                                     {payments.length > 0 && (
                                         <div className="pt-2">
-                                            <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Últimos Abonos</span>
+                                            <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Ãšltimos Abonos</span>
                                             <div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">
                                                 {payments.map(p => (
                                                     <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg group hover:border-blue-200 transition-all">
@@ -2218,7 +2469,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             <button
                                                                 onMouseDown={async (e) => {
                                                                     e.preventDefault();
-                                                                    if (confirm('¿Eliminar este registro de pago?')) {
+                                                                    if (confirm('Â¿Eliminar este registro de pago?')) {
                                                                         await supabase.from('quotation_payments').delete().eq('id', p.id);
                                                                         loadPayments(id!);
                                                                     }
@@ -2237,11 +2488,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             </div>
                         </section>
                     </div>
-                </div>
-            </main>
+                </div >
+            </main >
 
             {/* STITCH FOOTER */}
-            <footer className="h-14 bg-white border-t border-slate-200 px-8 flex items-center justify-start shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            < footer className="h-14 bg-white border-t border-slate-200 px-8 flex items-center justify-start shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]" >
                 <div className="flex items-center gap-6">
                     <button
                         onClick={handlePreview}
@@ -2259,268 +2510,379 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         Enviar por email
                     </button>
                 </div>
-            </footer>
+            </footer >
 
             {/* MODAL: REGISTRAR PAGO */}
-            {isPaymentModalOpen && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Icon name="add_card" className="text-[#1e40af] text-lg" />
-                                <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Registrar Pago a Proforma</h3>
+            {
+                isPaymentModalOpen && (
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+                            <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Icon name="add_card" className="text-[#1e40af] text-lg" />
+                                    <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Registrar Pago a Proforma</h3>
+                                </div>
+                                <button onClick={() => setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                    <Icon name="close" className="text-lg" />
+                                </button>
                             </div>
-                            <button onClick={() => setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                <Icon name="close" className="text-lg" />
-                            </button>
-                        </div>
-                        <form className="p-6 space-y-4" onSubmit={async (e) => {
-                            e.preventDefault();
-                            const formDataObj = new FormData(e.currentTarget);
-                            try {
-                                setIsUploading(true);
-                                let evidence_url = null;
+                            <form className="p-6 space-y-4" onSubmit={async (e) => {
+                                e.preventDefault();
+                                const formDataObj = new FormData(e.currentTarget);
+                                try {
+                                    setIsUploading(true);
+                                    let evidence_url = null;
 
-                                if (paymentFile) {
-                                    const fileExt = paymentFile.name.split('.').pop();
-                                    const fileName = `${id}/${Date.now()}.${fileExt}`;
-                                    const { error: uploadError } = await supabase.storage
-                                        .from('payment-evidence')
-                                        .upload(fileName, paymentFile);
+                                    if (paymentFile) {
+                                        const fileExt = paymentFile.name.split('.').pop();
+                                        const fileName = `${id}/${Date.now()}.${fileExt}`;
+                                        const { error: uploadError } = await supabase.storage
+                                            .from('payment-evidence')
+                                            .upload(fileName, paymentFile);
 
-                                    if (uploadError) throw uploadError;
-                                    evidence_url = fileName;
+                                        if (uploadError) throw uploadError;
+                                        evidence_url = fileName;
+                                    }
+
+                                    const paymentData = {
+                                        quotation_id: id,
+                                        amount: parseFloat(formDataObj.get('amount') as string),
+                                        payment_date: formDataObj.get('date'),
+                                        payment_method_code: formDataObj.get('method'),
+                                        bank_account_id: formDataObj.get('account'),
+                                        reference: formDataObj.get('reference'),
+                                        notes: formDataObj.get('notes'),
+                                        evidence_url: evidence_url,
+                                        status: 'VERIFICADO'
+                                    };
+
+                                    const { error } = await supabase.from('quotation_payments').insert([paymentData]);
+                                    if (error) throw error;
+                                    setIsPaymentModalOpen(false);
+                                    setPaymentFile(null);
+                                    loadPayments(id!);
+                                } catch (err) {
+                                    console.error('Error saving payment:', err);
+                                    alert('Error al guardar el pago. Verifica los datos.');
+                                } finally {
+                                    setIsUploading(false);
                                 }
-
-                                const paymentData = {
-                                    quotation_id: id,
-                                    amount: parseFloat(formDataObj.get('amount') as string),
-                                    payment_date: formDataObj.get('date'),
-                                    payment_method_code: formDataObj.get('method'),
-                                    bank_account_id: formDataObj.get('account'),
-                                    reference: formDataObj.get('reference'),
-                                    notes: formDataObj.get('notes'),
-                                    evidence_url: evidence_url,
-                                    status: 'VERIFICADO'
-                                };
-
-                                const { error } = await supabase.from('quotation_payments').insert([paymentData]);
-                                if (error) throw error;
-                                setIsPaymentModalOpen(false);
-                                setPaymentFile(null);
-                                loadPayments(id!);
-                            } catch (err) {
-                                console.error('Error saving payment:', err);
-                                alert('Error al guardar el pago. Verifica los datos.');
-                            } finally {
-                                setIsUploading(false);
-                            }
-                        }}>
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Monto del Abono</label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
-                                    <input
-                                        name="amount"
-                                        type="number"
-                                        step="0.01"
-                                        required
-                                        autoFocus
-                                        defaultValue={Math.max(0, total - payments.reduce((acc, p) => acc + Number(p.amount), 0)).toFixed(2)}
-                                        className="w-full pl-7 pr-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-sm font-black text-[#1e40af] focus:ring-2 focus:ring-blue-100 focus:border-[#1e40af] transition-all"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
+                            }}>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Fecha</label>
-                                    <input
-                                        name="date"
-                                        type="date"
-                                        required
-                                        defaultValue={new Date().toISOString().split('T')[0]}
-                                        className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
-                                    />
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Monto del Abono</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                                        <input
+                                            name="amount"
+                                            type="number"
+                                            step="0.01"
+                                            required
+                                            autoFocus
+                                            defaultValue={Math.max(0, total - payments.reduce((acc, p) => acc + Number(p.amount), 0)).toFixed(2)}
+                                            className="w-full pl-7 pr-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-sm font-black text-[#1e40af] focus:ring-2 focus:ring-blue-100 focus:border-[#1e40af] transition-all"
+                                        />
+                                    </div>
                                 </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Fecha</label>
+                                        <input
+                                            name="date"
+                                            type="date"
+                                            required
+                                            defaultValue={new Date().toISOString().split('T')[0]}
+                                            className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Forma Pago SAT</label>
+                                        <select
+                                            name="method"
+                                            required
+                                            defaultValue="03"
+                                            className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                        >
+                                            {(paymentFormsData as any[]).filter(f => typeof f.code === 'number' || !isNaN(Number(f.code))).map(f => (
+                                                <option key={f.code} value={f.code.toString().padStart(2, '0')}>
+                                                    {f.code.toString().padStart(2, '0')} - {f.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Forma Pago SAT</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Cuenta Receptora</label>
                                     <select
-                                        name="method"
+                                        name="account"
                                         required
-                                        defaultValue="03"
                                         className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
                                     >
-                                        {(paymentFormsData as any[]).filter(f => typeof f.code === 'number' || !isNaN(Number(f.code))).map(f => (
-                                            <option key={f.code} value={f.code.toString().padStart(2, '0')}>
-                                                {f.code.toString().padStart(2, '0')} - {f.name}
+                                        {bankAccounts.filter(acc => acc.is_active).length === 0 && <option value="">No hay cuentas activas registradas</option>}
+                                        {bankAccounts.filter(acc => acc.is_active).map(acc => (
+                                            <option key={acc.id} value={acc.id}>
+                                                {acc.bank_name} ({acc.account_number.slice(-4)}) - {acc.currency}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Cuenta Receptora</label>
-                                <select
-                                    name="account"
-                                    required
-                                    className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
-                                >
-                                    {bankAccounts.filter(acc => acc.is_active).length === 0 && <option value="">No hay cuentas activas registradas</option>}
-                                    {bankAccounts.filter(acc => acc.is_active).map(acc => (
-                                        <option key={acc.id} value={acc.id}>
-                                            {acc.bank_name} ({acc.account_number.slice(-4)}) - {acc.currency}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Referencia / Tracking</label>
-                                <input
-                                    name="reference"
-                                    type="text"
-                                    placeholder="N° Operación o Cheque"
-                                    className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Comprobante (PDF/Imagen)</label>
-                                <div className="flex items-center gap-2">
-                                    <label className="flex-1 cursor-pointer">
-                                        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all group">
-                                            <Icon name={paymentFile ? 'check_circle' : 'upload_file'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-blue-500'} />
-                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">
-                                                {paymentFile ? paymentFile.name : 'Subir Comprobante'}
-                                            </span>
-                                            <input
-                                                type="file"
-                                                className="hidden"
-                                                accept="image/*,.pdf"
-                                                onChange={(e) => setPaymentFile(e.target.files?.[0] || null)}
-                                            />
-                                        </div>
-                                    </label>
-                                    {paymentFile && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentFile(null)}
-                                            className="p-3 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200 transition-all"
-                                        >
-                                            <Icon name="delete" className="text-sm" />
-                                        </button>
-                                    )}
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Referencia / Tracking</label>
+                                    <input
+                                        name="reference"
+                                        type="text"
+                                        placeholder="NÂ° OperaciÃ³n o Cheque"
+                                        className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                    />
                                 </div>
-                            </div>
 
-                            <button
-                                type="submit"
-                                disabled={isUploading}
-                                className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 mt-4"
-                            >
-                                <Icon name={isUploading ? 'sync' : 'save_as'} className={isUploading ? 'animate-spin' : ''} />
-                                {isUploading ? 'Subiendo...' : 'Confirmar Registro de Pago'}
-                            </button>
-                        </form>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Comprobante (PDF/Imagen)</label>
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex-1 cursor-pointer">
+                                            <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all group">
+                                                <Icon name={paymentFile ? 'check_circle' : 'upload_file'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-blue-500'} />
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">
+                                                    {paymentFile ? paymentFile.name : 'Subir Comprobante'}
+                                                </span>
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*,.pdf"
+                                                    onChange={(e) => setPaymentFile(e.target.files?.[0] || null)}
+                                                />
+                                            </div>
+                                        </label>
+                                        {paymentFile && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setPaymentFile(null)}
+                                                className="p-3 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200 transition-all"
+                                            >
+                                                <Icon name="delete" className="text-sm" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isUploading}
+                                    className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 mt-4"
+                                >
+                                    <Icon name={isUploading ? 'sync' : 'save_as'} className={isUploading ? 'animate-spin' : ''} />
+                                    {isUploading ? 'Subiendo...' : 'Confirmar Registro de Pago'}
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* MODAL: GESTIONAR CUENTAS */}
-            {isAccountModalOpen && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Icon name="account_balance" className="text-[#1e40af] text-lg" />
-                                <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Gestión de Cuentas del Emisor</h3>
-                            </div>
-                            <button onClick={() => setIsAccountModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                <Icon name="close" className="text-lg" />
-                            </button>
-                        </div>
-
-                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Formulario Nueva Cuenta */}
-                            <div className="space-y-4">
-                                <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Nueva Cuenta / Caja</h4>
-                                <form className="space-y-3" onSubmit={async (e) => {
-                                    e.preventDefault();
-                                    const formDataObj = new FormData(e.currentTarget);
-                                    const newAccount = {
-                                        organization_id: selectedOrg.id,
-                                        account_type: formDataObj.get('type'),
-                                        bank_name: formDataObj.get('bank'),
-                                        account_number: formDataObj.get('number'),
-                                        holder_name: selectedOrg.name,
-                                        currency: formDataObj.get('currency'),
-                                        is_active: true
-                                    };
-
-                                    try {
-                                        const { error } = await supabase.from('org_bank_accounts').insert([newAccount]);
-                                        if (error) throw error;
-                                        (e.target as HTMLFormElement).reset();
-                                        loadBankAccounts(selectedOrg.id);
-                                    } catch (err) {
-                                        console.error('Error saving account:', err);
-                                        alert('Error al guardar la cuenta.');
-                                    }
-                                }}>
-                                    <div>
-                                        <select name="type" className="w-full px-3 py-1.5 bg-slate-50 border-slate-200 rounded-lg text-[10px] font-bold">
-                                            <option value="BANCO">CUENTA BANCARIA</option>
-                                            <option value="EFECTIVO">CAJA DE EFECTIVO</option>
-                                        </select>
-                                    </div>
-                                    <input name="bank" required placeholder="Banco (ej. BBVA) o Nombre Caja" className="w-full px-3 py-1.5 bg-slate-50 border-slate-200 rounded-lg text-[10px] font-bold" />
-                                    <input name="number" required placeholder="N° Cuenta / CLABE / Referencia" className="w-full px-3 py-1.5 bg-slate-50 border-slate-200 rounded-lg text-[10px] font-bold" />
-                                    <select name="currency" className="w-full px-3 py-1.5 bg-slate-50 border-slate-200 rounded-lg text-[10px] font-bold">
-                                        <option value="MXN">MXN - PESOS</option>
-                                        <option value="USD">USD - DÓLARES</option>
-                                    </select>
-                                    <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-700">Registrar Cuenta</button>
-                                </form>
+            {
+                isAccountModalOpen && (
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+                            <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Icon name="account_balance" className="text-[#1e40af] text-lg" />
+                                    <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">GestiÃ³n de Cuentas del Emisor</h3>
+                                </div>
+                                <button onClick={() => setIsAccountModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                    <Icon name="close" className="text-lg" />
+                                </button>
                             </div>
 
-                            {/* Lista de Cuentas Actuales */}
-                            <div className="space-y-3">
-                                <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Cuentas Registradas</h4>
-                                <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                                    {isLoadingAccounts ? (
-                                        <div className="text-[9px] text-slate-400 animate-pulse uppercase font-black text-center py-4">Cargando cuentas...</div>
-                                    ) : bankAccounts.length === 0 ? (
-                                        <div className="text-[9px] text-slate-300 italic text-center py-4 uppercase font-bold tracking-tighter">Sin cuentas registradas</div>
-                                    ) : (
-                                        bankAccounts.map(acc => (
-                                            <div key={acc.id} className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group">
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className="text-[10px] font-black text-slate-700 uppercase tracking-tight truncate">{acc.bank_name}</span>
-                                                    <span className="text-[9px] font-mono text-slate-400 font-bold">{acc.account_number}</span>
+                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Formulario Nueva Cuenta */}
+                                <div className="space-y-4">
+                                    <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Nueva Cuenta / Caja</h4>
+                                    <form className="space-y-3" onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const formDataObj = new FormData(e.currentTarget);
+                                        const newAccount = {
+                                            organization_id: selectedOrg.id,
+                                            account_type: formDataObj.get('type'),
+                                            bank_name: formDataObj.get('bank'),
+                                            account_number: formDataObj.get('number'),
+                                            holder_name: selectedOrg.name,
+                                            currency: formDataObj.get('currency'),
+                                            is_active: true
+                                        };
+
+                                        try {
+                                            const { error } = await supabase.from('org_bank_accounts').insert([newAccount]);
+                                            if (error) throw error;
+                                            (e.target as HTMLFormElement).reset();
+                                            setBankSearch('');
+                                            setIsBankDropdownOpen(false);
+                                            loadBankAccounts(selectedOrg.id);
+                                        } catch (err) {
+                                            console.error('Error saving account:', err);
+                                            alert('Error al guardar la cuenta.');
+                                        }
+                                    }}>
+                                        <div className="flex flex-col gap-4">
+                                            <div className="grid grid-cols-1 gap-4">
+                                                <div>
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Tipo de Cuenta</label>
+                                                    <select name="type" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                                                        <option value="BANCO">CUENTA BANCARIA</option>
+                                                        <option value="EFECTIVO">CAJA DE EFECTIVO</option>
+                                                    </select>
                                                 </div>
-                                                <button
-                                                    onMouseDown={async (e) => {
-                                                        e.preventDefault();
-                                                        if (confirm('¿Desactivar esta cuenta?')) {
-                                                            await supabase.from('org_bank_accounts').update({ is_active: false }).eq('id', acc.id);
-                                                            loadBankAccounts(selectedOrg.id);
-                                                        }
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all p-1"
-                                                >
-                                                    <Icon name="delete" className="text-xs" />
-                                                </button>
+
+                                                <div className="relative">
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">InstituciÃ³n / Banco</label>
+                                                    <div
+                                                        className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all cursor-text"
+                                                        onClick={(e) => {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setBankAnchor(rect);
+                                                            setIsBankDropdownOpen(true);
+                                                        }}
+                                                    >
+                                                        <input
+                                                            required
+                                                            name="bank"
+                                                            value={bankSearch}
+                                                            onChange={(e) => {
+                                                                setBankSearch(e.target.value);
+                                                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                                                if (rect) setBankAnchor(rect);
+                                                                setIsBankDropdownOpen(true);
+                                                            }}
+                                                            onFocus={(e) => {
+                                                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                                                if (rect) setBankAnchor(rect);
+                                                                setIsBankDropdownOpen(true);
+                                                            }}
+                                                            placeholder="Buscar banco (ej. BBVA)..."
+                                                            className="w-full bg-transparent border-none p-0 text-[10px] font-bold text-slate-900 focus:ring-0 placeholder:text-slate-300"
+                                                        />
+                                                        <Icon name="expand_more" className="text-[10px] text-slate-300 ml-1" />
+                                                    </div>
+
+                                                    {isBankDropdownOpen && (
+                                                        <DropdownPortal anchor={bankAnchor} width={bankAnchor?.width || 250}>
+                                                            <div className="flex flex-col bg-white overflow-hidden max-h-[300px]">
+                                                                <div className="sticky top-0 bg-slate-50 border-b border-slate-100 p-2 flex items-center justify-between z-10">
+                                                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter ml-1">CatÃ¡logo de Instituciones</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setIsBankDropdownOpen(false);
+                                                                        }}
+                                                                        className="p-1 hover:bg-slate-200 rounded-md transition-colors"
+                                                                    >
+                                                                        <Icon name="close" className="text-[10px] text-slate-500" />
+                                                                    </button>
+                                                                </div>
+                                                                <div className="overflow-y-auto custom-scrollbar">
+                                                                    {bankCatalog
+                                                                        .filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.includes(bankSearch))
+                                                                        .map(bank => (
+                                                                            <button
+                                                                                key={bank.code}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    setBankSearch(bank.name);
+                                                                                    setIsBankDropdownOpen(false);
+                                                                                }}
+                                                                                className="w-full text-left px-3 py-2.5 hover:bg-blue-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
+                                                                            >
+                                                                                <span className="text-[9px] font-bold text-slate-700 uppercase">{bank.name}</span>
+                                                                                <span className="text-[7px] font-black text-slate-300 group-hover:text-blue-400 bg-slate-50 px-1 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
+                                                                            </button>
+                                                                        ))}
+                                                                    {bankCatalog.filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.includes(bankSearch)).length === 0 && (
+                                                                        <div className="px-4 py-6 text-center">
+                                                                            <p className="text-[9px] font-bold text-slate-400 uppercase">Sin resultados para "{bankSearch}"</p>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setIsBankDropdownOpen(false)}
+                                                                                className="mt-2 text-[8px] font-black text-blue-500 hover:underline uppercase"
+                                                                            >
+                                                                                Usar texto ingresado
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </DropdownPortal>
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">NÃºmero de Cuenta / CLABE</label>
+                                                    <input
+                                                        required
+                                                        name="number"
+                                                        placeholder="18 dÃ­gitos para transferencia"
+                                                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-300"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Divisa</label>
+                                                    <select name="currency" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                                                        <option value="MXN">Pesos Mexicanos (MXN)</option>
+                                                        <option value="USD">DÃ³lares (USD)</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        ))
-                                    )}
+
+                                            <button
+                                                type="submit"
+                                                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-blue-100 mt-2"
+                                            >
+                                                Registrar Cuenta
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                {/* Lista de Cuentas Actuales */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Cuentas Registradas</h4>
+                                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                                        {isLoadingAccounts ? (
+                                            <div className="text-[9px] text-slate-400 animate-pulse uppercase font-black text-center py-4">Cargando cuentas...</div>
+                                        ) : bankAccounts.length === 0 ? (
+                                            <div className="text-[9px] text-slate-300 italic text-center py-4 uppercase font-bold tracking-tighter">Sin cuentas registradas</div>
+                                        ) : (
+                                            bankAccounts.map(acc => (
+                                                <div key={acc.id} className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group">
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-[10px] font-black text-slate-700 uppercase tracking-tight truncate">{acc.bank_name}</span>
+                                                        <span className="text-[9px] font-mono text-slate-400 font-bold">{acc.account_number}</span>
+                                                    </div>
+                                                    <button
+                                                        onMouseDown={async (e) => {
+                                                            e.preventDefault();
+                                                            if (confirm('Â¿Desactivar esta cuenta?')) {
+                                                                await supabase.from('org_bank_accounts').update({ is_active: false }).eq('id', acc.id);
+                                                                loadBankAccounts(selectedOrg.id);
+                                                            }
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all p-1"
+                                                    >
+                                                        <Icon name="delete" className="text-xs" />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -2532,6 +2894,5 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         </div >
     );
 };
-
 
 export default ProformaManager;

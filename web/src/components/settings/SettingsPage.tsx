@@ -3,6 +3,7 @@ import { CompanyList } from './CompanyList';
 import { CompanyDetails } from './CompanyDetails';
 import { UserDirectory } from './UserDirectory';
 import { RoleManager } from './RoleManager';
+import { Check, Save, Smartphone, Send } from 'lucide-react';
 import BulkCSFManager from '../catalogs/BulkCSFManager';
 
 interface SettingsPageProps {
@@ -16,6 +17,8 @@ interface SettingsPageProps {
     setImpersonatedUser?: (user: any) => void;
     realUserProfile?: any;
     userRolePermissions?: any[];
+    defaultOrgId?: string;
+    onSetDefaultOrg?: (orgId: string) => void;
 }
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({
@@ -28,15 +31,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     userPermissions = [],
     userRolePermissions = [],
     setImpersonatedUser,
-    realUserProfile
+    realUserProfile,
+    defaultOrgId,
+    onSetDefaultOrg
 }) => {
     // --- STATE ---
-    const [activeTab, setActiveTab] = useState<'empresa' | 'usuarios' | 'roles'>('empresa');
+    const [activeTab, setActiveTab] = useState<'empresa' | 'usuarios' | 'roles' | 'mi_perfil'>('empresa');
     const [subTab, setSubTab] = useState<'clientes' | 'emisoras' | 'lote'>('clientes');
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [users, setUsers] = useState<any[]>([]);
 
     // Filters State
+    const [profileData, setProfileData] = useState({
+        phone_whatsapp: '',
+        telegram_chat_id: ''
+    });
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+    const [profileUpdateSuccess, setProfileUpdateSuccess] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [activityFilter, setActivityFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState<'all' | 'persona_moral' | 'persona_fisica'>('all');
@@ -154,6 +165,41 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         : (isCreatingNew ? { id: 'new', _is_placeholder: true } : null);
 
     // DEBUG: Ver qué datos reales tiene la empresa seleccionada
+    useEffect(() => {
+        if (currentUser) {
+            setProfileData({
+                phone_whatsapp: currentUser.phone_whatsapp || '',
+                telegram_chat_id: currentUser.telegram_chat_id || ''
+            });
+        }
+    }, [currentUser]);
+
+    const handleUpdateProfile = async () => {
+        if (!currentUser) return;
+        setIsUpdatingProfile(true);
+        setProfileUpdateSuccess(false);
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    phone_whatsapp: profileData.phone_whatsapp,
+                    telegram_chat_id: profileData.telegram_chat_id
+                })
+                .eq('id', currentUser.id);
+
+            if (error) throw error;
+
+            setProfileUpdateSuccess(true);
+            setTimeout(() => setProfileUpdateSuccess(false), 3000);
+
+            // Recargar datos suavemente si es necesario, o confiar en el estado local
+        } catch (error: any) {
+            alert('Error al actualizar perfil: ' + error.message);
+        } finally {
+            setIsUpdatingProfile(false);
+        }
+    };
     useEffect(() => {
         if (selectedOrg) {
             console.log('--- SELECCIÓN DE EMPRESA ---', {
@@ -338,6 +384,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 {canViewTab('roles') && (
                     <button onClick={() => setActiveTab('roles')} className={`tab-button ${activeTab === 'roles' ? 'active' : ''}`}>Roles</button>
                 )}
+                <button onClick={() => setActiveTab('mi_perfil')} className={`tab-button ${activeTab === 'mi_perfil' ? 'active' : ''}`}>Mi Perfil</button>
             </div>
 
             {activeTab === 'empresa' && canViewTab('empresa') && (
@@ -383,9 +430,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                 uniqueActivities={uniqueActivities}
                                 onUnlinkOrg={handleUnlinkClient}
                                 subTab={subTab}
+                                defaultOrgId={defaultOrgId}
+                                onSetDefaultOrg={onSetDefaultOrg}
                             />
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} className="notranslate" translate="no">
                                 <CompanyDetails
                                     org={orgWithDetails}
                                     isCreatingNew={isCreatingNew}
@@ -413,6 +462,157 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     supabase={supabase}
                     currentUser={currentUser}
                 />
+            )}
+
+            {activeTab === 'mi_perfil' && (
+                <div className="premium-panel p-8 max-w-2xl mx-auto mt-8 relative overflow-hidden">
+                    {/* Decorative Background Element */}
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div className="relative z-10">
+                        <h2 className="text-2xl font-black mb-8 flex items-center gap-3">
+                            <div className="w-2 h-8 bg-gradient-to-b from-emerald-400 to-cyan-500 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.3)]"></div>
+                            Configuración de Perfil
+                        </h2>
+
+                        <div className="grid grid-cols-1 gap-6">
+                            {/* Locked Fields Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-50/50 rounded-2xl border border-slate-100 shadow-sm mb-2">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="text"
+                                            value={currentUser?.full_name || ''}
+                                            disabled
+                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed shadow-sm transition-all"
+                                        />
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black text-slate-300">SISTEMA</div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">E-mail Corporativo</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="email"
+                                            value={currentUser?.email || ''}
+                                            disabled
+                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed shadow-sm transition-all"
+                                        />
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black text-slate-300">SSO</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Editable Fields Section */}
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-black text-slate-700 uppercase tracking-widest ml-1">Teléfono / WhatsApp</label>
+                                        <div className="relative">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <Smartphone size={16} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={profileData.phone_whatsapp}
+                                                onChange={(e) => setProfileData(prev => ({ ...prev, phone_whatsapp: e.target.value }))}
+                                                placeholder="+52 000 000 0000"
+                                                className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-slate-900 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all shadow-sm placeholder:text-slate-300"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-black text-slate-700 uppercase tracking-widest ml-1">Telegram (Vía Bot)</label>
+                                        <div className="relative">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <Send size={16} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={profileData.telegram_chat_id}
+                                                onChange={(e) => setProfileData(prev => ({ ...prev, telegram_chat_id: e.target.value }))}
+                                                placeholder="Telegram ID Numerico"
+                                                className="w-full bg-white border-2 border-emerald-100 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm placeholder:text-slate-200"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center gap-4">
+                                    <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 ml-1">
+                                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                        Para Telegram: Envía <code className="bg-emerald-50 text-emerald-600 px-1 py-0.5 rounded">/id</code> al bot institucional
+                                    </p>
+
+                                    <button
+                                        onClick={handleUpdateProfile}
+                                        disabled={isUpdatingProfile}
+                                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${profileUpdateSuccess
+                                                ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                                                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg active:scale-95 disabled:opacity-50'
+                                            }`}
+                                    >
+                                        {isUpdatingProfile ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        ) : profileUpdateSuccess ? (
+                                            <Check size={16} strokeWidth={3} />
+                                        ) : (
+                                            <Save size={16} />
+                                        )}
+                                        {profileUpdateSuccess ? 'Actualizado' : 'Actualizar Perfil'}
+                                    </button>
+                                </div>
+
+                                <div className="pt-6 mt-2 border-t border-slate-100">
+                                    <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-4">Canales de Notificación Premium</h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        {['EMAIL', 'TELEGRAM', 'WHATSAPP'].map(channel => {
+                                            const isSelected = currentUser?.notification_prefered_channels?.includes(channel);
+                                            const colors = {
+                                                'EMAIL': 'peer-checked:bg-blue-500 peer-checked:border-blue-500 hover:border-blue-200',
+                                                'TELEGRAM': 'peer-checked:bg-emerald-500 peer-checked:border-emerald-500 hover:border-emerald-200',
+                                                'WHATSAPP': 'peer-checked:bg-green-500 peer-checked:border-green-500 hover:border-green-200'
+                                            } as any;
+
+                                            return (
+                                                <label key={channel} className="relative cursor-pointer group">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="sr-only peer"
+                                                        checked={isSelected}
+                                                        onChange={async () => {
+                                                            const current = currentUser?.notification_prefered_channels || [];
+                                                            const updated = isSelected
+                                                                ? current.filter((c: string) => c !== channel)
+                                                                : [...current, channel];
+                                                            const { error } = await supabase.from('profiles').update({ notification_prefered_channels: updated }).eq('id', currentUser.id);
+                                                            if (error) alert('Error al actualizar canales: ' + error.message);
+                                                            else window.location.reload();
+                                                        }}
+                                                    />
+                                                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 peer-checked:text-white ${colors[channel]}`}>
+                                                        {isSelected ? (
+                                                            <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
+                                                                <Check size={10} strokeWidth={4} />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-4 h-4 rounded-full bg-slate-50 border border-slate-200 group-hover:bg-slate-100 transition-colors"></div>
+                                                        )}
+                                                        <span className="text-xs font-black tracking-tight">{channel}</span>
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

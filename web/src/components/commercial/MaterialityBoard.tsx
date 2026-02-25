@@ -7,7 +7,8 @@ import {
     Clock,
     Printer,
     Edit3,
-    FileSearch
+    FileSearch,
+    Plus
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +17,7 @@ interface MaterialityStep {
     description: string;
     amount_total: number;
     status: string;
-    proforma_number?: number;
+    proforma_number?: string;
     total_proformas?: number;
     created_at: string;
     // Relaciones para estados
@@ -24,6 +25,14 @@ interface MaterialityStep {
     invoice_id?: string;
     has_evidence?: boolean;
     consecutive_id?: number;
+    req_quotation?: boolean;
+    req_evidence?: boolean;
+    is_contract_required?: boolean;
+    request_direct_invoice?: boolean;
+    invoice_status?: string | null;
+    contract_status?: string | null;
+    evidence_status?: string | null;
+    related_quotation_status?: string | null;
 }
 
 const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
@@ -61,6 +70,14 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
                     total_proformas, 
                     created_at,
                     consecutive_id,
+                    req_quotation,
+                    req_evidence,
+                    is_contract_required,
+                    request_direct_invoice,
+                    invoice_status,
+                    contract_status,
+                    evidence_status,
+                    related_quotation_status,
                     contracts (id),
                     invoices (id)
                 `)
@@ -80,7 +97,15 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
                 contract_id: q.contracts?.[0]?.id,
                 invoice_id: q.invoices?.[0]?.id,
                 has_evidence: false,
-                consecutive_id: q.consecutive_id
+                consecutive_id: q.consecutive_id,
+                req_quotation: q.req_quotation,
+                req_evidence: q.req_evidence,
+                is_contract_required: q.is_contract_required,
+                request_direct_invoice: q.request_direct_invoice,
+                invoice_status: q.invoice_status,
+                contract_status: q.contract_status,
+                evidence_status: q.evidence_status,
+                related_quotation_status: q.related_quotation_status
             }));
 
             setProformas(mappedData);
@@ -110,175 +135,180 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
         }
     };
 
-    const StatusBadge = ({ active, label, onClick }: { active: boolean, label: string, onClick?: () => void }) => (
+    const StatusBadge = ({ active, label, onClick, required = true, statusText }: { active: boolean, label: string, onClick?: () => void, required?: boolean, statusText?: string | null }) => (
         <div
             onClick={onClick}
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: onClick ? 'pointer' : 'default',
-                opacity: active ? 1 : 0.3,
-                transition: 'all 0.2s'
-            }}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 ${onClick ? 'cursor-pointer hover:scale-105' : 'cursor-default'} ${active ? 'opacity-100' : required ? 'opacity-40' : 'opacity-15'}`}
         >
-            <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                backgroundColor: active ? 'var(--primary-color)' : '#334155',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: active ? '0 0 10px var(--primary-glow)' : 'none'
-            }}>
-                {active ? <Check size={16} color="white" /> : <Clock size={16} color="#94a3b8" />}
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${active ? 'bg-cyan-600 shadow-[0_0_15px_rgba(8,145,178,0.3)]' : !required ? 'bg-slate-100 border border-dashed border-slate-300' : 'bg-slate-200'}`}>
+                {active ? <Check size={18} className="text-white" strokeWidth={3} /> : !required ? <Clock size={16} className="text-slate-300" /> : <Clock size={18} className="text-slate-500" />}
             </div>
-            <span style={{ fontSize: '10px', fontWeight: '600', color: active ? 'white' : '#64748b' }}>{label}</span>
+            <div className="flex flex-col items-center">
+                <span className={`text-[9px] font-black tracking-widest uppercase ${active ? 'text-cyan-700' : 'text-slate-400'}`}>
+                    {label}
+                    {!required && active && <span className="ml-1 text-[7px] bg-slate-100 px-1 rounded text-slate-400">OPT</span>}
+                </span>
+                {statusText && required !== false && (
+                    <span className={`mt-0.5 text-[7px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${active ? 'bg-cyan-50 text-cyan-600 border border-cyan-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                        {statusText}
+                    </span>
+                )}
+            </div>
         </div>
     );
 
     return (
-        <div className="fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px' }}>Tablero de Materialidad</h1>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <p style={{ color: '#94a3b8' }}>Rastreo completo del ciclo de vida de tus servicios y cumplimiento fiscal.</p>
-                        <div style={{
-                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                            color: 'var(--primary-color)',
-                            padding: '2px 8px',
-                            borderRadius: '12px',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            border: '1px solid rgba(56, 189, 248, 0.2)'
-                        }}>
+        <div className="fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-slate-900">
+            <div className="flex justify-between items-end mb-8 gap-4">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-black tracking-tight">Tablero de Materialidad</h1>
+                    <div className="flex items-center gap-3">
+                        <p className="text-sm text-slate-500 font-medium text-slate-900">Ciclo de vida de servicios y cumplimiento fiscal.</p>
+                        <div className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-[10px] font-black border border-cyan-100 uppercase tracking-widest">
                             {totalSystemProformas} Registros Globales
                         </div>
                     </div>
                 </div>
                 <button
-                    className="primary-button"
+                    className="premium-button flex items-center gap-2"
                     onClick={() => navigate('/proformas')}
                 >
-                    + Nueva Proforma
+                    <Plus size={16} />
+                    Nueva Proforma
                 </button>
             </div>
 
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '100px', color: '#64748b' }}>Cargando proformas...</div>
+                <div className="flex flex-col items-center justify-center py-24 gap-4">
+                    <div className="w-12 h-12 border-4 border-slate-100 border-t-cyan-600 rounded-full animate-spin"></div>
+                    <p className="text-sm text-slate-400 font-bold animate-pulse tracking-widest uppercase">Cargando Tablero...</p>
+                </div>
             ) : proformas.length === 0 ? (
-                <div className="glass-card" style={{ textAlign: 'center', padding: '60px' }}>
+                <div className="premium-panel flex flex-col items-center justify-center py-20 px-6 text-center animate-in fade-in zoom-in-95 duration-500">
                     {totalSystemProformas > 0 ? (
-                        <div style={{ marginBottom: '24px' }}>
-                            <AlertCircle size={48} color="var(--primary-color)" style={{ marginBottom: '16px', opacity: 0.5 }} />
-                            <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Filtro de Organización Activo</h3>
-                            <p style={{ color: '#94a3b8', maxWidth: '400px', margin: '0 auto 24px' }}>
-                                Hay <b>{totalSystemProformas} proformas</b> en el sistema, pero ninguna pertenece a <b>{selectedOrg?.name}</b>.
-                                Selecciona la empresa correspondiente en el menú superior para ver sus datos.
-                            </p>
+                        <div className="space-y-4 max-w-md">
+                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100 shadow-inner">
+                                <AlertCircle size={40} className="text-cyan-600/50" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black text-slate-700">Filtro de Empresa Activo</h3>
+                                <p className="text-sm text-slate-500 font-medium leading-relaxed mt-2 text-slate-900">
+                                    Hay <span className="text-cyan-600 font-black">{totalSystemProformas} registros</span> en el sistema, pero ninguno vinculado a <span className="font-bold text-slate-800">{selectedOrg?.name}</span>.
+                                </p>
+                            </div>
                         </div>
                     ) : (
-                        <>
-                            <Edit3 size={48} color="#334155" style={{ marginBottom: '16px' }} />
-                            <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>No hay proformas registradas</h3>
-                            <p style={{ color: '#64748b', marginBottom: '24px' }}>Inicia el proceso de materialidad creando tu primera proforma.</p>
-                        </>
+                        <div className="space-y-4">
+                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100 shadow-inner">
+                                <Edit3 size={40} className="text-slate-400" />
+                            </div>
+                            <h3 className="text-lg font-black text-slate-700">Sin proformas registradas</h3>
+                            <p className="text-sm text-slate-500 font-medium text-slate-900">Inicia el proceso de materialidad creando tu primera proforma.</p>
+                        </div>
                     )}
-                    <button className="primary-button" onClick={() => navigate('/proformas')}>Empezar Proceso</button>
+                    <button className="premium-button mt-8" onClick={() => navigate('/proformas')}>Empezar Proceso</button>
                 </div>
             ) : (
-                <div className="glass-card" style={{ padding: '0', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
-                                <th style={{ padding: '16px 24px', fontSize: '12px', color: '#64748b', fontWeight: '600' }}>SERVICIO / PROFORMA</th>
-                                <th style={{ padding: '16px 24px', fontSize: '12px', color: '#64748b', fontWeight: '600', textAlign: 'center' }}>FLUJO DE MATERIALIDAD</th>
-                                <th style={{ padding: '16px 24px', fontSize: '12px', color: '#64748b', fontWeight: '600', textAlign: 'right' }}>MONTO</th>
-                                <th style={{ padding: '16px 24px', fontSize: '12px', color: '#64748b', fontWeight: '600', textAlign: 'right' }}>ACCIONES</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {proformas.map((p) => (
-                                <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }} className="table-row-hover">
-                                    <td style={{ padding: '20px 24px' }}>
-                                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>{p.description}</div>
-                                        <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{
-                                                backgroundColor: 'rgba(255,255,255,0.05)',
-                                                padding: '2px 6px',
-                                                borderRadius: '4px',
-                                                color: 'var(--primary-color)',
-                                                fontWeight: '700'
-                                            }}>
-                                                {(() => {
-                                                    const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                    const dateStr = new Date(p.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
-                                                    const folNum = (p.proforma_number || 1).toString().padStart(2, '0');
-                                                    return `Folio: ${orgPrefix}-${dateStr}-${folNum}`;
-                                                })()}
-                                            </span>
-                                            <span>• Emisión: {new Date(p.created_at).toLocaleDateString()}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '16px 24px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
-                                            <StatusBadge active={true} label="Proforma" onClick={() => navigate(`/proformas/${p.id}`)} />
-                                            <StatusBadge active={p.status === 'APROBADA'} label="Cotización" />
-                                            <StatusBadge active={!!p.contract_id} label="Contrato" />
-                                            <StatusBadge active={!!p.has_evidence} label="Evidencia" />
-                                            <StatusBadge active={!!p.invoice_id} label="Factura" />
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: '700', fontSize: '16px' }}>
-                                        ${p.amount_total.toLocaleString()}
-                                    </td>
-                                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                                            <button
-                                                title="Ver Detalles"
-                                                onClick={() => navigate(`/proformas/${p.id}`)}
-                                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px', borderRadius: '8px', cursor: 'pointer', color: '#94a3b8' }}
-                                            >
-                                                <FileSearch size={18} />
-                                            </button>
-                                            <button
-                                                title="Imprimir"
-                                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px', borderRadius: '8px', cursor: 'pointer', color: '#94a3b8' }}
-                                            >
-                                                <Printer size={18} />
-                                            </button>
-                                            <button
-                                                key={`del-${p.id}`}
-                                                title="Eliminar"
-                                                onClick={() => handleDelete(p.id)}
-                                                style={{
-                                                    background: 'rgba(239, 68, 68, 0.05)',
-                                                    border: '1px solid rgba(239, 68, 68, 0.1)',
-                                                    padding: '8px',
-                                                    borderRadius: '8px',
-                                                    cursor: 'pointer',
-                                                    color: '#f87171'
-                                                }}
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
+                <div className="premium-panel p-0 overflow-hidden border-standard shadow-premium">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/80 border-b border-slate-200">
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-1/3">Servicio / Proforma</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Flujo de Materialidad</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Monto</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {proformas.map((p) => (
+                                    <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="px-6 py-5">
+                                            <div className="text-[13px] font-bold text-slate-800 mb-1 group-hover:text-cyan-700 transition-colors">{p.description}</div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded tracking-tight uppercase border border-slate-200 shadow-sm font-mono" translate="no">
+                                                    {p.proforma_number && typeof p.proforma_number === 'string' && p.proforma_number.includes('-')
+                                                        ? p.proforma_number
+                                                        : (() => {
+                                                            const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                            const dateStr = new Date(p.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                            const folNum = (p.proforma_number || 1).toString().padStart(2, '0');
+                                                            return `${orgPrefix}-${dateStr}-${folNum}`;
+                                                        })()
+                                                    }
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-medium">Emisión: {new Date(p.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex justify-center gap-7">
+                                                <StatusBadge active={true} label="Proforma" onClick={() => navigate(`/proformas/${p.id}`)} />
+                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
+                                                <StatusBadge
+                                                    active={p.status === 'APROBADA' || !!p.invoice_id || p.related_quotation_status === 'aceptada' || p.related_quotation_status === 'completada'}
+                                                    label="Cotización"
+                                                    required={p.req_quotation !== false}
+                                                    statusText={p.related_quotation_status}
+                                                />
+                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
+                                                <StatusBadge
+                                                    active={!!p.contract_id || p.contract_status === 'firmado' || p.contract_status === 'completado'}
+                                                    label="Contrato"
+                                                    required={p.is_contract_required === true}
+                                                    statusText={p.contract_status}
+                                                />
+                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
+                                                <StatusBadge
+                                                    active={!!p.has_evidence || p.evidence_status === 'completada' || p.evidence_status === 'entregada'}
+                                                    label="Evidencia"
+                                                    required={p.req_evidence !== false}
+                                                    statusText={p.evidence_status}
+                                                />
+                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
+                                                <StatusBadge
+                                                    active={!!p.invoice_id || p.invoice_status === 'emitida' || p.invoice_status === 'timbrada'}
+                                                    label="Factura"
+                                                    required={p.request_direct_invoice === true}
+                                                    statusText={p.invoice_status}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-right">
+                                            <div className="text-base font-black text-slate-800 tracking-tight">
+                                                {p.amount_total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-slate-900">
+                                            <div className="flex justify-end gap-2 text-slate-900">
+                                                <button
+                                                    title="Ver Detalles"
+                                                    onClick={() => navigate(`/proformas/${p.id}`)}
+                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-cyan-600 hover:border-cyan-200 hover:bg-cyan-50 rounded-lg transition-all shadow-sm"
+                                                >
+                                                    <FileSearch size={16} />
+                                                </button>
+                                                <button
+                                                    title="Imprimir"
+                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-lg transition-all shadow-sm"
+                                                >
+                                                    <Printer size={16} />
+                                                </button>
+                                                <button
+                                                    title="Eliminar"
+                                                    onClick={() => handleDelete(p.id)}
+                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-red-100 text-red-300 hover:text-red-600 hover:border-red-200 hover:bg-red-50 rounded-lg transition-all shadow-sm"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
-
-            <style>{`
-                .table-row-hover:hover {
-                    background-color: rgba(255, 255, 255, 0.02);
-                }
-            `}</style>
         </div>
     );
 };
