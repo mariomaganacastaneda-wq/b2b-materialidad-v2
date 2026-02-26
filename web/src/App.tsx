@@ -9,9 +9,9 @@ import {
   LogOut,
   ImageIcon,
   BarChart3,
-  FileEdit,
   CheckCircle2,
-  Shield
+  Shield,
+  FileSignature
 } from 'lucide-react';
 import { supabase, hasSupabaseConfig, updateSupabaseAuth, setClerkTokenProvider } from './lib/supabase';
 import {
@@ -25,7 +25,11 @@ import {
 
 // Componentes importados
 import ProformaManager from './components/commercial/ProformaManager';
-import ProformaDashboard from './pages/Quotations';
+import MaterialityBoard from './components/commercial/MaterialityBoard';
+import Quotations from './pages/Proformas';
+import QuotationRequests from './pages/QuotationRequests';
+import Evidence from './pages/Evidence';
+import Contracts from './pages/Contracts';
 import { SettingsPage } from './components/settings/SettingsPage';
 import SATCatalogsPage from './pages/SATCatalogs';
 import BankAccountsPage from './pages/BankAccounts';
@@ -568,10 +572,10 @@ export function App() {
     { label: 'Materialidad', path: '/materialidad', icon: Shield, screenId: 'materialidad', roles: ['ADMIN', 'CONTABLE', 'FACTURACION'] },
     { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
     { label: 'Órdenes Compra', path: '/ordenes-compra', icon: FileText, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
-    { label: 'Proformas', path: '/proformas', icon: FileEdit, screenId: 'proformas', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'REPRESENTANTE'] },
     { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
     { label: 'Bancos', path: '/bancos', icon: FileCheck, screenId: 'bancos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'REPRESENTANTE'] },
     { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
+    { label: 'Contratos', path: '/contratos', icon: FileSignature, screenId: 'contratos', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
     { label: 'Reportes', path: '/reportes', icon: BarChart3, screenId: 'reportes', roles: ['ADMIN', 'CONTABLE', 'REPRESENTANTE'] },
     { label: 'Catálogos SAT', path: '/catalogos-sat', icon: LayoutGrid, screenId: 'catalogos-sat', roles: ['ADMIN', 'FACTURACION', 'CONTABLE'] },
     { label: 'Configuración', path: '/settings', icon: Settings, screenIds: ['settings_empresa', 'settings_usuarios', 'settings_roles'], roles: ['ADMIN', 'VENDEDOR', 'CXC', 'CONTABLE'] },
@@ -579,7 +583,7 @@ export function App() {
   ];
 
   const hardcodedAdmins = ['user_39fz5fO1nTqgiZdV3oBEevy2FfT', 'user_39ldmMY70oeZqxolww1N55Ptvw6'];
-  const isActualAdmin = clerkUser && hardcodedAdmins.includes(clerkUser.id) && !impersonatedUser;
+  const isActualAdmin = (clerkUser && hardcodedAdmins.includes(clerkUser.id) && !impersonatedUser) || (userProfile?.role === 'ADMIN' && !impersonatedUser);
 
   const filteredNavItems = navItems.filter(item => {
     if (item.roles.includes('*')) return true;
@@ -800,19 +804,22 @@ export function App() {
               )}
               <Routes>
                 <Route path="/" element={<DashboardPage userProfile={userProfile} />} />
-                <Route path="/materialidad" element={<ProformaDashboard selectedOrg={selectedOrg} />} />
-                <Route path="/cotizaciones" element={<ProformaDashboard selectedOrg={selectedOrg} />} />
-                <Route path="/cotizaciones/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/proformas" element={<ProformaManager selectedOrg={selectedOrg} />} />
+                <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
+                <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
+                <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} />} />
+                <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
+                <Route path="/proformas" element={<Quotations selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/cotizaciones/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
+                <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/facturas" element={<Invoices userProfile={userProfile} />} />
                 <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} />} />
+                <Route path="/evidencia" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
+                <Route path="/evidencia/:id" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/catalogos-sat" element={<SATCatalogsPage />} />
                 <Route path="/bancos" element={<BankAccountsPage selectedOrg={selectedOrg} />} />
-                <Route path="/evidencia" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
-                <Route path="/evidencia/:id" element={<PlaceholderPage title="Evidencia Fotográfica" />} />
+                <Route path="/contratos" element={<Contracts selectedOrg={selectedOrg} />} />
+                <Route path="/contratos/:id" element={<Contracts selectedOrg={selectedOrg} />} />
                 <Route path="/reportes" element={<PlaceholderPage title="Generador de Reportes" />} />
                 <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} currentUser={userProfile} userPermissions={userPermissions} userRolePermissions={userRolePermissions} setImpersonatedUser={setImpersonatedUser} realUserProfile={realUserProfile} defaultOrgId={userProfile?.default_org_id} onSetDefaultOrg={handleSetDefaultOrg} />} />
                 <Route path="/security" element={<SecurityCenter supabase={supabase} clerkUser={clerkUser} getToken={getToken} impersonatedUser={impersonatedUser} />} />

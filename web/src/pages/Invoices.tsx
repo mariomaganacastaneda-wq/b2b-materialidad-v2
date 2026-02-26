@@ -2,17 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Invoice } from '../types';
-import {
-    FileCheck,
-    FileText,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    AlertCircle,
-    Eye,
-    Upload,
-    FileEdit
-} from 'lucide-react';
+import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit } from 'lucide-react';
 
 interface InvoicesProps {
     userProfile: any;
@@ -72,7 +62,8 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                             organization: q.organizations,
                             quotations: {
                                 request_direct_invoice: q.request_direct_invoice,
-                                proforma_number: q.proforma_number
+                                proforma_number: q.proforma_number,
+                                created_at: q.created_at
                             }
                         });
                     });
@@ -114,8 +105,13 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
     const handleUpload = async () => {
         if (!selectedInvoice) return;
         // Verify at least one file or comment changed.
-        if (!files.pdf && !files.xml && !files.facturaPdf && !preinvoiceComments && !invoiceComments && preinvoiceAuthorized === selectedInvoice.preinvoice_authorized) return;
+        const noFileChanges = !files.pdf && !files.xml && !files.facturaPdf;
+        const noCommentChanges = preinvoiceComments === (selectedInvoice.preinvoice_comments || '') &&
+            invoiceComments === (selectedInvoice.invoice_comments || '') &&
+            preinvoiceAuthorized === (selectedInvoice.preinvoice_authorized || false) &&
+            preinvoiceRejected === (selectedInvoice.status === 'RECHAZADA');
 
+        if (noFileChanges && noCommentChanges) return;
         try {
             setUploading(true);
             let updates: any = {};
@@ -144,20 +140,32 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                 currentInvoiceId = insertedData.id;
             }
 
-            // We only change to PREFACTURA_PENDIENTE if we are currently handling the initial request and not rejecting.
-            if (selectedInvoice.status === 'SOLICITUD' && (files.pdf || files.xml) && !preinvoiceRejected) {
+            // 1. Manejo de estado inicial o recuperación de un rechazo
+            if ((selectedInvoice.status === 'SOLICITUD' || selectedInvoice.status === 'RECHAZADA') &&
+                (files.pdf || files.xml || selectedInvoice.preinvoice_url) &&
+                !preinvoiceRejected) {
+                // Si estaba en solicitud o rechazada, y ahora hay un archivo y NO está rechazada -> Pendiente
                 updates.status = 'PREFACTURA_PENDIENTE';
                 updates.is_preinvoice = true;
-            } else if ((selectedInvoice.status === 'PREFACTURA_CANDIDATA' || selectedInvoice.status === 'POR_TIMBRAR') && (files.facturaPdf || files.xml)) {
-                // If they uploading final invoice docs
-                updates.status = 'TIMBRADA';
             }
 
-            // Handle status rejection explicitly
+            // 2. Si la marcan como RECHAZADA explícitamente, pisa cualquier otro estado.
             if (preinvoiceRejected) {
                 updates.status = 'RECHAZADA';
-            } else if (selectedInvoice.status === 'RECHAZADA' && !preinvoiceRejected && preinvoiceAuthorized) {
-                updates.status = 'VALIDADA';
+            } else if (preinvoiceAuthorized) {
+                // 3. Si no está rechazada, y la autorizan: puede ser VALIDADA o brincar a TIMBRADA directo.
+
+                // ¿Están subiendo los archivos finales AHORA, o ya estaban cargados de antes?
+                const hasFinalFiles = files.facturaPdf || selectedInvoice.pdf_url || files.xml || selectedInvoice.xml_url;
+
+                if (hasFinalFiles) {
+                    updates.status = 'TIMBRADA';
+                } else if (selectedInvoice.status !== 'TIMBRADA') {
+                    // Si no tiene los archivos finales, y no era ya TIMBRADA, se queda en VALIDADA
+                    updates.status = 'VALIDADA';
+                    updates.validated_at = new Date().toISOString();
+                    updates.validated_by = userProfile?.id;
+                }
             }
 
             // 1. Upload Prefactura PDF
@@ -250,13 +258,115 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
         }
     };
 
+    const handleDelete = async (invoiceId: string) => {
+        if (!confirm('¿Estás seguro de que deseas eliminar esta factura? Esta acción no se puede deshacer y los archivos en el servidor quedarán huérfanos.')) return;
+
+        try {
+            const invoiceToDelete = invoices.find(inv => inv.id === invoiceId);
+
+            const { error } = await supabase
+                .from('invoices')
+                .delete()
+                .eq('id', invoiceId);
+
+            if (error) throw error;
+
+            // Revert quotation status if needed
+            if (invoiceToDelete?.quotation_id) {
+                const remaining = invoices.filter(inv => inv.quotation_id === invoiceToDelete.quotation_id && inv.id !== invoiceId);
+                if (remaining.length === 0) {
+                    await supabase.from('quotations').update({ request_direct_invoice: false, invoice_status: null }).eq('id', invoiceToDelete.quotation_id);
+                }
+            }
+
+            alert('Factura eliminada correctamente.');
+            fetchInvoices();
+        } catch (err: any) {
+            alert('Error al eliminar la factura: ' + err.message);
+        }
+    };
+
+    const handleCancelInvoice = async (invoiceId: string, quotationId?: string) => {
+        if (!confirm('¿Estás seguro de que deseas cancelar esta factura? La operación es irreversible y se generará una nueva solicitud de reposición para esta proforma.')) return;
+
+        try {
+            const { error } = await supabase
+                .from('invoices')
+                .update({ status: 'CANCELADA', status_sat: 'Cancelado' })
+                .eq('id', invoiceId);
+
+            if (error) throw error;
+
+            const invoiceToCancel = invoices.find(inv => inv.id === invoiceId) as any;
+
+            if (quotationId) {
+                // Actualizar el estado de la proforma a solicitada para reabrir el ciclo
+                await supabase.from('quotations').update({ invoice_status: 'solicitada' }).eq('id', quotationId);
+
+                // Inyectar un nuevo registro de Factura para reponerla
+                if (invoiceToCancel) {
+                    const newInvoice = {
+                        quotation_id: quotationId,
+                        organization_id: invoiceToCancel.organization_id || invoiceToCancel.organization?.id,
+                        amount_total: invoiceToCancel.amount_total || 0,
+                        internal_number: invoiceToCancel.quotations?.proforma_number?.toString() || 'S/N',
+                        rfc_receptor: invoiceToCancel.organization?.rfc || invoiceToCancel.rfc_receptor || 'S/N',
+                        rfc_emisor: invoiceToCancel.rfc_emisor || 'S/N',
+                        status: 'SOLICITUD'
+                    };
+                    await supabase.from('invoices').insert(newInvoice);
+                }
+            }
+
+            alert('Factura cancelada. Se ha generado una nueva solicitud en blanco para su reposición.');
+            fetchInvoices();
+        } catch (err: any) {
+            alert('Error al cancelar la factura: ' + err.message);
+        }
+    };
+
+    const handleDeleteFile = async (fileType: 'preinvoice_url' | 'pdf_url' | 'xml_url') => {
+        if (!confirm('¿Seguro que deseas eliminar este archivo? Tendrás que subir uno nuevo.')) return;
+
+        try {
+            setUploading(true);
+            const updates: any = {};
+            updates[fileType] = null;
+
+            // Si se borra la prefactura y estaba rechazada, la devolvemos a SOLICITUD para que vuelva a empezar el flujo azul.
+            if (fileType === 'preinvoice_url' && selectedInvoice.status === 'RECHAZADA') {
+                updates.status = 'SOLICITUD';
+                updates.preinvoice_authorized = false;
+                updates.preinvoice_comments = '';
+            } else if (fileType === 'pdf_url' && selectedInvoice.status === 'TIMBRADA') {
+                updates.status = 'VALIDADA';
+            }
+
+            const { error } = await supabase
+                .from('invoices')
+                .update(updates)
+                .eq('id', selectedInvoice.id);
+
+            if (error) throw error;
+
+            alert('Archivo eliminado correctamente.');
+            setSelectedInvoice({ ...selectedInvoice, [fileType]: null });
+            fetchInvoices();
+        } catch (err: any) {
+            alert('Error al eliminar el archivo: ' + err.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'SOLICITUD': return <Clock className="w-4 h-4 text-amber-500" />;
-            case 'PREFACTURA_PENDIENTE': return <FileText className="w-4 h-4 text-blue-500" />;
-            case 'EN_REVISION_VENDEDOR': return <AlertCircle className="w-4 h-4 text-amber-400" />;
-            case 'VALIDADA': return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
-            case 'TIMBRADA': return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
+            case 'PREFACTURA_PENDIENTE':
+            case 'EN_REVISION_VENDEDOR': return <FileText className="w-4 h-4 text-blue-500" />;
+            case 'VALIDADA':
+            case 'TIMBRADA': return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+            case 'TIMBRADA_INCOMPLETA': return <AlertTriangle className="w-4 h-4 text-orange-400" />;
             case 'CANCELADA': return <XCircle className="w-4 h-4 text-red-500" />;
             case 'RECHAZADA': return <XCircle className="w-4 h-4 text-red-400" />;
             default: return <FileCheck className="w-4 h-4 text-slate-400" />;
@@ -269,6 +379,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
             case 'PREFACTURA_PENDIENTE': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
             case 'VALIDADA':
             case 'TIMBRADA': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+            case 'TIMBRADA_INCOMPLETA': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
             case 'RECHAZADA':
             case 'CANCELADA': return 'bg-red-500/10 text-red-500 border-red-500/20';
             default: return 'bg-slate-500/10 text-slate-400 border-white/5';
@@ -355,347 +466,381 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                         No se encontraron registros en este estado.
                                     </td>
                                 </tr>
-                            ) : filteredInvoices.map((inv: any) => (
-                                <tr key={inv.id} className="hover:bg-white/5 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            {inv.isPending ? (
-                                                <button
-                                                    onClick={() => navigate(`/proformas/${inv.quotation_id}`)}
-                                                    className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
-                                                    title="Ir a Configurar Proforma"
-                                                >
-                                                    <FileEdit className="w-4 h-4" />
-                                                </button>
-                                            ) : (
-                                                inv.quotation_id && (
+                            ) : filteredInvoices.map((originalInv: any) => {
+                                // Parche de retrocompatibilidad visual y estado Incompleto:
+                                let displayStatus = originalInv.status;
+
+                                // Respetar estado CANCELADA (terminal) sin importar los archivos
+                                if (originalInv.status !== 'CANCELADA') {
+                                    if (originalInv.pdf_url && originalInv.xml_url) {
+                                        displayStatus = 'TIMBRADA';
+                                    } else if (originalInv.pdf_url || originalInv.xml_url) {
+                                        displayStatus = 'TIMBRADA_INCOMPLETA';
+                                    } else if (['VALIDADA', 'TIMBRADA'].includes(originalInv.status)) {
+                                        // Si la BD dice que está timbrada/validada pero no hay archivos, la forzamos a VALIDADA
+                                        displayStatus = 'VALIDADA';
+                                    }
+                                }
+
+                                const inv = { ...originalInv, status: displayStatus };
+
+                                return (
+                                    <tr key={inv.id} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                {inv.isPending ? (
                                                     <button
                                                         onClick={() => navigate(`/proformas/${inv.quotation_id}`)}
-                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                        title="Abrir Proforma Original"
+                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
+                                                        title="Ir a Configurar Proforma"
                                                     >
                                                         <FileEdit className="w-4 h-4" />
                                                     </button>
-                                                )
-                                            )}
-                                            <div>
-                                                <div className="font-bold text-white leading-tight font-mono text-sm max-w-[150px] truncate">
-                                                    {(() => {
-                                                        const orgPrefix = inv.organization?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                        const dateStr = inv.quotations?.created_at ? new Date(inv.quotations.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '') : '000000';
-                                                        const folNum = (inv.quotations?.proforma_number || 1).toString().padStart(2, '0');
-                                                        return `${orgPrefix}-${dateStr}-${folNum}`;
-                                                    })()}
-                                                </div>
-                                                <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[150px]">
-                                                    {inv.organization?.name || 'Org Desconocida'}
-                                                </div>
-                                                {inv.internal_number && inv.internal_number !== 'SOLICITUD_S/F' && (
-                                                    <div className="text-[10px] font-bold text-blue-400 mt-1">
-                                                        Folio Fiscal: {inv.internal_number}
-                                                    </div>
+                                                ) : (
+                                                    inv.quotation_id && (
+                                                        <button
+                                                            onClick={() => navigate(`/proformas/${inv.quotation_id}`)}
+                                                            className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            title="Abrir Proforma Original"
+                                                        >
+                                                            <FileEdit className="w-4 h-4" />
+                                                        </button>
+                                                    )
                                                 )}
+                                                <div>
+                                                    <div className="font-bold text-white leading-tight font-mono text-sm max-w-[150px] truncate">
+                                                        {(() => {
+                                                            const orgPrefix = inv.organization?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                            const dateStr = inv.quotations?.created_at ? new Date(inv.quotations.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '') : '000000';
+                                                            const folNum = (inv.quotations?.proforma_number || 1).toString().padStart(2, '0');
+                                                            return `${orgPrefix}-${dateStr}-${folNum}`;
+                                                        })()}
+                                                    </div>
+                                                    <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[150px]">
+                                                        {inv.organization?.name || 'Org Desconocida'}
+                                                    </div>
+                                                    {inv.internal_number && inv.internal_number !== 'SOLICITUD_S/F' && (
+                                                        <div className="text-[10px] font-bold text-blue-400 mt-1">
+                                                            Folio Interno: {inv.internal_number}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="font-bold text-emerald-500">
-                                            {inv.amount_total?.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex gap-1.5">
-                                            <div title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.status === 'PREFACTURA_PENDIENTE' ? 'Prefactura Pendiente' : 'Prefactura Autorizada')) : 'Sin Prefactura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.status === 'PREFACTURA_PENDIENTE' ? 'bg-blue-500' : 'bg-emerald-500')) : 'bg-yellow-500'}`}>PF</div>
-                                            <div title={inv.pdf_url ? (inv.status === 'CANCELADA' ? 'Factura Cancelada' : 'Factura Cargada') : 'Sin Factura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.pdf_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>F</div>
-                                            <div title={inv.xml_url ? (inv.status === 'CANCELADA' ? 'XML Cancelado' : 'XML Cargado') : 'Sin XML'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.xml_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>X</div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${getStatusColor(inv.status)}`}>
-                                            {getStatusIcon(inv.status)}
-                                            {inv.status?.replace(/_/g, ' ')}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-xs text-slate-400">
-                                            {new Date(inv.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3 justify-center">
-                                            {inv.isPending ? (
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="font-bold text-emerald-500">
+                                                {inv.amount_total?.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex gap-1.5">
+                                                <div title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'Prefactura Autorizada' : 'Prefactura Pendiente')) : 'Sin Prefactura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'bg-emerald-500' : 'bg-blue-500')) : 'bg-yellow-500'}`}>PF</div>
+                                                <div title={inv.pdf_url ? (inv.status === 'CANCELADA' ? 'Factura Cancelada' : 'Factura Cargada') : 'Sin Factura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.pdf_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>F</div>
+                                                <div title={inv.xml_url ? (inv.status === 'CANCELADA' ? 'XML Cancelado' : 'XML Cargado') : 'Sin XML'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.xml_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>X</div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${getStatusColor(inv.status)}`}>
+                                                {getStatusIcon(inv.status)}
+                                                {inv.status?.replace(/_/g, ' ')}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-xs text-slate-400">
+                                                {new Date(inv.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3 justify-center">
                                                 <button
-                                                    className="p-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg transition-colors cursor-not-allowed opacity-50"
-                                                    title="Sube evidencia desde la Proforma o una vez creada la factura"
+                                                    onClick={() => {
+                                                        setSelectedInvoice(inv);
+                                                        setPreinvoiceComments(inv.preinvoice_comments || '');
+                                                        setInvoiceComments(inv.invoice_comments || '');
+                                                        setPreinvoiceAuthorized(inv.preinvoice_authorized || false);
+                                                        setPreinvoiceRejected(inv.status === 'RECHAZADA');
+                                                        setShowUploadModal(true);
+                                                        setFiles({ pdf: null, xml: null, facturaPdf: null });
+                                                    }}
+                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    title="Gestionar Archivos"
                                                 >
-                                                    <Upload size={18} />
+                                                    <Upload className="w-4 h-4" />
                                                 </button>
-                                            ) : (
-                                                <>
+
+                                                {(inv.status === 'PREFACTURA_PENDIENTE' || inv.status === 'EN_REVISION_VENDEDOR') && userProfile?.role === 'ADMIN' && (
+                                                    <button
+                                                        onClick={() => handleValidate(inv.id)}
+                                                        className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all"
+                                                        title="Validar Prefactura"
+                                                    >
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+
+                                                {inv.status === 'VALIDADA' && (
+                                                    <span className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg cursor-help shrink-0" title="Validado Pospago">
+                                                        <CheckCircle2 size={18} />
+                                                    </span>
+                                                )}
+
+                                                {(inv.pdf_url || inv.xml_url) && (
                                                     <button
                                                         onClick={() => {
-                                                            setSelectedInvoice(inv);
-                                                            setPreinvoiceComments(inv.preinvoice_comments || '');
-                                                            setInvoiceComments(inv.invoice_comments || '');
-                                                            setPreinvoiceAuthorized(inv.preinvoice_authorized || false);
-                                                            setPreinvoiceRejected(inv.status === 'RECHAZADA');
-                                                            setShowUploadModal(true);
-                                                            setFiles({ pdf: null, xml: null, facturaPdf: null });
+                                                            // Handle view details optionally
                                                         }}
-                                                        className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
-                                                        title="Gestionar Archivos"
+                                                        className="p-1.5 bg-slate-500/10 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                                        title="Ver Detalles"
                                                     >
-                                                        <Upload className="w-4 h-4" />
+                                                        <Eye size={18} />
                                                     </button>
+                                                )}
 
-                                                    {(inv.status === 'PREFACTURA_PENDIENTE' || inv.status === 'EN_REVISION_VENDEDOR') && userProfile?.role === 'ADMIN' && (
-                                                        <button
-                                                            onClick={() => handleValidate(inv.id)}
-                                                            className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all"
-                                                            title="Validar Prefactura"
-                                                        >
-                                                            <CheckCircle2 className="w-4 h-4" />
-                                                        </button>
-                                                    )}
-
-                                                    {inv.status === 'VALIDADA' && (
-                                                        <span className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg cursor-help shrink-0" title="Validado Pospago">
-                                                            <CheckCircle2 size={18} />
-                                                        </span>
-                                                    )}
-
-                                                    {(inv.pdf_url || inv.xml_url) && (
-                                                        <button
-                                                            onClick={() => {
-                                                                // Handle view details optionally
-                                                            }}
-                                                            className="p-1.5 bg-slate-500/10 text-slate-400 hover:text-white rounded-lg transition-colors"
-                                                            title="Ver Detalles"
-                                                        >
-                                                            <Eye size={18} />
-                                                        </button>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                {userProfile?.role === 'ADMIN' && !['VALIDADA', 'TIMBRADA', 'TIMBRADA_INCOMPLETA'].includes(inv.status) && (
+                                                    <button
+                                                        onClick={() => handleDelete(inv.id)}
+                                                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                        title="Eliminar Registro (Físico)"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                                {['VALIDADA', 'TIMBRADA', 'TIMBRADA_INCOMPLETA'].includes(inv.status) && (
+                                                    <button
+                                                        onClick={() => handleCancelInvoice(inv.id, inv.quotation_id)}
+                                                        className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-500/10 rounded-lg transition-all"
+                                                        title="Cancelar Factura (Reposición)"
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </div>
 
             {/* MODAL DE CARGA */}
-            {showUploadModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-blue-500/10">
-                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-blue-600/10 to-transparent">
-                            <div>
-                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Upload className="text-blue-500 w-5 h-5" />
-                                    Documentación de Facturación
-                                </h3>
-                                <p className="text-xs text-slate-400 mt-1">Sube la documentación y añade comentarios al proceso.</p>
-                            </div>
-                            <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-white transition-colors">&times;</button>
-                        </div>
-
-                        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                            <div className="space-y-6">
-                                {/* SECCIÓN PREFACTURA */}
-                                <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                        <FileText className="w-4 h-4 text-emerald-500" />
-                                        1. Prefactura
-                                    </h4>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Prefactura)</label>
-                                        {selectedInvoice?.preinvoice_url && !files.pdf ? (
-                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
-                                                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                                                    <FileCheck size={16} /> Archivo Cargado
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
-                                                <input
-                                                    type="file"
-                                                    accept=".pdf"
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                    onChange={(e) => setFiles(prev => ({ ...prev, pdf: e.target.files?.[0] || null }))}
-                                                />
-                                                <div className="text-center">
-                                                    {files.pdf ? (
-                                                        <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
-                                                            <FileCheck size={16} /> {files.pdf.name}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
-                                                            <Upload size={20} className="text-slate-600" />
-                                                            Sube la prefactura en PDF
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios (Prefactura)</label>
-                                        <textarea
-                                            value={preinvoiceComments}
-                                            onChange={(e) => setPreinvoiceComments(e.target.value)}
-                                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
-                                            placeholder="Añade observaciones sobre la prefactura..."
-                                            rows={2}
-                                        />
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2">
-                                        <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors flex-1 w-full ${preinvoiceAuthorized ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-900 border-white/5 hover:bg-slate-800'}`}
-                                            onClick={() => {
-                                                setPreinvoiceAuthorized(!preinvoiceAuthorized);
-                                                if (!preinvoiceAuthorized) setPreinvoiceRejected(false);
-                                            }}>
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preinvoiceAuthorized ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/20 text-transparent'}`}>
-                                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                            </div>
-                                            <span className={`text-sm font-medium ${preinvoiceAuthorized ? 'text-emerald-400' : 'text-slate-300'}`}>Prefactura Autorizada</span>
-                                        </div>
-
-                                        <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors flex-1 w-full ${preinvoiceRejected ? 'bg-red-500/10 border-red-500/30' : 'bg-slate-900 border-white/5 hover:bg-slate-800'}`}
-                                            onClick={() => {
-                                                setPreinvoiceRejected(!preinvoiceRejected);
-                                                if (!preinvoiceRejected) setPreinvoiceAuthorized(false);
-                                            }}>
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preinvoiceRejected ? 'bg-red-500 border-red-500 text-white' : 'border-white/20 text-transparent'}`}>
-                                                <XCircle className="w-3.5 h-3.5" />
-                                            </div>
-                                            <span className={`text-sm font-medium ${preinvoiceRejected ? 'text-red-400' : 'text-slate-300'}`}>Prefactura Rechazada</span>
-                                        </div>
-                                    </div>
+            {
+                showUploadModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-blue-500/10">
+                            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-blue-600/10 to-transparent">
+                                <div>
+                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <Upload className="text-blue-500 w-5 h-5" />
+                                        Documentación de Facturación
+                                    </h3>
+                                    <p className="text-xs text-slate-400 mt-1">Sube la documentación y añade comentarios al proceso.</p>
                                 </div>
-
-                                {/* SECCIÓN FACTURA TIMBRADA */}
-                                <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                        <FileCheck className="w-4 h-4 text-blue-500" />
-                                        2. Factura Timbrada
-                                    </h4>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Factura Final)</label>
-                                        {selectedInvoice?.pdf_url && !files.facturaPdf ? (
-                                            <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl">
-                                                <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
-                                                    <FileCheck size={16} /> Archivo Cargado
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.facturaPdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
-                                                <input
-                                                    type="file"
-                                                    accept=".pdf"
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                    onChange={(e) => setFiles(prev => ({ ...prev, facturaPdf: e.target.files?.[0] || null }))}
-                                                />
-                                                <div className="text-center">
-                                                    {files.facturaPdf ? (
-                                                        <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
-                                                            <FileCheck size={16} /> {files.facturaPdf.name}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
-                                                            <Upload size={20} className="text-slate-600" />
-                                                            Sube la factura timbrada (PDF)
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios (Factura)</label>
-                                        <textarea
-                                            value={invoiceComments}
-                                            onChange={(e) => setInvoiceComments(e.target.value)}
-                                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
-                                            placeholder="Añade observaciones sobre la factura final..."
-                                            rows={2}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* SECCIÓN XML */}
-                                <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                        <FileText className="w-4 h-4 text-purple-500" />
-                                        3. Archivo XML
-                                    </h4>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo XML (CFDI)</label>
-                                        {selectedInvoice?.xml_url && !files.xml ? (
-                                            <div className="flex items-center justify-between bg-purple-500/10 border border-purple-500/20 p-3 rounded-xl">
-                                                <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
-                                                    <FileCheck size={16} /> Archivo XML Cargado
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.xml ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
-                                                <input
-                                                    type="file"
-                                                    accept=".xml"
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                    onChange={(e) => setFiles(prev => ({ ...prev, xml: e.target.files?.[0] || null }))}
-                                                />
-                                                <div className="text-center">
-                                                    {files.xml ? (
-                                                        <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
-                                                            <FileCheck size={16} /> {files.xml.name}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
-                                                            <FileText size={20} className="text-slate-600" />
-                                                            Arrastra o selecciona el XML
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-white transition-colors">&times;</button>
                             </div>
 
-                            <div className="flex gap-3 pt-6 border-t border-white/5">
-                                <button
-                                    onClick={() => setShowUploadModal(false)}
-                                    className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl transition-all"
-                                >
-                                    Cerrar
-                                </button>
-                                <button
-                                    disabled={uploading}
-                                    onClick={handleUpload}
-                                    className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading
-                                        ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                        : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/20'
-                                        }`}
-                                >                            {uploading ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                                        Subiendo...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload size={16} />
-                                        Subir y Notificar
-                                    </>
-                                )}
-                                </button>
+                            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                                <div className="space-y-6">
+                                    {/* SECCIÓN PREFACTURA */}
+                                    <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <FileText className="w-4 h-4 text-emerald-500" />
+                                            1. Prefactura
+                                        </h4>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Prefactura)</label>
+                                            {selectedInvoice?.preinvoice_url && !files.pdf ? (
+                                                <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+                                                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> Archivo Cargado
+                                                    </div>
+                                                    <button onClick={() => handleDeleteFile('preinvoice_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                </div>
+                                            ) : (
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        onChange={(e) => setFiles(prev => ({ ...prev, pdf: e.target.files?.[0] || null }))}
+                                                    />
+                                                    <div className="text-center">
+                                                        {files.pdf ? (
+                                                            <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                                <FileCheck size={16} /> {files.pdf.name}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                                <Upload size={20} className="text-slate-600" />
+                                                                Sube la prefactura en PDF
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios (Prefactura)</label>
+                                            <textarea
+                                                value={preinvoiceComments}
+                                                onChange={(e) => setPreinvoiceComments(e.target.value)}
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
+                                                placeholder="Añade observaciones sobre la prefactura..."
+                                                rows={2}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2">
+                                            <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors flex-1 w-full ${preinvoiceAuthorized ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-900 border-white/5 hover:bg-slate-800'}`}
+                                                onClick={() => {
+                                                    const newVal = !preinvoiceAuthorized;
+                                                    setPreinvoiceAuthorized(newVal);
+                                                    if (newVal) setPreinvoiceRejected(false);
+                                                }}>
+                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preinvoiceAuthorized ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/20 text-transparent'}`}>
+                                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                                </div>
+                                                <span className={`text-sm font-medium ${preinvoiceAuthorized ? 'text-emerald-400' : 'text-slate-300'}`}>Prefactura Autorizada</span>
+                                            </div>
+
+                                            <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors flex-1 w-full ${preinvoiceRejected ? 'bg-red-500/10 border-red-500/30' : 'bg-slate-900 border-white/5 hover:bg-slate-800'}`}
+                                                onClick={() => {
+                                                    const newVal = !preinvoiceRejected;
+                                                    setPreinvoiceRejected(newVal);
+                                                    if (newVal) setPreinvoiceAuthorized(false);
+                                                }}>
+                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preinvoiceRejected ? 'bg-red-500 border-red-500 text-white' : 'border-white/20 text-transparent'}`}>
+                                                    <XCircle className="w-3.5 h-3.5" />
+                                                </div>
+                                                <span className={`text-sm font-medium ${preinvoiceRejected ? 'text-red-400' : 'text-slate-300'}`}>Prefactura Rechazada</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* SECCIÓN FACTURA TIMBRADA */}
+                                    <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <FileCheck className="w-4 h-4 text-blue-500" />
+                                            2. Factura Timbrada
+                                        </h4>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Factura Final)</label>
+                                            {selectedInvoice?.pdf_url && !files.facturaPdf ? (
+                                                <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl">
+                                                    <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> Archivo Cargado
+                                                    </div>
+                                                    <button onClick={() => handleDeleteFile('pdf_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                </div>
+                                            ) : (
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.facturaPdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        onChange={(e) => setFiles(prev => ({ ...prev, facturaPdf: e.target.files?.[0] || null }))}
+                                                    />
+                                                    <div className="text-center">
+                                                        {files.facturaPdf ? (
+                                                            <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                                <FileCheck size={16} /> {files.facturaPdf.name}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                                <Upload size={20} className="text-slate-600" />
+                                                                Sube la factura timbrada (PDF)
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios (Factura)</label>
+                                            <textarea
+                                                value={invoiceComments}
+                                                onChange={(e) => setInvoiceComments(e.target.value)}
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
+                                                placeholder="Añade observaciones sobre la factura final..."
+                                                rows={2}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* SECCIÓN XML */}
+                                    <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <FileText className="w-4 h-4 text-purple-500" />
+                                            3. Archivo XML
+                                        </h4>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo XML (CFDI)</label>
+                                            {selectedInvoice?.xml_url && !files.xml ? (
+                                                <div className="flex items-center justify-between bg-purple-500/10 border border-purple-500/20 p-3 rounded-xl">
+                                                    <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> Archivo XML Cargado
+                                                    </div>
+                                                    <button onClick={() => handleDeleteFile('xml_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                </div>
+                                            ) : (
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.xml ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                    <input
+                                                        type="file"
+                                                        accept=".xml"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                        onChange={(e) => setFiles(prev => ({ ...prev, xml: e.target.files?.[0] || null }))}
+                                                    />
+                                                    <div className="text-center">
+                                                        {files.xml ? (
+                                                            <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                                <FileCheck size={16} /> {files.xml.name}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                                <FileText size={20} className="text-slate-600" />
+                                                                Arrastra o selecciona el XML
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3 pt-6 border-t border-white/5">
+                                    <button
+                                        onClick={() => setShowUploadModal(false)}
+                                        className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl transition-all"
+                                    >
+                                        Cerrar
+                                    </button>
+                                    <button
+                                        disabled={uploading}
+                                        onClick={handleUpload}
+                                        className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading
+                                            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                                            : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/20'
+                                            }`}
+                                    >                            {uploading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                            Subiendo...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload size={16} />
+                                            Subir y Notificar
+                                        </>
+                                    )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

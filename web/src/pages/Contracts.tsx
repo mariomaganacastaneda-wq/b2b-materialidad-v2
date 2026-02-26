@@ -9,7 +9,8 @@ import {
     Eye,
     Upload,
     FileEdit,
-    FileText
+    FileText,
+    ExternalLink
 } from 'lucide-react';
 
 interface ContractsProps {
@@ -116,13 +117,32 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
 
             if (pError) throw pError;
 
-            // Update Contract record
-            const { error: uError } = await supabase
-                .from('contracts')
-                .update({ file_url: pData.path, is_signed_vendor: true }) // Assuming vendor upload
-                .eq('id', selectedContract.id);
+            if (selectedContract.isPending) {
+                // Calculate SHA-256 hash for the file as required by the schema
+                const hashBuffer = await crypto.subtle.digest('SHA-256', await files.pdf.arrayBuffer());
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const sha256_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            if (uError) throw uError;
+                const { error: iError } = await supabase
+                    .from('contracts')
+                    .insert({
+                        organization_id: selectedContract.organizations.id,
+                        quotation_id: selectedContract.quotation_id,
+                        file_url: pData.path,
+                        sha256_hash: sha256_hash,
+                        is_signed_vendor: true
+                    });
+
+                if (iError) throw iError;
+            } else {
+                // Update existing Contract record
+                const { error: uError } = await supabase
+                    .from('contracts')
+                    .update({ file_url: pData.path, is_signed_vendor: true }) // Assuming vendor upload
+                    .eq('id', selectedContract.id);
+
+                if (uError) throw uError;
+            }
 
             // Update Quotation status
             const { error: qError } = await supabase
@@ -164,6 +184,21 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
             fetchContracts();
         } catch (err: any) {
             alert('Error al validar: ' + err.message);
+        }
+    };
+
+    const handleViewContract = async (fileUrl: string) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('contracts')
+                .createSignedUrl(fileUrl, 3600);
+
+            if (error) throw error;
+            if (data?.signedUrl) {
+                window.open(data.signedUrl, '_blank');
+            }
+        } catch (err: any) {
+            alert('Error al abrir el contrato: ' + err.message);
         }
     };
 
@@ -315,8 +350,18 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                                 className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-all"
                                                 title="Ir a Proforma Maestra"
                                             >
-                                                <Eye className="w-4 h-4" />
+                                                <ExternalLink className="w-4 h-4" />
                                             </button>
+
+                                            {c.file_url && (
+                                                <button
+                                                    onClick={() => handleViewContract(c.file_url)}
+                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    title="Ver Contrato PDF"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            )}
 
                                             {(!c.quotations?.contract_status || c.quotations.contract_status === 'solicitado') && (
                                                 <button

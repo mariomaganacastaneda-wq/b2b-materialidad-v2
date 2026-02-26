@@ -23,20 +23,34 @@ const getStatusColor = (status: string | null | undefined, isProforma: boolean =
 
     const lower = status.toLowerCase();
 
-    if (['aceptada', 'completada', 'emitida', 'timbrada', 'firmado', 'entregada', 'procesado', 'procesada', 'validada'].includes(lower)) {
+    // Azul para Facturas timbradas o emitidas
+    if (['emitida', 'timbrada'].includes(lower)) {
+        return "text-blue-400 border-blue-500/40 bg-blue-500/20";
+    }
+
+    // Púrpura para Prefacturas
+    if (lower.includes('prefactura')) {
+        return "text-purple-400 border-purple-500/40 bg-purple-500/20";
+    }
+
+    // Verde para flujos completados o aprobados
+    if (['aceptada', 'completada', 'firmado', 'entregada', 'procesado', 'procesada', 'validada'].includes(lower)) {
         return "text-emerald-400 border-emerald-500/40 bg-emerald-500/20";
     }
 
-    if (['en_revision', 'en_proceso', 'en_captura', 'negociando', 'enviada', 'procesando', 'prefactura_candidata', 'prefactura_pendiente', 'en_revision_vendedor', 'por_timbrar'].includes(lower)) {
+    // Ambar para estados intermedios y revisiones
+    if (['en_revision', 'en_proceso', 'en_captura', 'negociando', 'enviada', 'procesando', 'en_revision_vendedor', 'por_timbrar', 'timbrada_incompleta'].includes(lower)) {
         return "text-amber-400 border-amber-500/40 bg-amber-500/20";
     }
 
+    // Rosa/Indigo para solicitudes
     if (['solicitada', 'solicitado', 'requerida', 'requerido', 'solicitud', 'boceto'].includes(lower)) {
-        return "text-rose-400 border-rose-500/30 bg-rose-500/10";
+        return "text-indigo-400 border-indigo-500/40 bg-indigo-500/20";
     }
 
+    // Rojo para cancelados o rechazados
     if (['cancelada', 'rechazada', 'expirada'].includes(lower)) {
-        return "text-red-500 border-red-500/30 bg-red-500/10";
+        return "text-red-500 border-red-500/30 bg-red-500/10 line-through";
     }
 
     return null;
@@ -62,7 +76,6 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
                     organizations(name, rfc),
                     contracts(id),
                     invoices(id, status, evidence(id)),
-                    purchase_orders(id),
                     quotation_payments(amount),
                     invoice_status,
                     contract_status,
@@ -100,7 +113,7 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
     });
 
     const getMaterialityStatus = (q: any) => {
-        const hasPO = q.purchase_orders !== null;
+        const hasPO = false; // Relación eliminada momentáneamente
 
         const contractsList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
         const invoicesList = Array.isArray(q.invoices) ? q.invoices : (q.invoices ? [q.invoices] : []);
@@ -113,10 +126,18 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
         }) || q.evidence_status === 'completada' || q.evidence_status === 'entregada' || q.req_evidence;
         const hasQuotation = q.req_quotation || Boolean(q.related_quotation_status) || q.status === 'APROBADA' || invoicesList.length > 0;
 
-        let computedInvoiceStatus = q.invoice_status;
-        if (!computedInvoiceStatus && invoicesList.length > 0) {
-            computedInvoiceStatus = invoicesList[0].status;
-        }
+        const getBestInvoiceStatus = () => {
+            if (invoicesList.length === 0) return q.invoice_status;
+            // Sort by updated_at descending to get the most recently modified invoice
+            const sorted = [...invoicesList].sort((a: any, b: any) => {
+                const dateA = new Date(a.updated_at || a.created_at || 0).getTime();
+                const dateB = new Date(b.updated_at || b.created_at || 0).getTime();
+                return dateB - dateA;
+            });
+            return sorted[0].status;
+        };
+
+        const computedInvoiceStatus = getBestInvoiceStatus();
 
         let computedContractStatus = q.contract_status;
         if (!computedContractStatus && contractsList.length > 0) {
@@ -151,11 +172,11 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
                 </div>
 
                 <a
-                    href="/cotizaciones/nueva"
+                    href="/proformas/nueva"
                     className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/30 hover:-translate-y-0.5"
                     onClick={(e) => {
                         e.preventDefault();
-                        window.history.pushState({}, '', '/cotizaciones/nueva');
+                        window.history.pushState({}, '', '/proformas/nueva');
                         window.dispatchEvent(new PopStateEvent('popstate'));
                     }}
                 >

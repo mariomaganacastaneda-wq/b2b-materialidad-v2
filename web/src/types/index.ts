@@ -35,6 +35,7 @@ export interface Quotation {
 
 export interface Invoice {
     id: string;
+    quotation_id?: string;
     internal_number: string;
     amount_total: number;
     status: 'SOLICITUD' | 'PREFACTURA_PENDIENTE' | 'EN_REVISION_VENDEDOR' | 'VALIDADA' | 'RECHAZADA' | 'TIMBRADA' | 'CANCELADA';

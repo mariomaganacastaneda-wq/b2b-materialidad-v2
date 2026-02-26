@@ -1,314 +1,437 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import {
-    Check,
-    Trash2,
-    AlertCircle,
-    Clock,
-    Printer,
-    Edit3,
-    FileSearch,
-    Plus
+    Plus,
+    Search,
+    ArrowRight,
+    SearchX,
+    FileEdit
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-interface MaterialityStep {
-    id: string;
-    description: string;
-    amount_total: number;
-    status: string;
-    proforma_number?: string;
-    total_proformas?: number;
-    created_at: string;
-    // Relaciones para estados
-    contract_id?: string;
-    invoice_id?: string;
-    has_evidence?: boolean;
-    consecutive_id?: number;
-    req_quotation?: boolean;
-    req_evidence?: boolean;
-    is_contract_required?: boolean;
-    request_direct_invoice?: boolean;
-    invoice_status?: string | null;
-    contract_status?: string | null;
-    evidence_status?: string | null;
-    related_quotation_status?: string | null;
-}
+// Material Symbols mapping
+const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
+    <span className={`material-symbols-outlined ${className}`} style={{ fontSize: 'inherit' }}>{name}</span>
+);
+
+const getStatusColor = (status: string | null | undefined, isProforma: boolean = false) => {
+    if (isProforma) {
+        return "text-emerald-400 border-emerald-500/40 bg-emerald-500/20";
+    }
+
+    if (!status) return null;
+
+    const lower = status.toLowerCase();
+
+    if (['aceptada', 'completada', 'emitida', 'timbrada', 'firmado', 'entregada', 'procesado', 'procesada', 'validada'].includes(lower)) {
+        return "text-emerald-400 border-emerald-500/40 bg-emerald-500/20";
+    }
+
+    if (['en_revision', 'en_proceso', 'en_captura', 'negociando', 'enviada', 'procesando', 'prefactura_candidata', 'prefactura_pendiente', 'en_revision_vendedor', 'por_timbrar'].includes(lower)) {
+        return "text-amber-400 border-amber-500/40 bg-amber-500/20";
+    }
+
+    if (['solicitada', 'solicitado', 'requerida', 'requerido', 'solicitud', 'boceto'].includes(lower)) {
+        return "text-rose-400 border-rose-500/30 bg-rose-500/10";
+    }
+
+    if (['cancelada', 'rechazada', 'expirada'].includes(lower)) {
+        return "text-red-500 border-red-500/30 bg-red-500/10";
+    }
+
+    return null;
+};
 
 const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
-    const [loading, setLoading] = useState(true);
-    const [proformas, setProformas] = useState<MaterialityStep[]>([]);
-    const [totalSystemProformas, setTotalSystemProformas] = useState(0);
     const navigate = useNavigate();
+    const [quotations, setQuotations] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
 
-    useEffect(() => {
-        fetchGlobalStats();
-        if (selectedOrg?.id) {
-            fetchProformas();
-        }
-    }, [selectedOrg]);
-
-    const fetchGlobalStats = async () => {
-        const { count, error } = await supabase
-            .from('quotations')
-            .select('*', { count: 'exact', head: true });
-        if (!error && count !== null) setTotalSystemProformas(count);
-    };
-
-    const fetchProformas = async () => {
-        setLoading(true);
+    const fetchQuotations = async () => {
+        if (!selectedOrg?.id) return;
         try {
-            // Consulta compleja para traer proformas y sus estados vinculados
+            setLoading(true);
+            // Query with joins to check materiality status
             const { data, error } = await supabase
                 .from('quotations')
                 .select(`
-                    id, 
-                    description, 
-                    amount_total, 
-                    status, 
-                    proforma_number, 
-                    total_proformas, 
-                    created_at,
-                    consecutive_id,
-                    req_quotation,
-                    req_evidence,
-                    is_contract_required,
-                    request_direct_invoice,
+                    *,
+                    organizations(name, rfc),
+                    contracts(id),
+                    invoices(id, status, evidence(id)),
+                    quotation_payments(amount),
                     invoice_status,
                     contract_status,
                     evidence_status,
                     related_quotation_status,
-                    contracts (id),
-                    invoices (id)
+                    is_contract_required,
+                    request_direct_invoice,
+                    req_quotation,
+                    req_evidence
                 `)
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            const mappedData = data.map((q: any) => ({
-                id: q.id,
-                description: q.description || 'Sin descripción',
-                amount_total: q.amount_total,
-                status: q.status,
-                proforma_number: q.proforma_number,
-                total_proformas: q.total_proformas,
-                created_at: q.created_at,
-                contract_id: q.contracts?.[0]?.id,
-                invoice_id: q.invoices?.[0]?.id,
-                has_evidence: false,
-                consecutive_id: q.consecutive_id,
-                req_quotation: q.req_quotation,
-                req_evidence: q.req_evidence,
-                is_contract_required: q.is_contract_required,
-                request_direct_invoice: q.request_direct_invoice,
-                invoice_status: q.invoice_status,
-                contract_status: q.contract_status,
-                evidence_status: q.evidence_status,
-                related_quotation_status: q.related_quotation_status
-            }));
-
-            setProformas(mappedData);
-        } catch (err) {
-            console.error('Error fetching proformas for board:', err);
+            setQuotations(data || []);
+        } catch (err: any) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar esta proforma? Esta acción no se puede deshacer.')) return;
+    useEffect(() => {
+        fetchQuotations();
+    }, [selectedOrg?.id]);
 
-        try {
-            // El borrado en cascada debería manejar los items si está configurado en DB, 
-            // pero si no, borramos ítems primero por precaución.
-            await supabase.from('quotation_items').delete().eq('quotation_id', id);
-            const { error } = await supabase.from('quotations').delete().eq('id', id);
+    const filtered = quotations.filter(q => {
+        const matchesSearch =
+            q.description?.toLowerCase().includes(search.toLowerCase()) ||
+            q.organizations?.name?.toLowerCase().includes(search.toLowerCase()) ||
+            q.consecutive_id?.toString().includes(search);
 
-            if (error) throw error;
+        const matchesStatus = statusFilter === 'ALL' || q.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
 
-            setProformas(prev => prev.filter(p => p.id !== id));
-            fetchGlobalStats();
-        } catch (err) {
-            console.error('Error deleting proforma:', err);
-            alert('No se pudo eliminar la proforma.');
+    const getMaterialityStatus = (q: any) => {
+        const hasPO = false; // Relación eliminada momentáneamente
+
+        const contractsList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
+        const invoicesList = Array.isArray(q.invoices) ? q.invoices : (q.invoices ? [q.invoices] : []);
+
+        const hasContract = contractsList.length > 0 || q.contract_status === 'firmado' || q.contract_status === 'completado' || q.is_contract_required;
+        const hasInvoice = invoicesList.length > 0 || q.invoice_status === 'emitida' || q.invoice_status === 'timbrada' || q.request_direct_invoice;
+        const hasEvidence = invoicesList.some((i: any) => {
+            const evList = Array.isArray(i.evidence) ? i.evidence : (i.evidence ? [i.evidence] : []);
+            return evList.length > 0;
+        }) || q.evidence_status === 'completada' || q.evidence_status === 'entregada' || q.req_evidence;
+        const hasQuotation = q.req_quotation || Boolean(q.related_quotation_status) || q.status === 'APROBADA' || invoicesList.length > 0;
+
+        let computedInvoiceStatus = q.invoice_status;
+        if (!computedInvoiceStatus && invoicesList.length > 0) {
+            computedInvoiceStatus = invoicesList[0].status;
         }
+
+        let computedContractStatus = q.contract_status;
+        if (!computedContractStatus && contractsList.length > 0) {
+            computedContractStatus = contractsList[0].file_url ? 'firmado' : 'en_revision';
+        }
+
+        // Fallbacks para statusText (si fue requerido pero no tiene status = SOLICITADO)
+        const finalContractStatus = computedContractStatus || (q.is_contract_required ? 'solicitada' : null);
+        const finalInvoiceStatus = computedInvoiceStatus || (q.request_direct_invoice ? 'solicitada' : null);
+        const finalEvidenceStatus = q.evidence_status || (q.req_evidence ? 'solicitada' : null);
+        const finalQuotationStatus = q.related_quotation_status || (q.req_quotation ? 'solicitada' : null);
+
+        // Calcular porcentaje de pago
+        const totalPaid = (q.quotation_payments || []).reduce((acc: number, p: any) => acc + (p.amount || 0), 0);
+        const paymentPercentage = q.amount_total > 0 ? Math.min(Math.round((totalPaid / q.amount_total) * 100), 100) : 0;
+
+        return { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus };
     };
 
-    const StatusBadge = ({ active, label, onClick, required = true, statusText }: { active: boolean, label: string, onClick?: () => void, required?: boolean, statusText?: string | null }) => (
-        <div
-            onClick={onClick}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 ${onClick ? 'cursor-pointer hover:scale-105' : 'cursor-default'} ${active ? 'opacity-100' : required ? 'opacity-40' : 'opacity-15'}`}
-        >
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${active ? 'bg-cyan-600 shadow-[0_0_15px_rgba(8,145,178,0.3)]' : !required ? 'bg-slate-100 border border-dashed border-slate-300' : 'bg-slate-200'}`}>
-                {active ? <Check size={18} className="text-white" strokeWidth={3} /> : !required ? <Clock size={16} className="text-slate-300" /> : <Clock size={18} className="text-slate-500" />}
-            </div>
-            <div className="flex flex-col items-center">
-                <span className={`text-[9px] font-black tracking-widest uppercase ${active ? 'text-cyan-700' : 'text-slate-400'}`}>
-                    {label}
-                    {!required && active && <span className="ml-1 text-[7px] bg-slate-100 px-1 rounded text-slate-400">OPT</span>}
-                </span>
-                {statusText && required !== false && (
-                    <span className={`mt-0.5 text-[7px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${active ? 'bg-cyan-50 text-cyan-600 border border-cyan-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
-                        {statusText}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-
     return (
-        <div className="fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-slate-900">
-            <div className="flex justify-between items-end mb-8 gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tight">Tablero de Materialidad</h1>
-                    <div className="flex items-center gap-3">
-                        <p className="text-sm text-slate-500 font-medium text-slate-900">Ciclo de vida de servicios y cumplimiento fiscal.</p>
-                        <div className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-[10px] font-black border border-cyan-100 uppercase tracking-widest">
-                            {totalSystemProformas} Registros Globales
+        <div className="space-y-6 animate-in fade-in duration-500">
+            {/* HEADER AREA */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+                <div>
+                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
+                        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <Icon name="analytics" className="text-white text-2xl" />
+                        </div>
+                        Gis Materialidad B2B
+                    </h1>
+                    <p className="text-slate-400 text-sm font-medium mt-1">Gestión forense de proformas y cumplimiento fiscal</p>
+                </div>
+
+                <a
+                    href="/proformas/nueva"
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/30 hover:-translate-y-0.5"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.history.pushState({}, '', '/proformas/nueva');
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                    }}
+                >
+                    <Plus size={18} /> Nueva Proforma
+                </a>
+            </div>
+
+            {/* SEARCH & FILTERS */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1 group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Buscar por cliente, descripción o folio..."
+                        className="w-full bg-slate-800/40 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-600 font-medium"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+                </div>
+                <select
+                    className="bg-slate-800/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all font-bold cursor-pointer"
+                    value={statusFilter}
+                    onChange={e => setStatusFilter(e.target.value)}
+                >
+                    <option value="ALL">TODOS LOS ESTADOS</option>
+                    <option value="PENDIENTE">PENDientes</option>
+                    <option value="ACEPTADA">ACEPTADAS</option>
+                    <option value="EXPIRADA">EXPIRADAS</option>
+                </select>
+            </div>
+
+            {/* ERROR STATE */}
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center gap-3">
+                    <Icon name="error" className="text-xl" />
+                    <span className="text-sm font-bold uppercase tracking-tight">{error}</span>
+                </div>
+            )}
+
+            {/* DASHBOARD GRID */}
+            <div className="grid grid-cols-1 gap-4">
+                {loading ? (
+                    <div className="py-20 flex flex-col items-center justify-center gap-4 grayscale opacity-50">
+                        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                        <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">Sincronizando con BBDD...</span>
+                    </div>
+                ) : filtered.length === 0 ? (
+                    <div className="py-20 flex flex-col items-center justify-center gap-4 bg-slate-800/20 border border-dashed border-white/5 rounded-3xl">
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
+                            <SearchX className="text-slate-600" size={32} />
+                        </div>
+                        <div className="text-center">
+                            <h3 className="text-white font-bold">No se encontraron registros</h3>
+                            <p className="text-slate-500 text-sm">Intenta con otros términos o filtros</p>
                         </div>
                     </div>
-                </div>
-                <button
-                    className="premium-button flex items-center gap-2"
-                    onClick={() => navigate('/proformas')}
-                >
-                    <Plus size={16} />
-                    Nueva Proforma
-                </button>
-            </div>
-
-            {loading ? (
-                <div className="flex flex-col items-center justify-center py-24 gap-4">
-                    <div className="w-12 h-12 border-4 border-slate-100 border-t-cyan-600 rounded-full animate-spin"></div>
-                    <p className="text-sm text-slate-400 font-bold animate-pulse tracking-widest uppercase">Cargando Tablero...</p>
-                </div>
-            ) : proformas.length === 0 ? (
-                <div className="premium-panel flex flex-col items-center justify-center py-20 px-6 text-center animate-in fade-in zoom-in-95 duration-500">
-                    {totalSystemProformas > 0 ? (
-                        <div className="space-y-4 max-w-md">
-                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100 shadow-inner">
-                                <AlertCircle size={40} className="text-cyan-600/50" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-black text-slate-700">Filtro de Empresa Activo</h3>
-                                <p className="text-sm text-slate-500 font-medium leading-relaxed mt-2 text-slate-900">
-                                    Hay <span className="text-cyan-600 font-black">{totalSystemProformas} registros</span> en el sistema, pero ninguno vinculado a <span className="font-bold text-slate-800">{selectedOrg?.name}</span>.
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100 shadow-inner">
-                                <Edit3 size={40} className="text-slate-400" />
-                            </div>
-                            <h3 className="text-lg font-black text-slate-700">Sin proformas registradas</h3>
-                            <p className="text-sm text-slate-500 font-medium text-slate-900">Inicia el proceso de materialidad creando tu primera proforma.</p>
-                        </div>
-                    )}
-                    <button className="premium-button mt-8" onClick={() => navigate('/proformas')}>Empezar Proceso</button>
-                </div>
-            ) : (
-                <div className="premium-panel p-0 overflow-hidden border-standard shadow-premium">
-                    <div className="overflow-x-auto">
+                ) : (
+                    <div className="bg-slate-800/40 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50/80 border-b border-slate-200">
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-1/3">Servicio / Proforma</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Flujo de Materialidad</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Monto</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Acciones</th>
+                                <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest">
+                                    <th className="p-5 w-24">Folio</th>
+                                    <th className="p-5">Receptor / Concepto</th>
+                                    <th className="p-5 w-32">Total</th>
+                                    <th className="p-5 w-40 text-center">Estatus Fiscal</th>
+                                    <th className="p-5 w-[660px] text-center">Gatillos de Materialidad</th>
+                                    <th className="p-5 w-16"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {proformas.map((p) => (
-                                    <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-5">
-                                            <div className="text-[13px] font-bold text-slate-800 mb-1 group-hover:text-cyan-700 transition-colors">{p.description}</div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded tracking-tight uppercase border border-slate-200 shadow-sm font-mono" translate="no">
-                                                    {p.proforma_number && typeof p.proforma_number === 'string' && p.proforma_number.includes('-')
-                                                        ? p.proforma_number
-                                                        : (() => {
-                                                            const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                            const dateStr = new Date(p.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
-                                                            const folNum = (p.proforma_number || 1).toString().padStart(2, '0');
+                            <tbody className="divide-y divide-white/5">
+                                {filtered.map(q => {
+                                    const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus } = getMaterialityStatus(q);
+
+                                    return (
+                                        <tr key={q.id} className="hover:bg-white/5 transition-colors group">
+                                            <td className="p-5">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                        title="Abrir Proforma"
+                                                    >
+                                                        <FileEdit className="w-4 h-4" />
+                                                    </button>
+                                                    <span
+                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                        className="cursor-pointer font-mono text-indigo-400 font-bold bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded text-xs border border-indigo-500/20 whitespace-nowrap transition-colors"
+                                                    >
+                                                        {(() => {
+                                                            const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                            const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                            const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
                                                             return `${orgPrefix}-${dateStr}-${folNum}`;
-                                                        })()
-                                                    }
+                                                        })()}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="p-5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-white font-bold text-[13px] group-hover:text-indigo-300 transition-colors uppercase truncate max-w-md">
+                                                        {q.organizations?.name || 'Cliente sin nombre'}
+                                                    </span>
+                                                    <span className="text-slate-500 text-[11px] mt-0.5 italic line-clamp-1">
+                                                        {q.description || 'Sin descripción del servicio'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="p-5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-white font-bold text-sm">
+                                                        ${new Intl.NumberFormat('es-MX').format(q.amount_total)}
+                                                    </span>
+                                                    <span className="text-slate-600 text-[10px] font-bold">
+                                                        {q.currency || 'MXN'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="p-5 text-center">
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${q.status === 'ACEPTADA' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                    q.status === 'PENDIENTE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                                                    }`}>
+                                                    {q.status}
                                                 </span>
-                                                <span className="text-[10px] text-slate-400 font-medium">Emisión: {new Date(p.created_at).toLocaleDateString()}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex justify-center gap-7">
-                                                <StatusBadge active={true} label="Proforma" onClick={() => navigate(`/proformas/${p.id}`)} />
-                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
-                                                <StatusBadge
-                                                    active={p.status === 'APROBADA' || !!p.invoice_id || p.related_quotation_status === 'aceptada' || p.related_quotation_status === 'completada'}
-                                                    label="Cotización"
-                                                    required={p.req_quotation !== false}
-                                                    statusText={p.related_quotation_status}
-                                                />
-                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
-                                                <StatusBadge
-                                                    active={!!p.contract_id || p.contract_status === 'firmado' || p.contract_status === 'completado'}
-                                                    label="Contrato"
-                                                    required={p.is_contract_required === true}
-                                                    statusText={p.contract_status}
-                                                />
-                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
-                                                <StatusBadge
-                                                    active={!!p.has_evidence || p.evidence_status === 'completada' || p.evidence_status === 'entregada'}
-                                                    label="Evidencia"
-                                                    required={p.req_evidence !== false}
-                                                    statusText={p.evidence_status}
-                                                />
-                                                <div className="w-8 h-px bg-slate-100 mt-4.5 self-start opacity-50"></div>
-                                                <StatusBadge
-                                                    active={!!p.invoice_id || p.invoice_status === 'emitida' || p.invoice_status === 'timbrada'}
-                                                    label="Factura"
-                                                    required={p.request_direct_invoice === true}
-                                                    statusText={p.invoice_status}
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <div className="text-base font-black text-slate-800 tracking-tight">
-                                                {p.amount_total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 text-slate-900">
-                                            <div className="flex justify-end gap-2 text-slate-900">
+                                            </td>
+                                            <td className="p-5">
+                                                <div className="flex items-start justify-between w-[640px] pt-1">
+                                                    <MaterialityIndicator
+                                                        icon="shopping_cart"
+                                                        label="O.C."
+                                                        active={hasPO}
+                                                        tooltip="Ver Orden de Compra de origen"
+                                                        onClick={() => q.from_po_id && navigate(`/ordenes-compra/${q.from_po_id}`)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="receipt_long"
+                                                        label="COT"
+                                                        active={hasQuotation}
+                                                        tooltip="Ver Cotizaciones"
+                                                        onClick={() => navigate(`/cotizaciones/${q.id}`)}
+                                                        statusText={finalQuotationStatus}
+                                                        colorOverride={getStatusColor(finalQuotationStatus)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="description"
+                                                        label="CONT"
+                                                        active={hasContract}
+                                                        tooltip="Ver Contratos"
+                                                        onClick={() => navigate(`/contratos/${q.id}`)}
+                                                        statusText={finalContractStatus}
+                                                        colorOverride={getStatusColor(finalContractStatus)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="payments"
+                                                        label="FACT"
+                                                        active={hasInvoice}
+                                                        tooltip="Ver/Editar Factura"
+                                                        onClick={() => navigate(`/facturas/${q.id}`)}
+                                                        statusText={finalInvoiceStatus}
+                                                        colorOverride={getStatusColor(finalInvoiceStatus)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="account_balance_wallet"
+                                                        label={paymentPercentage > 0 ? `${paymentPercentage}%` : "PAGO"}
+                                                        active={paymentPercentage > 0}
+                                                        colorOverride={
+                                                            paymentPercentage === 0 ? "text-rose-400 border-rose-500/30 bg-rose-500/10" :
+                                                                paymentPercentage === 100 ? "text-emerald-400 border-emerald-500/40 bg-emerald-500/20" :
+                                                                    "text-amber-400 border-amber-500/40 bg-amber-500/20"
+                                                        }
+                                                        tooltip={`Pagado: ${paymentPercentage}%`}
+                                                        onClick={() => navigate(`/pagos/${q.id}`)}
+                                                    />
+                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                    <MaterialityIndicator
+                                                        icon="photo_camera"
+                                                        label="EVI"
+                                                        active={hasEvidence}
+                                                        tooltip="Ver/Editar Evidencia"
+                                                        onClick={() => navigate(`/evidencia/${q.id}`)}
+                                                        statusText={finalEvidenceStatus}
+                                                        colorOverride={getStatusColor(finalEvidenceStatus)}
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="p-5 text-right">
                                                 <button
-                                                    title="Ver Detalles"
-                                                    onClick={() => navigate(`/proformas/${p.id}`)}
-                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-cyan-600 hover:border-cyan-200 hover:bg-cyan-50 rounded-lg transition-all shadow-sm"
+                                                    className="p-2 text-slate-600 hover:text-white transition-colors"
+                                                    onClick={() => navigate(`/proformas/${q.id}`)}
                                                 >
-                                                    <FileSearch size={16} />
+                                                    <ArrowRight size={18} />
                                                 </button>
-                                                <button
-                                                    title="Imprimir"
-                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-lg transition-all shadow-sm"
-                                                >
-                                                    <Printer size={16} />
-                                                </button>
-                                                <button
-                                                    title="Eliminar"
-                                                    onClick={() => handleDelete(p.id)}
-                                                    className="w-8 h-8 flex items-center justify-center bg-white border border-red-100 text-red-300 hover:text-red-600 hover:border-red-200 hover:bg-red-50 rounded-lg transition-all shadow-sm"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
+
+            {/* FOOTER STATS */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                <StatCard
+                    label="Materialización Completa"
+                    value={quotations.filter(q => getMaterialityStatus(q).hasEvidence).length}
+                    total={quotations.length}
+                    color="emerald"
+                />
+                <StatCard
+                    label="Contratos Pendientes"
+                    value={quotations.filter(q => q.status === 'ACEPTADA' && !getMaterialityStatus(q).hasContract).length}
+                    total={quotations.filter(q => q.status === 'ACEPTADA').length}
+                    color="amber"
+                />
+                <StatCard
+                    label="Total Cotizado ($)"
+                    value={new Intl.NumberFormat('es-MX', { notation: 'compact' }).format(quotations.reduce((acc, q) => acc + (q.amount_total || 0), 0))}
+                    total={null}
+                    color="indigo"
+                />
+            </div>
+        </div>
+    );
+};
+
+const MaterialityIndicator = ({ icon, label, active, tooltip, onClick, colorOverride, statusText }: any) => (
+    <div
+        className={`flex flex-col items-center gap-1 group/ind relative cursor-pointer hover:-translate-y-0.5 transition-transform w-[76px]`}
+        title={tooltip}
+        onClick={onClick}
+    >
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${colorOverride ? colorOverride :
+            active
+                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400 ring-4 ring-indigo-500/5'
+                : 'bg-slate-900 border-white/5 text-slate-700 opacity-40 hover:opacity-100 hover:border-white/20'
+            }`}>
+            <Icon name={icon} className="text-lg" />
+        </div>
+        <span className={`text-[7px] font-black uppercase tracking-widest ${colorOverride ? colorOverride.split(' ')[0] : (active ? 'text-indigo-400' : 'text-slate-500')}`}>
+            {label}
+        </span>
+        {statusText && (
+            <span className={`text-[6px] font-bold uppercase tracking-wider px-1 py-0.5 rounded -mt-0.5 whitespace-nowrap ${colorOverride ? colorOverride : (active ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-800 text-slate-500')}`}>
+                {statusText}
+            </span>
+        )}
+        {active && !statusText && (
+            <div className="absolute -top-1 -right-1">
+                <span className="flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+            </div>
+        )}
+    </div>
+);
+
+const StatCard = ({ label, value, total, color }: any) => {
+    const colors: any = {
+        emerald: 'from-emerald-600/20 to-emerald-500/5 border-emerald-500/20 text-emerald-400',
+        amber: 'from-amber-600/20 to-amber-500/5 border-amber-500/20 text-amber-400',
+        indigo: 'from-indigo-600/20 to-indigo-500/5 border-indigo-500/20 text-indigo-400',
+    };
+
+    return (
+        <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5 flex flex-col gap-1`}>
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{label}</span>
+            <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black">{value}</span>
+                {total !== null && <span className="text-xs font-bold opacity-40">de {total}</span>}
+            </div>
         </div>
     );
 };

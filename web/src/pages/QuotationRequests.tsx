@@ -9,7 +9,8 @@ import {
     Eye,
     Upload,
     Send,
-    FileEdit
+    FileEdit,
+    ExternalLink
 } from 'lucide-react';
 
 interface QuotationRequestsProps {
@@ -100,6 +101,21 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
             alert('Error al subir cotización: ' + err.message);
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleViewRequestFile = async (fileUrl: string) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('quotations')
+                .createSignedUrl(fileUrl, 3600);
+
+            if (error) throw error;
+            if (data?.signedUrl) {
+                window.open(data.signedUrl, '_blank');
+            }
+        } catch (err: any) {
+            alert('Error al abrir la cotización: ' + err.message);
         }
     };
 
@@ -266,8 +282,18 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                                 className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-all"
                                                 title="Ir a Proforma Maestra"
                                             >
-                                                <Eye className="w-4 h-4" />
+                                                <ExternalLink className="w-4 h-4" />
                                             </button>
+
+                                            {q.request_file_url && (
+                                                <button
+                                                    onClick={() => handleViewRequestFile(q.request_file_url)}
+                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    title="Ver Cotización Subida"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            )}
 
                                             {(!q.related_quotation_status || q.related_quotation_status === 'solicitada' || q.related_quotation_status === 'rechazada') && (
                                                 <button

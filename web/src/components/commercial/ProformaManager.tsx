@@ -14,7 +14,7 @@ const Icon = ({ name, className = "" }: { name: string, className?: string }) =>
 const DropdownPortal = ({ children, anchor, width }: { children: React.ReactNode, anchor: DOMRect | null, width?: number }) => {
     if (!anchor) return null;
 
-    // Mejorar lÃ³gica de posicionamiento: detectar espacio arriba/abajo
+    // Mejorar lé³gica de posicionamiento: detectar espacio arriba/abajo
     const portalHeight = 500;
     const margin = 8;
     const spaceBelow = window.innerHeight - anchor.bottom - margin;
@@ -48,14 +48,16 @@ const DropdownPortal = ({ children, anchor, width }: { children: React.ReactNode
     );
 };
 
-const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel }: { label: string, sub: string, checked: boolean, onChange: (v: boolean) => void, disabled?: boolean, statusLabel?: string }) => (
+const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel, statusColorClass }: { label: string, sub: string, checked: boolean, onChange: (v: boolean) => void, disabled?: boolean, statusLabel?: string, statusColorClass?: string }) => (
     <div className={`flex flex-col gap-1.5 group ${disabled ? 'opacity-70' : ''}`}>
         <div className="flex items-center justify-between gap-4">
-            <div>
-                <p className={`text-sm font-bold leading-tight transition-colors ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#1e40af]'}`}>{label}</p>
-                <p className="text-[10px] text-slate-400 font-medium">{sub}</p>
+            <div className="min-w-0">
+                <p className={`text-sm font-bold leading-tight transition-colors truncate ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#1e40af]'}`}>{label}</p>
+                <div className="mt-0.5">
+                    <p className="text-[10px] text-slate-400 font-medium leading-snug">{sub}</p>
+                </div>
             </div>
-            <label className={`relative inline-flex items-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+            <label className={`relative inline-flex items-center shrink-0 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                 <input
                     type="checkbox"
                     className="sr-only peer"
@@ -71,8 +73,8 @@ const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel }: 
         </div>
         {statusLabel && checked && (
             <div className="mt-1">
-                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest ${disabled ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
-                    Estatus: {statusLabel}
+                <span className={`inline-flex px-2 py-0.5 text-[9px] font-black rounded uppercase tracking-widest ${statusColorClass ? statusColorClass : (disabled ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200')}`}>
+                    ESTATUS: {statusLabel}
                 </span>
             </div>
         )}
@@ -98,7 +100,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
         const stored = localStorage.getItem(storedKey);
         let parsed = stored ? JSON.parse(stored) : [];
 
-        // Demo para AlbaÃ±ilerÃ­a (238130)
+        // Demo para Albaé±ileré­a (238130)
         if (activityCode === '238130' && parsed.length === 0) {
             parsed = ['MUROS DE BLOCK', 'ACABADO FINO'];
             localStorage.setItem(storedKey, JSON.stringify(parsed));
@@ -118,11 +120,11 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
     useEffect(() => {
         if (search) {
             setActiveCategory('TODOS');
-            if (search.length > 3) setActiveTag(null); // Desactivar tag si el usuario escribe algo especÃ­fico
+            if (search.length > 3) setActiveTag(null); // Desactivar tag si el usuario escribe algo especé­fico
         }
     }, [search]);
 
-    // Extraer Smart Tags de los resultados de congruencia para mÃ¡xima precisiÃ³n
+    // Extraer Smart Tags de los resultados de congruencia para máxima precisié³n
     useEffect(() => {
         const generateSmartTags = async () => {
             if (!activityCode) {
@@ -190,7 +192,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
     useEffect(() => {
         const fetchResults = async () => {
-            // El motor de bÃºsqueda prioritiza: 1. Tag Activo, 2. BÃºsqueda Manual, 3. Actividad Base
+            // El motor de béºsqueda prioritiza: 1. Tag Activo, 2. Béºsqueda Manual, 3. Actividad Base
             let queryTag = activeTag || search;
 
             if (!queryTag && !activityCode && isOpen) return;
@@ -200,7 +202,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
             try {
                 let finalData: any[] = [];
 
-                // Capa de TraducciÃ³n de Conceptos: BÃºsqueda Inversa por Tokens
+                // Capa de Traduccié³n de Conceptos: Béºsqueda Inversa por Tokens
                 let inverseActivityCodes: string[] = [];
                 let inverseResults: any[] = [];
                 const searchCriteria = activeTag || search;
@@ -281,7 +283,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     }
                 }
 
-                // Combinar con bÃºsqueda inversa (evitando duplicados)
+                // Combinar con béºsqueda inversa (evitando duplicados)
                 inverseResults.forEach(ir => {
                     if (!finalData.find((f: any) => f.code === ir.code)) {
                         finalData.push(ir);
@@ -290,7 +292,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
                 finalData.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-                // 2. Mega-BÃºsqueda Global (Si hay Tag o BÃºsqueda Manual)
+                // 2. Mega-Béºsqueda Global (Si hay Tag o Béºsqueda Manual)
                 const effectiveSearch = activeTag || search;
                 if (effectiveSearch || (finalData.length === 0 && isOpen)) {
                     let globalData = null;
@@ -303,14 +305,14 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             .limit(100);
                         globalData = data;
                     } else if (effectiveSearch) {
-                        // BÃºsqueda semÃ¡ntica usando la nueva funciÃ³n RPC (ordenado por relevancia GIN trigram)
+                        // Béºsqueda semántica usando la nueva funcié³n RPC (ordenado por relevancia GIN trigram)
                         const { data } = await supabase.rpc('search_productos_sat', {
                             search_term: effectiveSearch,
                             max_results: 100
                         });
                         globalData = data;
                     } else if (activityDescription) {
-                        // Si no hay bÃºsqueda pero sÃ­ actividad, usamos los primeros keywords para llenar el vacÃ­o
+                        // Si no hay béºsqueda pero sé­ actividad, usamos los primeros keywords para llenar el vacé­o
                         const keywords = smartTags.slice(0, 2).join(' ');
                         const query = supabase.from('cat_cfdi_productos_servicios').select('code, name, similar_words, includes_iva_transfered, includes_ieps_transfered');
                         if (keywords) {
@@ -336,13 +338,13 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 similar_words: p.similar_words,
                                 has_iva: p.includes_iva_transfered,
                                 has_ieps: p.includes_ieps_transfered,
-                                source: activeTag ? `Concepto: ${activeTag}` : (search ? 'CatÃ¡logo SAT' : 'BÃºsqueda SemÃ¡ntica')
+                                source: activeTag ? `Concepto: ${activeTag}` : (search ? 'Catálogo SAT' : 'Béºsqueda Semántica')
                             }));
                         finalData = [...finalData, ...mapped];
                     }
                 }
                 // 3. Mapeo inverso de actividades para contexto (Solo para Global o Conceptos)
-                const globalIndices = finalData.map((d: any, i: number) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'CatÃ¡logo SAT' || d.source === 'BÃºsqueda SemÃ¡ntica' ? i : -1).filter((i: number) => i !== -1);
+                const globalIndices = finalData.map((d: any, i: number) => d.source.includes('Global') || d.source.includes('Concepto') || d.source === 'Catálogo SAT' || d.source === 'Béºsqueda Semántica' ? i : -1).filter((i: number) => i !== -1);
 
                 if (globalIndices.length > 0) {
                     const familyCodes = Array.from(new Set(globalIndices.map((i: number) => finalData[i].code.substring(0, 6))));
@@ -465,7 +467,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     type="text"
                                     autoFocus
                                     className="w-full bg-transparent border-none p-0 text-sm font-black text-slate-700 focus:ring-0 placeholder:text-slate-300 placeholder:font-medium uppercase tracking-tight"
-                                    placeholder="Â¿QuÃ© servicio estÃ¡s buscando?"
+                                    placeholder="Â¿Qué© servicio estás buscando?"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     onKeyDown={e => {
@@ -494,7 +496,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="text-slate-300 hover:text-slate-500 hover:bg-slate-200 p-1.5 rounded-full transition-all flex items-center justify-center h-8 w-8"
-                                title="Cerrar bÃºsqueda"
+                                title="Cerrar béºsqueda"
                             >
                                 <Icon name="close" className="text-lg" />
                             </button>
@@ -535,12 +537,12 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                         </div>
                                     )}
 
-                                    {/* Tags Temporales (SesiÃ³n actual) */}
+                                    {/* Tags Temporales (Sesié³n actual) */}
                                     {userTags.length > 0 && (
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2 px-1">
                                                 <Icon name="history" className="text-indigo-500 text-[10px]" />
-                                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">En esta sesiÃ³n:</span>
+                                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">En esta sesié³n:</span>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto no-scrollbar">
                                                 {userTags.filter(ut => !savedTags.includes(ut)).map(tag => (
@@ -592,10 +594,10 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                             </div>
                         )}
 
-                        {/* Filtros de CategorÃ­a */}
+                        {/* Filtros de Categoré­a */}
                         {results.length > 0 && (
                             <div className="flex bg-slate-50/50 p-2 gap-2 border-b border-slate-100 overflow-x-auto no-scrollbar shrink-0">
-                                {['TODOS', 'PRINCIPAL', 'RELACIONADO', 'EJEMPLOS', 'ESTA BÃšSQUEDA'].map(cat => (
+                                {['TODOS', 'PRINCIPAL', 'RELACIONADO', 'EJEMPLOS', 'ESTA BéšSQUEDA'].map(cat => (
                                     <button
                                         key={cat}
                                         onMouseDown={(e) => { e.preventDefault(); setActiveCategory(cat); }}
@@ -604,7 +606,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                             : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-600'
                                             }`}
                                     >
-                                        {cat === 'ESTA BÃšSQUEDA' ? (activeTag ? `CONCEPTO: ${activeTag}` : 'GLOBAL') : cat}
+                                        {cat === 'ESTA BéšSQUEDA' ? (activeTag ? `CONCEPTO: ${activeTag}` : 'GLOBAL') : cat}
                                     </button>
                                 ))}
                             </div>
@@ -616,7 +618,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     <Icon name="search_off" className="text-3xl text-slate-200" />
                                     <div className="text-[10px] text-slate-400 italic text-center max-w-[200px]">
                                         No encontramos resultados para "{search || activeTag}". <br />
-                                        <span className="font-bold text-blue-500">Prueba con un concepto mÃ¡s general o busca otro tag.</span>
+                                        <span className="font-bold text-blue-500">Prueba con un concepto más general o busca otro tag.</span>
                                     </div>
                                 </div>
                             )}
@@ -625,7 +627,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 if (activeCategory === 'PRINCIPAL') return prod.source === 'Actividad Principal';
                                 if (activeCategory === 'RELACIONADO') return prod.source === 'Actividad Relacionada';
                                 if (activeCategory === 'EJEMPLOS') return prod.source === 'Sugerencia por Ejemplo';
-                                if (activeCategory === 'ESTA BÃšSQUEDA') return prod.source.includes('Concepto:') || prod.source === 'CatÃ¡logo SAT' || prod.source === 'BÃºsqueda SemÃ¡ntica';
+                                if (activeCategory === 'ESTA BéšSQUEDA') return prod.source.includes('Concepto:') || prod.source === 'Catálogo SAT' || prod.source === 'Béºsqueda Semántica';
                                 return true;
                             }).map(prod => (
                                 <div
@@ -656,7 +658,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                             {prod.activityContext && (
                                                 <span className={`text-[6px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter flex items-center gap-1 shrink-0 ${prod.source === 'Sugerencia por Ejemplo' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-white'}`}>
                                                     <Icon name={prod.source === 'Sugerencia por Ejemplo' ? 'auto_awesome' : 'business_center'} className="text-[7px]" />
-                                                    {prod.source === 'Sugerencia por Ejemplo' ? 'INTENCIÃ“N: ' : 'ACTIVIDAD: '}{prod.activityContext}
+                                                    {prod.source === 'Sugerencia por Ejemplo' ? 'INTENCIé“N: ' : 'ACTIVIDAD: '}{prod.activityContext}
                                                 </span>
                                             )}
                                             {prod.score !== undefined && (
@@ -682,7 +684,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                         {results.length > 0 && !loading && (
                             <div className="bg-slate-50 px-3 py-1.5 border-t border-slate-100 shrink-0 flex justify-between">
                                 <span className="text-[8px] text-slate-400 font-bold">Mostrando {results.length} resultados potenciales</span>
-                                <span className="text-[8px] text-blue-500 font-black animate-pulse uppercase">Mega-BÃºsqueda Activa</span>
+                                <span className="text-[8px] text-blue-500 font-black animate-pulse uppercase">Mega-Béºsqueda Activa</span>
                             </div>
                         )}
                     </div>
@@ -694,7 +696,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
 
 /**
  * Motor de Sugerencia de Unidades Inteligentes
-     * Analiza el nombre y cÃ³digo SAT para predecir la unidad de medida mÃ¡s probable.
+     * Analiza el nombre y cé³digo SAT para predecir la unidad de medida más probable.
      */
 const suggestUnit = (name: string, code: string): string => {
     const text = (name || '').toUpperCase()
@@ -707,7 +709,7 @@ const suggestUnit = (name: string, code: string): string => {
         return 'E48'; // Unidad de servicio
     }
 
-    // 2. LÃ­quidos y Combustibles
+    // 2. Lé­quidos y Combustibles
     if (['LITRO', 'LTR', 'ACEITE', 'AGUA', 'PINTURA', 'SOLVENTE', 'COMBUSTIBLE', 'GASOLINA', 'DIESEL', 'TAMBO'].some(k => text.includes(k))) {
         return 'LTR'; // Litro
     }
@@ -717,7 +719,7 @@ const suggestUnit = (name: string, code: string): string => {
         return 'KGM'; // Kilogramo
     }
 
-    // 4. ConstrucciÃ³n y Peso Pesado
+    // 4. Construccié³n y Peso Pesado
     if (['TONELADA', 'TNE', 'CEMENTO', 'ARENA', 'GRAVA', 'VARILLA', 'CONCRETO', 'ASFALTO'].some(k => text.includes(k))) {
         return 'TNE'; // Tonelada
     }
@@ -896,7 +898,7 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
 
     const currentUsage = usages.find(u => u.code === value) || { code: value, description: 'Cargando...' };
 
-    // Filtrar usos permitidos por el rÃ©gimen del cliente
+    // Filtrar usos permitidos por el ré©gimen del cliente
     const filteredUsages = React.useMemo(() => {
         if (!clientRegime) return usages;
         return usages.filter(u => {
@@ -940,7 +942,7 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
                                 <div className="flex items-center gap-2 mb-0.5">
                                     <span className="text-[10px] font-black text-blue-600">{u.code}</span>
                                     <div className="flex gap-1">
-                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">FÃSICA</span>}
+                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">FéSICA</span>}
                                         {u.applies_to_moral && <span className="text-[6px] font-black px-1 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">MORAL</span>}
                                     </div>
                                 </div>
@@ -1048,8 +1050,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         hasQuotation: false,
         hasContract: false,
         advancePayment: false,
-        req_quotation: true,
-        req_evidence: true,
+        created_at: null as string | null,
+        req_quotation: false,
+        req_evidence: false,
         invoice_status: null as string | null,
         contract_status: null as string | null,
         evidence_status: null as string | null,
@@ -1094,10 +1097,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 }
 
                 const fullData = JSON.parse(decoded);
-                // Si es poParam simple, poData es el objeto directo. Si es po_full, estÃ¡ en .po_data
+                // Si es poParam simple, poData es el objeto directo. Si es po_full, está en .po_data
                 const poData = fullData.po_data || fullData;
 
-                if (!poData) throw new Error("No hay po_data en el parÃ¡metro");
+                if (!poData) throw new Error("No hay po_data en el parámetro");
 
                 setFormData(prev => {
                     const incomingItems = poData.items || [];
@@ -1276,7 +1279,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .from('quotations')
                 .select(`
                     *,
-                    organizations(*)
+                    organizations(*),
+                    invoices(id, status)
                 `)
                 .eq('id', quotationId)
                 .single();
@@ -1290,6 +1294,22 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .eq('quotation_id', quotationId);
 
             if (iError) throw iError;
+
+            // Determine real status prioritizing the actual invoice record
+            const invoiceList = Array.isArray(q.invoices) ? q.invoices : (q.invoices ? [q.invoices] : []);
+
+            const getBestInvoiceStatus = () => {
+                if (invoiceList.length === 0) return q.invoice_status;
+                // Sort by updated_at descending to get the most recently modified invoice
+                const sorted = [...invoiceList].sort((a: any, b: any) => {
+                    const dateA = new Date(a.updated_at || a.created_at || 0).getTime();
+                    const dateB = new Date(b.updated_at || b.created_at || 0).getTime();
+                    return dateB - dateA;
+                });
+                return sorted[0].status;
+            };
+
+            const trueInvoiceStatus = getBestInvoiceStatus();
 
             // 3. Update form
             setFormData(prev => ({
@@ -1315,10 +1335,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 is_contract_required: q.is_contract_required || false,
                 request_direct_invoice: q.request_direct_invoice || false,
                 economicActivity: q.economic_activity_code || prev.economicActivity,
-                invoice_status: q.invoice_status || null,
+                invoice_status: trueInvoiceStatus || null,
                 contract_status: q.contract_status || null,
                 evidence_status: q.evidence_status || null,
                 related_quotation_status: q.related_quotation_status || null,
+                created_at: q.created_at || null,
 
                 items: items && items.length > 0 ? items.map((item: any) => ({
                     id: item.id,
@@ -1336,24 +1357,25 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             console.error('Error loading quotation:', err);
         }
     };
+
     const handlePreview = async () => {
         if (!selectedOrg) {
-            alert('No se ha seleccionado una organizaciÃ³n emisora.');
+            alert('No se ha seleccionado una organización emisora.');
             return;
         }
 
         try {
             console.log('Generando vista previa con:', { formData, subtotal, total });
 
-            // Resolver descripciÃ³n de actividad econÃ³mica si es un cÃ³digo
+            // Resolver descripcié³n de actividad econé³mica si es un cé³digo
             const activityDesc = orgActivities.find(a => a.activity_code === formData.economicActivity)?.description || formData.economicActivity;
 
-            // Etiquetas Fiscales Formateadas (Clave - DescripciÃ³n)
+            // Etiquetas Fiscales Formateadas (Clave - Descripcié³n)
             const regList = clientRegimes !== null && clientRegimes.length > 0 ? clientRegimes : regimes;
             const regRecord = regList.find(r => r.code === formData.clientRegime);
             const regimeLabel = regRecord ? `${regRecord.code} - ${regRecord.name}` : formData.clientRegime;
 
-            const methodDict: Record<string, string> = { 'PUE': 'Pago en una sola exhibiciÃ³n', 'PPD': 'Pago en parcialidades o diferido' };
+            const methodDict: Record<string, string> = { 'PUE': 'Pago en una sola exhibicié³n', 'PPD': 'Pago en parcialidades o diferido' };
             const paymentMethodLabel = formData.paymentMethod ? `${formData.paymentMethod} - ${methodDict[formData.paymentMethod] || 'Desconocido'}` : 'PUE';
 
             const pfRecord = paymentFormsData.find((pf: any) => String(pf.code).padStart(2, '0') === String(formData.paymentForm).padStart(2, '0'));
@@ -1367,7 +1389,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
             // Folio Personalizado
             const orgPrefix = selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-            const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+            const processDate = formData.created_at ? new Date(formData.created_at) : new Date();
+            const dateStr = processDate.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
             const folNum = (formData.proforma_number || 1).toString().padStart(2, '0');
             const folioString = `Folio\n${orgPrefix}-${dateStr}-${folNum}`;
 
@@ -1399,6 +1422,63 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         }
     };
 
+    const getInvoiceStatusColor = (status: string) => {
+        if (!status) return 'bg-slate-50 text-slate-500 border border-slate-200';
+        const s = status.toUpperCase();
+        if (s.includes('TIMBRADA') || s === 'EMITIDA') return 'bg-blue-50 text-blue-600 border border-blue-200';
+        if (s.includes('RECHAZADA') || s === 'CANCELADA') return 'bg-red-50 text-red-600 border border-red-200 line-through';
+        if (s === 'EN_REVISION' || s === 'EN_REVISION_VENDEDOR' || s === 'TIMBRADA_INCOMPLETA') return 'bg-amber-50 text-amber-600 border border-amber-200';
+        if (s === 'VALIDADA') return 'bg-emerald-50 text-emerald-600 border border-emerald-200';
+        if (s === 'SOLICITADA' || s === 'SOLICITUD') return 'bg-indigo-50 text-indigo-500 border border-indigo-200';
+        if (s.includes('PREFACTURA')) return 'bg-purple-50 text-purple-600 border border-purple-200';
+
+        return 'bg-slate-50 text-slate-500 border border-slate-200';
+    };
+
+    const handleInvoiceToggle = async (val: boolean) => {
+        // Turning ON
+        if (val) {
+            setFormData({ ...formData, request_direct_invoice: true, invoice_status: formData.invoice_status || 'solicitada' });
+            return;
+        }
+
+        // Turning OFF - Need to safely check and delete
+        // If it's a new proforma (not yet saved), just turn it off
+        if (!id || id === 'nueva') {
+            setFormData({ ...formData, request_direct_invoice: false, invoice_status: null });
+            return;
+        }
+
+        // Check if there is a real invoice in the database
+        const { data: existingInvoice } = await supabase
+            .from('invoices')
+            .select('id, status')
+            .eq('quotation_id', id)
+            .maybeSingle();
+
+        if (existingInvoice) {
+            // Protect if finalized
+            if (['TIMBRADA', 'TIMBRADA_INCOMPLETA', 'VALIDADA'].includes(existingInvoice.status)) {
+                alert(`No puedes desactivar el registro temporal. La factura localmente está protegida bajo el estado: ${existingInvoice.status}`);
+                return;
+            }
+
+            // It's in an early stage (SOLICITUD, PREFACTURA, etc..), ask user
+            const confirmDelete = window.confirm(`Desactivar la facturación eliminará permanentemente la solicitud técnica actual (${existingInvoice.status}). ¿Deseas continuar y borrar la factura?`);
+
+            if (confirmDelete) {
+                const { error } = await supabase.from('invoices').delete().eq('id', existingInvoice.id);
+                if (error) {
+                    alert('Error al eliminar la factura: ' + error.message);
+                } else {
+                    setFormData({ ...formData, request_direct_invoice: false, invoice_status: null });
+                }
+            }
+        } else {
+            // No invoice really existed in DB yet, just turn off toggle
+            setFormData({ ...formData, request_direct_invoice: false, invoice_status: null });
+        }
+    };
 
     const handleDuplicate = () => {
         // Resetear ID y aumentar secuencia
@@ -1409,14 +1489,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             saveSuccess: false,
             saveError: null
         }));
-        // Navegar a ruta de creaciÃ³n limpia (pero con estado actual)
+        // Navegar a ruta de creacié³n limpia (pero con estado actual)
         navigate('/cotizaciones/nueva');
         alert('Proforma clonada. Ajuste el periodo y conceptos antes de guardar el nuevo registro.');
     };
 
     const handleSendEmail = async () => {
         if (!formData.clientEmail) {
-            alert('Por favor ingrese un correo electrÃ³nico para el cliente');
+            alert('Por favor ingrese un correo electré³nico para el cliente');
             return;
         }
 
@@ -1425,13 +1505,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             // Simulando llamada a Edge Function
             console.log('Enviando proforma a:', formData.clientEmail);
 
-            // AquÃ­ irÃ­a el llamado real:
+            // Aqué­ iré­a el llamado real:
             // const { error } = await supabase.functions.invoke('send-proforma', {
             //     body: { proformaId: '...', email: formData.clientEmail }
             // });
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            alert('Proforma enviada con Ã©xito a ' + formData.clientEmail);
+            alert('Proforma enviada con é©xito a ' + formData.clientEmail);
         } catch (error: any) {
             alert('Error al enviar: ' + error.message);
         } finally {
@@ -1480,11 +1560,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 client_name: formData.clientName,
                 client_address: formData.clientAddress,
                 client_regime_code: formData.clientRegime,
-                bank_account_id: formData.bank_account_id || undefined,
-                from_po_id: formData.from_po_id,
+                bank_account_id: (typeof formData.bank_account_id === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(formData.bank_account_id)) ? formData.bank_account_id : null,
+                from_po_id: (typeof formData.from_po_id === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(formData.from_po_id)) ? formData.from_po_id : null,
                 req_quotation: formData.req_quotation,
                 req_evidence: formData.req_evidence,
-                economic_activity_code: formData.economicActivity,
+                economic_activity_code: formData.economicActivity && formData.economicActivity.trim() !== '' ? formData.economicActivity : null,
                 invoice_status: formData.invoice_status,
                 contract_status: formData.contract_status,
                 evidence_status: formData.evidence_status,
@@ -1509,7 +1589,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 quotationId = quotation.id;
             }
 
-            // 2. Sincronizar Items (Borrar y Re-insertar para simplicidad en ediciÃ³n)
+            // 2. Sincronizar Items (Borrar y Re-insertar para simplicidad en edicié³n)
             if (id && id !== 'nueva') {
                 const { error: dError } = await supabase
                     .from('quotation_items')
@@ -1556,15 +1636,34 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         status: 'SOLICITUD'
                     };
 
-                    const { data: invData, error: invError } = await supabase
+                    // Verificar si ya existe una factura para no depender de un unique constraint en UPSERT
+                    const { data: existingInvoice } = await supabase
                         .from('invoices')
-                        .upsert(invoicePayload, { onConflict: 'quotation_id' })
                         .select('id')
+                        .eq('quotation_id', quotationId)
                         .maybeSingle();
 
+                    let invPromise;
+                    if (existingInvoice) {
+                        invPromise = supabase
+                            .from('invoices')
+                            .update(invoicePayload)
+                            .eq('id', existingInvoice.id)
+                            .select('id')
+                            .maybeSingle();
+                    } else {
+                        invPromise = supabase
+                            .from('invoices')
+                            .insert(invoicePayload)
+                            .select('id')
+                            .maybeSingle();
+                    }
+
+                    const { data: invData, error: invError } = await invPromise;
+
                     if (invError) {
-                        console.error('Error creating invoice request:', invError);
-                        alert('Atención: Fallo al solicitar factura automática: ' + invError.message);
+                        console.error('Error creating/updating invoice request:', invError);
+                        alert('Atención: Fallo al procesar factura automática: ' + invError.message);
                     } else if (invData) {
                         currentInvoiceId = invData.id;
                     }
@@ -1645,7 +1744,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             }
 
             setFormData(prev => ({ ...prev, isSaving: false, saveSuccess: true }));
-            alert((id && id !== 'nueva') ? 'Proforma actualizada con Ã©xito' : 'Proforma guardada con Ã©xito');
+            alert((id && id !== 'nueva') ? 'Proforma actualizada con é©xito' : 'Proforma guardada con é©xito');
 
             if ((!id || id === 'nueva') && quotationId) {
                 navigate(`/cotizaciones/${quotationId}`);
@@ -1676,7 +1775,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         loadCatalogs();
     }, []);
 
-    // Actividades se cargan vÃ­a loadActivities arriba, o aquÃ­ si cambia de org en vivo
+    // Actividades se cargan vé­a loadActivities arriba, o aqué­ si cambia de org en vivo
     useEffect(() => {
         if (selectedOrg?.id) {
             loadActivities(selectedOrg.id);
@@ -1695,7 +1794,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             client.state
         ].filter(Boolean).join(', ');
 
-        // Intentar obtener los regÃ­menes del cliente desde organization_regimes
+        // Intentar obtener los regé­menes del cliente desde organization_regimes
         const fetchRegimes = async () => {
             const { data: orgRegimes } = await supabase
                 .from('organization_regimes')
@@ -1703,7 +1802,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .eq('organization_id', client.id);
 
             if (orgRegimes && orgRegimes.length > 0) {
-                // Filtrar cÃ³digos vÃ¡lidos (no nulos) que existan en nuestro catÃ¡logo
+                // Filtrar cé³digos válidos (no nulos) que existan en nuestro catálogo
                 const specificRegimes = regimes.filter(r =>
                     orgRegimes.some((or: any) => or.regime_code === r.code)
                 );
@@ -1715,8 +1814,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         clientRegime: specificRegimes[0].code
                     }));
                 } else {
-                    // Si hay registros pero ninguno tiene cÃ³digo vÃ¡lido (ej. nulls ya corregidos o desconocidos)
-                    // mantenemos el catÃ¡logo completo pero mostramos advertencia o dejamos fallback
+                    // Si hay registros pero ninguno tiene cé³digo válido (ej. nulls ya corregidos o desconocidos)
+                    // mantenemos el catálogo completo pero mostramos advertencia o dejamos fallback
                     setClientRegimes([]);
                 }
             } else {
@@ -1734,7 +1833,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             clientCP: client.tax_domicile?.match(/\d{5}/)?.[0] || '',
             clientRegime: '601' // Fallback inicial
         });
-        setSearchTerm(''); // Limpiar bÃºsqueda para que al volver a abrir se vea todo
+        setSearchTerm(''); // Limpiar béºsqueda para que al volver a abrir se vea todo
         setShowDropdown(false);
     };
 
@@ -1774,7 +1873,6 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         }
     };
 
-
     return (
         <div className="flex flex-col min-h-screen text-slate-900 bg-[#f8fafc] font-['Inter',_sans-serif] overflow-hidden force-light">
             {/* STITCH HEADER */}
@@ -1790,30 +1888,29 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     <div>
                         <h1 className="text-sm font-bold text-slate-800 leading-none">{selectedOrg?.name || "Generador de Proformas"}</h1>
                         <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider font-semibold">
-                            {selectedOrg ? `RFC: ${selectedOrg.rfc}` : "MÃ³dulo Comercial"}
+                            {selectedOrg ? `RFC: ${selectedOrg.rfc}` : "Mé³dulo Comercial"}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {id && (
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={handleDuplicate}
-                                className="px-4 py-1.5 text-[11px] font-bold text-amber-600 hover:text-white hover:bg-amber-500 border border-amber-500 rounded-lg transition-all flex items-center gap-2"
-                            >
-                                <Icon name="content_copy" className="text-sm" />
-                                DUPLICAR
-                            </button>
-                            <button
-                                onClick={() => navigate('/cotizaciones')}
-                                className="px-4 py-1.5 text-[11px] font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all flex items-center gap-2"
-                            >
-                                <Icon name="arrow_back" className="text-sm" />
-                                VOLVER AL DASHBOARD
-                            </button>
-                        </div>
+                    {id && id !== 'nueva' && (
+                        <button
+                            onClick={handleDuplicate}
+                            className="px-4 py-1.5 text-[11px] font-bold text-amber-600 hover:text-white hover:bg-amber-500 border border-amber-500 rounded-lg transition-all flex items-center gap-2"
+                        >
+                            <Icon name="content_copy" className="text-sm" />
+                            DUPLICAR
+                        </button>
                     )}
+
+                    <button
+                        onClick={() => navigate('/proformas')}
+                        className="px-4 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all flex items-center gap-2"
+                    >
+                        <Icon name="close" className="text-sm" />
+                        SALIR
+                    </button>
 
                     <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-100 mr-2">
                         <button
@@ -1867,7 +1964,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <div className="col-span-2 space-y-3">
                                     <div className="relative client-selector-container">
                                         <div className="flex justify-between items-center mb-1">
-                                            <label className="block text-[9px] font-bold text-slate-400 uppercase font-mono">Nombre o RazÃ³n Social</label>
+                                            <label className="block text-[9px] font-bold text-slate-400 uppercase font-mono">Nombre o Razón Social</label>
                                         </div>
                                         <div className="relative">
                                             <input
@@ -1899,7 +1996,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         }}
                                                     >
                                                         <div className="text-xs font-bold text-slate-700 group-hover:text-blue-600 break-words line-clamp-2">{client.name}</div>
-                                                        <div className="text-[9px] text-slate-400 font-mono tracking-tighter">{client.rfc} â€¢ {client.contact_email || 'Sin email'}</div>
+                                                        <div className="text-[9px] text-slate-400 font-mono tracking-tighter">{client.rfc} • {client.contact_email || 'Sin email'}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1930,22 +2027,22 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             title={formData.clientAddress}
                                         >
                                             <span key="client-address" className={!formData.clientAddress ? "text-slate-300 italic" : ""}>
-                                                {formData.clientAddress || 'Sin direcciÃ³n fiscal'}
+                                                {formData.clientAddress || 'Sin dirección fiscal'}
                                             </span>
                                         </div>
                                         <div className="text-[11px] text-slate-500 truncate py-0.5">
                                             <span key="client-email" className={!formData.clientEmail ? "text-slate-300 italic text-[10px]" : ""}>
-                                                {formData.clientEmail || 'Sin correo electrÃ³nico'}
+                                                {formData.clientEmail || 'Sin correo electrónico'}
                                             </span>
                                         </div>
 
                                     </div>
                                 </div>
 
-                                {/* Columna 3: ConfiguraciÃ³n Fiscal (Alineada con Nombre) */}
+                                {/* Columna 3: Configuración Fiscal (Alineada con Nombre) */}
                                 <div className="col-span-1 space-y-3">
                                     <div>
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">RÃ©gimen Fiscal</label>
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Régimen Fiscal</label>
                                         <select
                                             className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50"
                                             value={formData.clientRegime}
@@ -1955,7 +2052,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 <option key={r.code} value={r.code}>{r.code} - {r.name}</option>
                                             ))}
                                             {clientRegimes !== null && clientRegimes.length === 0 && (
-                                                <option value="" disabled>Sin regÃ­menes asignados en CSF</option>
+                                                <option value="" disabled>Sin regímenes asignados en CSF</option>
                                             )}
                                         </select>
                                     </div>
@@ -1981,13 +2078,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </select>
                                     </div>
                                     <div className="pt-0">
-                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">MÃ©todo de Pago</label>
+                                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Método de Pago</label>
                                         <select
                                             className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
                                             value={formData.paymentMethod}
                                             onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
                                         >
-                                            <option value="PUE">PUE - PAGO EN UNA SOLA EXHIBICIÃ“N</option>
+                                            <option value="PUE">PUE - PAGO EN UNA SOLA EXHIBICIÓN</option>
                                             <option value="PPD">PPD - PAGO EN PARCIALIDADES O DIFERIDO</option>
                                         </select>
                                     </div>
@@ -2019,7 +2116,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <div className="flex items-center gap-2 pr-2">
                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight">Folio</span>
                                     <span className="text-sm font-mono font-black text-[#1e40af] notranslate" translate="no">
-                                        {`${selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF'}-${new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')}-${formData.proforma_number.toString().padStart(2, '0')}`}
+                                        {(() => {
+                                            const processDate = formData.created_at ? new Date(formData.created_at) : new Date();
+                                            return `${selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF'}-${processDate.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')}-${formData.proforma_number.toString().padStart(2, '0')}`;
+                                        })()}
                                     </span>
                                 </div>
                             </div>
@@ -2038,7 +2138,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             )}
                                         </div>
                                         <div className="flex flex-col min-w-0 flex-1">
-                                            <span className="text-[11px] font-black text-slate-700 leading-tight truncate">{selectedOrg?.name || "MAGAÃ‘A Y VIEIRA"}</span>
+                                            <span className="text-[11px] font-black text-slate-700 leading-tight truncate">{selectedOrg?.name || "MAGAÑA Y VIEIRA"}</span>
                                             <span className="text-[9px] font-mono text-slate-400 tracking-tighter notranslate" translate="no">{selectedOrg?.rfc}</span>
                                         </div>
                                     </div>
@@ -2053,13 +2153,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             translate="no"
                                         >
                                             <option value="MXN">MXN ($)</option>
-                                            <option value="USD">USD ($)</option>
+                                            <option value="USD">Dólares (USD)</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Cuenta de DepÃ³sito</label>
+                                    <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Cuenta de Depé³sito</label>
                                     <select
                                         className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 font-medium notranslate"
                                         value={formData.bank_account_id || ''}
@@ -2089,7 +2189,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
                                 <div className="h-6 w-px bg-slate-200 mx-2" />
                                 <div className="flex items-center gap-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad EconÃ³mica:</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad Econé³mica:</label>
                                     <select
                                         className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-[#1e40af] focus:border-[#1e40af] bg-white min-w-[200px]"
                                         value={formData.economicActivity}
@@ -2117,10 +2217,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <thead className="sticky top-0 bg-white shadow-sm z-10">
                                     <tr className="bg-slate-50/80 text-slate-400 uppercase text-[9px] font-bold border-b border-slate-100">
                                         <th className="px-4 py-2 w-44 tracking-wider">Clave SAT</th>
-                                        <th className="px-4 py-2 w-32 tracking-wider">No. IdentificaciÃ³n</th>
+                                        <th className="px-4 py-2 w-32 tracking-wider">No. Identificacié³n</th>
                                         <th className="px-4 py-2 w-24 text-center tracking-wider">Cant.</th>
                                         <th className="px-4 py-2 w-28 text-center tracking-wider">Unidad</th>
-                                        <th className="px-4 py-2 tracking-wider">DescripciÃ³n del Servicio</th>
+                                        <th className="px-4 py-2 tracking-wider">Descripcié³n del Servicio</th>
                                         <th className="px-4 py-2 w-32 text-right tracking-wider">P. Unitario</th>
                                         <th className="px-4 py-2 w-32 text-right tracking-wider">Importe</th>
                                         <th className="px-4 py-2 w-12 text-center"></th>
@@ -2158,7 +2258,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             description: prod.name,
                                                             unit: suggested,
                                                             unitPrice: historicalPrice || newItems[idx].unitPrice,
-                                                            has_iva: true, // Siempre prendido por default como solicitÃ³ el usuario, ignorando la BD del SAT que estÃ¡ mayormente en false
+                                                            has_iva: true, // Siempre prendido por default como solicité³ el usuario, ignorando la BD del SAT que está mayormente en false
                                                             has_ieps: prod.has_ieps ?? false
                                                         };
                                                         setFormData({ ...formData, items: newItems });
@@ -2202,7 +2302,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 <AutoResizeTextarea
                                                     className="w-full border-none bg-transparent p-0 text-[11px] resize-none focus:ring-0 leading-tight focus:outline-none transition-all text-slate-600"
                                                     rows={1}
-                                                    placeholder="DescripciÃ³n del concepto"
+                                                    placeholder="Descripcié³n del concepto"
                                                     value={item.description}
                                                     onChange={val => updateItem(idx, 'description', val)}
                                                 />
@@ -2244,7 +2344,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             <div className="absolute -top-3 right-0">
                                                                 <span className="text-[7px] font-black text-emerald-500 uppercase flex items-center gap-0.5 animate-in fade-in zoom-in-90 duration-500">
                                                                     <Icon name="history" className="text-[8px]" />
-                                                                    HISTÃ“RICO
+                                                                    HISTé“RICO
                                                                 </span>
                                                             </div>
                                                         )}
@@ -2275,10 +2375,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#1e40af] text-[#1e40af] hover:bg-[#1e40af] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
                             >
                                 <Icon name="add" className="text-sm" />
-                                AÃ‘ADIR CONCEPTO
+                                AÑADIR CONCEPTO
                             </button>
                             <div className="flex items-center gap-6">
-                                <p className="text-[10px] text-slate-400 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rÃ¡pidamente.</p>
+                                <p className="text-[10px] text-slate-400 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rápidamente.</p>
                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full border border-slate-200">Conceptos: {formData.items.length}</span>
                             </div>
                         </div>
@@ -2324,8 +2424,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         sub="Habilitar facturación inmediata"
                                         checked={formData.request_direct_invoice}
                                         disabled={formData.invoice_status === 'emitida' || formData.invoice_status === 'timbrada'}
-                                        statusLabel={formData.request_direct_invoice ? (formData.invoice_status || 'solicitada') : undefined}
-                                        onChange={(val) => setFormData({ ...formData, request_direct_invoice: val, invoice_status: val ? (formData.invoice_status || 'solicitada') : null })}
+                                        statusLabel={formData.request_direct_invoice ? (formData.invoice_status || 'SOLICITUD') : undefined}
+                                        statusColorClass={formData.request_direct_invoice ? getInvoiceStatusColor(formData.invoice_status || 'SOLICITUD') : undefined}
+                                        onChange={handleInvoiceToggle}
                                     />
                                 </div>
 
@@ -2424,7 +2525,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </div>
                                     </div>
 
-                                    {/* BotÃ³n de AcciÃ³n Principal */}
+                                    {/* Boté³n de Accié³n Principal */}
                                     <button
                                         onClick={() => setIsPaymentModalOpen(true)}
                                         className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
@@ -2436,7 +2537,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     {/* Historial de Pagos (Compacto) */}
                                     {payments.length > 0 && (
                                         <div className="pt-2">
-                                            <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Ãšltimos Abonos</span>
+                                            <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Últimos Abonos</span>
                                             <div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">
                                                 {payments.map(p => (
                                                     <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg group hover:border-blue-200 transition-all">
@@ -2549,7 +2650,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         amount: parseFloat(formDataObj.get('amount') as string),
                                         payment_date: formDataObj.get('date'),
                                         payment_method_code: formDataObj.get('method'),
-                                        bank_account_id: formDataObj.get('account'),
+                                        bank_account_id: formDataObj.get('account') || null,
                                         reference: formDataObj.get('reference'),
                                         notes: formDataObj.get('notes'),
                                         evidence_url: evidence_url,
@@ -2561,9 +2662,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     setIsPaymentModalOpen(false);
                                     setPaymentFile(null);
                                     loadPayments(id!);
-                                } catch (err) {
+                                } catch (err: any) {
                                     console.error('Error saving payment:', err);
-                                    alert('Error al guardar el pago. Verifica los datos.');
+                                    alert(`Error al guardar el pago: ${err?.message || JSON.stringify(err)}`);
                                 } finally {
                                     setIsUploading(false);
                                 }
@@ -2633,7 +2734,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <input
                                         name="reference"
                                         type="text"
-                                        placeholder="NÂ° OperaciÃ³n o Cheque"
+                                        placeholder="N° Operación o Cheque"
                                         className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
                                     />
                                 </div>
@@ -2689,7 +2790,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Icon name="account_balance" className="text-[#1e40af] text-lg" />
-                                    <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">GestiÃ³n de Cuentas del Emisor</h3>
+                                    <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Gestié³n de Cuentas del Emisor</h3>
                                 </div>
                                 <button onClick={() => setIsAccountModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                                     <Icon name="close" className="text-lg" />
@@ -2736,7 +2837,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 </div>
 
                                                 <div className="relative">
-                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">InstituciÃ³n / Banco</label>
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Institucié³n / Banco</label>
                                                     <div
                                                         className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all cursor-text"
                                                         onClick={(e) => {
@@ -2770,7 +2871,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         <DropdownPortal anchor={bankAnchor} width={bankAnchor?.width || 250}>
                                                             <div className="flex flex-col bg-white overflow-hidden max-h-[300px]">
                                                                 <div className="sticky top-0 bg-slate-50 border-b border-slate-100 p-2 flex items-center justify-between z-10">
-                                                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter ml-1">CatÃ¡logo de Instituciones</span>
+                                                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter ml-1">Catálogo de Instituciones</span>
                                                                     <button
                                                                         type="button"
                                                                         onClick={(e) => {
@@ -2818,11 +2919,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">NÃºmero de Cuenta / CLABE</label>
+                                                    <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Néºmero de Cuenta / CLABE</label>
                                                     <input
                                                         required
                                                         name="number"
-                                                        placeholder="18 dÃ­gitos para transferencia"
+                                                        placeholder="18 dé­gitos para transferencia"
                                                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-300"
                                                     />
                                                 </div>
@@ -2831,7 +2932,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                     <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Divisa</label>
                                                     <select name="currency" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-blue-100 outline-none transition-all">
                                                         <option value="MXN">Pesos Mexicanos (MXN)</option>
-                                                        <option value="USD">DÃ³lares (USD)</option>
+                                                        <option value="USD">Dé³lares (USD)</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -2891,7 +2992,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
                 .force-light { color-scheme: light !important; }
             `}</style>
-        </div >
+        </div>
     );
 };
 
