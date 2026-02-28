@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Invoice } from '../types';
-import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit } from 'lucide-react';
+import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit, Shield } from 'lucide-react';
 
 interface InvoicesProps {
     userProfile: any;
+    selectedOrg?: any;
 }
 
-const Invoices = ({ userProfile }: InvoicesProps) => {
+const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
     const { id: quotationId } = useParams();
     const navigate = useNavigate();
     const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -31,6 +32,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
     const [preinvoiceRejected, setPreinvoiceRejected] = useState(false);
 
     const fetchInvoices = async () => {
+        if (!selectedOrg?.id) return;
         try {
             setLoading(true);
             const { data: rawData, error: fetchError } = await supabase
@@ -40,6 +42,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                     organizations!inner(id, name, rfc),
                     invoices(*)
                 `)
+                .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
 
             if (fetchError) throw fetchError;
@@ -100,7 +103,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
 
     useEffect(() => {
         fetchInvoices();
-    }, [quotationId, userProfile]);
+    }, [quotationId, userProfile, selectedOrg?.id]);
 
     const handleUpload = async () => {
         if (!selectedInvoice) return;
@@ -114,7 +117,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
         if (noFileChanges && noCommentChanges) return;
         try {
             setUploading(true);
-            let updates: any = {};
+            const updates: any = {};
 
             let currentInvoiceId = selectedInvoice.id;
 
@@ -363,7 +366,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
         switch (status) {
             case 'SOLICITUD': return <Clock className="w-4 h-4 text-amber-500" />;
             case 'PREFACTURA_PENDIENTE':
-            case 'EN_REVISION_VENDEDOR': return <FileText className="w-4 h-4 text-blue-500" />;
+            case 'EN_REVISION_VENDEDOR': return <FileText className="w-4 h-4 text-cyan-500" />;
             case 'VALIDADA':
             case 'TIMBRADA': return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
             case 'TIMBRADA_INCOMPLETA': return <AlertTriangle className="w-4 h-4 text-orange-400" />;
@@ -376,7 +379,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'SOLICITUD': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-            case 'PREFACTURA_PENDIENTE': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+            case 'PREFACTURA_PENDIENTE': return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
             case 'VALIDADA':
             case 'TIMBRADA': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
             case 'TIMBRADA_INCOMPLETA': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
@@ -400,7 +403,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FileCheck className="text-blue-500" />
+                        <FileCheck className="text-cyan-500" />
                         {quotationId ? 'Facturas de Proforma' : 'Gestión de Facturación'}
                     </h1>
                     <p className="text-slate-400 text-sm mt-1">
@@ -414,7 +417,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
                         >
@@ -428,7 +431,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
             <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 bg-slate-800/30 p-3 rounded-xl border border-white/5">
                 <span className="font-bold text-slate-300">Estados de Archivo en Tabla:</span>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-yellow-500"></div> Aún no cargada</div>
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500"></div> Cargada (Pendiente de Autorizar)</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-cyan-500"></div> Cargada (Pendiente de Autorizar)</div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500"></div> Archivo cargado y autorizado</div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-red-500"></div> Rechazada / Cancelada</div>
             </div>
@@ -491,7 +494,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                                 {inv.isPending ? (
                                                     <button
                                                         onClick={() => navigate(`/proformas/${inv.quotation_id}`)}
-                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
+                                                        className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
                                                         title="Ir a Configurar Proforma"
                                                     >
                                                         <FileEdit className="w-4 h-4" />
@@ -500,12 +503,30 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                                     inv.quotation_id && (
                                                         <button
                                                             onClick={() => navigate(`/proformas/${inv.quotation_id}`)}
-                                                            className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
                                                             title="Abrir Proforma Original"
                                                         >
                                                             <FileEdit className="w-4 h-4" />
                                                         </button>
                                                     )
+                                                )}
+                                                {inv.quotation_id && (
+                                                    <>
+                                                        <button
+                                                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            onClick={() => navigate(`/materialidad?quotationId=${inv.quotation_id}`)}
+                                                            title="Ir a Evidencia de Materialidad"
+                                                        >
+                                                            <Shield size={16} />
+                                                        </button>
+                                                        <button
+                                                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            onClick={() => navigate(`/cotizaciones?id=${inv.quotation_id}`)}
+                                                            title="Ver Detalles de Cotización"
+                                                        >
+                                                            <FileText size={16} />
+                                                        </button>
+                                                    </>
                                                 )}
                                                 <div>
                                                     <div className="font-bold text-white leading-tight font-mono text-sm max-w-[150px] truncate">
@@ -520,7 +541,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                                         {inv.organization?.name || 'Org Desconocida'}
                                                     </div>
                                                     {inv.internal_number && inv.internal_number !== 'SOLICITUD_S/F' && (
-                                                        <div className="text-[10px] font-bold text-blue-400 mt-1">
+                                                        <div className="text-[10px] font-bold text-cyan-400 mt-1">
                                                             Folio Interno: {inv.internal_number}
                                                         </div>
                                                     )}
@@ -534,7 +555,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-1.5">
-                                                <div title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'Prefactura Autorizada' : 'Prefactura Pendiente')) : 'Sin Prefactura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'bg-emerald-500' : 'bg-blue-500')) : 'bg-yellow-500'}`}>PF</div>
+                                                <div title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'Prefactura Autorizada' : 'Prefactura Pendiente')) : 'Sin Prefactura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'bg-emerald-500' : 'bg-cyan-500')) : 'bg-yellow-500'}`}>PF</div>
                                                 <div title={inv.pdf_url ? (inv.status === 'CANCELADA' ? 'Factura Cancelada' : 'Factura Cargada') : 'Sin Factura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.pdf_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>F</div>
                                                 <div title={inv.xml_url ? (inv.status === 'CANCELADA' ? 'XML Cancelado' : 'XML Cargado') : 'Sin XML'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.xml_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>X</div>
                                             </div>
@@ -562,7 +583,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                                         setShowUploadModal(true);
                                                         setFiles({ pdf: null, xml: null, facturaPdf: null });
                                                     }}
-                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                     title="Gestionar Archivos"
                                                 >
                                                     <Upload className="w-4 h-4" />
@@ -628,11 +649,11 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
             {
                 showUploadModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-blue-500/10">
-                            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-blue-600/10 to-transparent">
+                        <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-cyan-500/10">
+                            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-cyan-600/10 to-transparent">
                                 <div>
                                     <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <Upload className="text-blue-500 w-5 h-5" />
+                                        <Upload className="text-cyan-500 w-5 h-5" />
                                         Documentación de Facturación
                                     </h3>
                                     <p className="text-xs text-slate-400 mt-1">Sube la documentación y añade comentarios al proceso.</p>
@@ -649,7 +670,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                             1. Prefactura
                                         </h4>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Prefactura)</label>
+                                            <label htmlFor="preinvoice-pdf" className="text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer">Archivo PDF (Prefactura)</label>
                                             {selectedInvoice?.preinvoice_url && !files.pdf ? (
                                                 <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
                                                     <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
@@ -658,8 +679,9 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                                     <button onClick={() => handleDeleteFile('preinvoice_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
                                             ) : (
-                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
                                                     <input
+                                                        id="preinvoice-pdf"
                                                         type="file"
                                                         accept=".pdf"
                                                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -685,7 +707,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                             <textarea
                                                 value={preinvoiceComments}
                                                 onChange={(e) => setPreinvoiceComments(e.target.value)}
-                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors custom-scrollbar"
                                                 placeholder="Añade observaciones sobre la prefactura..."
                                                 rows={2}
                                             />
@@ -720,21 +742,22 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                     {/* SECCIÓN FACTURA TIMBRADA */}
                                     <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
                                         <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <FileCheck className="w-4 h-4 text-blue-500" />
+                                            <FileCheck className="w-4 h-4 text-cyan-500" />
                                             2. Factura Timbrada
                                         </h4>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Factura Final)</label>
+                                            <label htmlFor="final-invoice-pdf" className="text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer">Archivo PDF (Factura Final)</label>
                                             {selectedInvoice?.pdf_url && !files.facturaPdf ? (
-                                                <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl">
-                                                    <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                                                <div className="flex items-center justify-between bg-cyan-500/10 border border-cyan-500/20 p-3 rounded-xl">
+                                                    <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
                                                         <FileCheck size={16} /> Archivo Cargado
                                                     </div>
                                                     <button onClick={() => handleDeleteFile('pdf_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
                                             ) : (
-                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.facturaPdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.facturaPdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
                                                     <input
+                                                        id="final-invoice-pdf"
                                                         type="file"
                                                         accept=".pdf"
                                                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -760,7 +783,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                             <textarea
                                                 value={invoiceComments}
                                                 onChange={(e) => setInvoiceComments(e.target.value)}
-                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors custom-scrollbar"
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors custom-scrollbar"
                                                 placeholder="Añade observaciones sobre la factura final..."
                                                 rows={2}
                                             />
@@ -770,21 +793,22 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                     {/* SECCIÓN XML */}
                                     <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
                                         <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <FileText className="w-4 h-4 text-purple-500" />
+                                            <FileText className="w-4 h-4 text-teal-500" />
                                             3. Archivo XML
                                         </h4>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo XML (CFDI)</label>
+                                            <label htmlFor="final-invoice-xml" className="text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer">Archivo XML (CFDI)</label>
                                             {selectedInvoice?.xml_url && !files.xml ? (
-                                                <div className="flex items-center justify-between bg-purple-500/10 border border-purple-500/20 p-3 rounded-xl">
-                                                    <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                                                <div className="flex items-center justify-between bg-teal-500/10 border border-teal-500/20 p-3 rounded-xl">
+                                                    <div className="flex items-center gap-2 text-teal-400 font-bold text-sm">
                                                         <FileCheck size={16} /> Archivo XML Cargado
                                                     </div>
                                                     <button onClick={() => handleDeleteFile('xml_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
                                             ) : (
-                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.xml ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/30'}`}>
+                                                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.xml ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
                                                     <input
+                                                        id="final-invoice-xml"
                                                         type="file"
                                                         accept=".xml"
                                                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -820,7 +844,7 @@ const Invoices = ({ userProfile }: InvoicesProps) => {
                                         onClick={handleUpload}
                                         className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading
                                             ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                            : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/20'
+                                            : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-cyan-500/20'
                                             }`}
                                     >                            {uploading ? (
                                         <>

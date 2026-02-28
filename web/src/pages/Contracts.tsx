@@ -235,7 +235,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FileSignature className="text-indigo-500" />
+                        <FileSignature className="text-cyan-500" />
                         {quotationId ? 'Contratos de Proforma' : 'Gestión de Contratos'}
                     </h1>
                     <p className="text-slate-400 text-sm mt-1">
@@ -249,7 +249,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
                         >
@@ -298,7 +298,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                             {c.isPending ? (
                                                 <button
                                                     onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                    className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
+                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
                                                     title="Ir a Configurar Proforma"
                                                 >
                                                     <FileEdit className="w-4 h-4" /> {/* Assuming FileEdit is the intended icon */}
@@ -306,7 +306,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                             ) : (
                                                 <button
                                                     onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                    className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
                                                     title="Abrir Proforma Original"
                                                 >
                                                     <FileEdit className="w-4 h-4" />
@@ -347,7 +347,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                         <div className="flex items-center justify-center gap-2">
                                             <button
                                                 onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-all"
+                                                className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                 title="Ir a Proforma Maestra"
                                             >
                                                 <ExternalLink className="w-4 h-4" />
@@ -356,7 +356,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                             {c.file_url && (
                                                 <button
                                                     onClick={() => handleViewContract(c.file_url)}
-                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                     title="Ver Contrato PDF"
                                                 >
                                                     <Eye className="w-4 h-4" />
@@ -394,11 +394,11 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
             {/* MODAL DE CARGA */}
             {showUploadModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-indigo-500/10">
-                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-indigo-600/10 to-transparent">
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-cyan-500/10">
+                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-cyan-600/10 to-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Upload className="text-indigo-500 w-5 h-5" />
+                                    <Upload className="text-cyan-500 w-5 h-5" />
                                     Subir Contrato
                                 </h3>
                                 <p className="text-xs text-slate-400 mt-1">Sube el documento PDF o Word del contrato.</p>
@@ -410,7 +410,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Word</label>
-                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-indigo-500/30'}`}>
+                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
                                         <input
                                             type="file"
                                             accept=".pdf,.doc,.docx"
@@ -445,7 +445,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                     onClick={handleUpload}
                                     className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading || !files.pdf
                                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                        : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/20'
+                                        : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-cyan-500/20'
                                         }`}
                                 >
                                     {uploading ? (

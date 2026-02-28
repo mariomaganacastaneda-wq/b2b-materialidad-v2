@@ -51,7 +51,7 @@ const SystemVersionsTab = () => {
         switch (type) {
             case 'feat': return <Sparkles size={12} style={{ color: '#10b981' }} />;
             case 'fix': return <Wrench size={12} style={{ color: '#ef4444' }} />;
-            case 'ui': return <Zap size={12} style={{ color: '#6366f1' }} />;
+            case 'ui': return <Zap size={12} style={{ color: '#06b6d4' }} />;
             case 'perf': return <ShieldCheck size={12} style={{ color: '#f59e0b' }} />;
             default: return <Code2 size={12} />;
         }
@@ -61,7 +61,7 @@ const SystemVersionsTab = () => {
         switch (type) {
             case 'feat': return 'rgba(16, 185, 129, 0.1)';
             case 'fix': return 'rgba(239, 68, 68, 0.1)';
-            case 'ui': return 'rgba(99, 102, 241, 0.1)';
+            case 'ui': return 'rgba(6, 182, 212, 0.1)';
             case 'perf': return 'rgba(245, 158, 11, 0.1)';
             default: return 'rgba(255, 255, 255, 0.05)';
         }
@@ -145,7 +145,7 @@ const SystemVersionsTab = () => {
                                     style={{
                                         padding: '0',
                                         overflow: 'hidden',
-                                        border: isLatest ? '1px solid rgba(99, 102, 241, 0.2)' : '1px solid rgba(255,255,255,0.05)',
+                                        border: isLatest ? '1px solid rgba(6, 182, 212, 0.2)' : '1px solid rgba(255,255,255,0.05)',
                                         transition: 'all 0.3s ease'
                                     }}
                                 >

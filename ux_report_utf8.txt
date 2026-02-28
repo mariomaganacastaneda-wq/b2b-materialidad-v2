@@ -1,0 +1,32 @@
+﻿
+[UX AUDIT] 116 files checked
+--------------------------------------------------
+[!] ISSUES (25):
+  - [Cognitive Load] Informe_Ejecutivo_SEICO.html: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] Mapa_Mental.html: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] Roadmap_Granular_SEICO.html: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Color] index.html: PURPLE DETECTED ('#A78BFA'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Cognitive Load] globals.css: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Color] page.tsx: PURPLE DETECTED ('purple'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Hick's Law] index.tsx: 18 nav items (Max 7)
+  - [Cognitive Load] alert.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] autocomplete.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] card.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+[*] WARNINGS (651):
+  - [Fitts' Law] Informe_Ejecutivo_SEICO.html: Small targets (< 44px)
+  - [Reflective] Informe_Ejecutivo_SEICO.html: Long-form content without brand story/values. Add 'About' or 'Why We Exist' section.
+  - [Cognitive Load] Informe_Ejecutivo_SEICO.html: High visual noise detected. Many colors and borders increase cognitive load.
+  - [Typography] Informe_Ejecutivo_SEICO.html: No line length constraint (45-75ch). Use max-w-prose or max-w-[65ch].
+  - [Typography] Informe_Ejecutivo_SEICO.html: Heading has line-height 1.7 (>1.3). Headings should be tighter (1.1-1.3).
+  - [Typography] Informe_Ejecutivo_SEICO.html: Uppercase text without tracking. ALL CAPS needs +5-10% spacing.
+  - [Typography] Informe_Ejecutivo_SEICO.html: Adjacent font weights (700/800). Skip at least 2 levels for contrast.
+  - [Typography] Informe_Ejecutivo_SEICO.html: Fixed font sizes without clamp(). Consider fluid typography: clamp(MIN, PREFERRED, MAX)
+  - [Performance] Informe_Ejecutivo_SEICO.html: Animating expensive properties (padding, height, top, width, margin, bottom, right, left). Use transform/opacity where possible.
+  - [Accessibility] Informe_Ejecutivo_SEICO.html: Animations found without prefers-reduced-motion check
+  - [Visual] Informe_Ejecutivo_SEICO.html: Simple/Unnatural shadow detected. Consider multiple layers or Y > X offset for realism.
+  - [Color] Informe_Ejecutivo_SEICO.html: 14 distinct colors. Consider 60-30-10 rule: dominant (60%), secondary (30%), accent (10%).
+  - [Fitts' Law] Roadmap_Granular_SEICO.html: Small targets (< 44px)
+  - [Behavioral] Roadmap_Granular_SEICO.html: Interactive elements lack immediate feedback. Add hover/focus/disabled states.
+  - [Reflective] Roadmap_Granular_SEICO.html: Long-form content without brand story/values. Add 'About' or 'Why We Exist' section.
+[+] PASSED CHECKS: 63
+STATUS: FAIL

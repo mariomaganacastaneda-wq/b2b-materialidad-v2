@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "n8n": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "n8n-mcp@latest"
+      ],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "https://n8n-n8n.5gad6x.easypanel.host",
+        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNDAyNmI2Zi0xZGVkLTQwZjEtOGU5OC0yYWZjMWRjODE5NzEiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY4NDk0NDQyfQ.69gxUu-5JUl7P3_FeHm1et-IEzVzJTbiNc8HNZO8f4s"
+      }
+    }
+  }
+}

@@ -50,7 +50,7 @@ const SATCatalogs = () => {
                 position: 'relative',
                 overflow: 'hidden',
                 padding: '32px',
-                background: 'linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(15, 23, 42, 0.6))',
+                background: 'linear-gradient(to bottom right, rgba(6, 182, 212, 0.1), rgba(15, 23, 42, 0.6))',
                 borderRadius: '24px'
             }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, width: '256px', height: '256px', background: 'var(--primary-glow)', filter: 'blur(100px)', marginRight: '-128px', marginTop: '-128px', opacity: 0.3 }}></div>

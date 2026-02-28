@@ -11,23 +11,29 @@ const AVAILABLE_SCREENS = [
     { id: 'settings_empresa', label: 'Empresa', category: 'Configuración Administrativa (Sensibilidad Alta)' },
     { id: 'settings_usuarios', label: 'Usuarios', category: 'Configuración Administrativa (Sensibilidad Alta)' },
     { id: 'settings_roles', label: 'Roles', category: 'Configuración Administrativa (Sensibilidad Alta)' },
+    { id: 'settings_emisoras', label: 'Gestión de Emisoras', category: 'Configuración Administrativa (Sensibilidad Alta)' },
     { id: 'security', label: 'Centro de Seguridad', category: 'Configuración Administrativa (Sensibilidad Alta)' },
 
     // Operación Base
     { id: 'dashboard', label: 'Dashboard', category: 'Operación General' },
+    { id: 'mi_perfil', label: 'Mi Perfil (Autogestión)', category: 'Operación General' },
 
     // Nivel Medio (Manejo de Dinero/Fiscal)
     { id: 'facturas', label: 'Facturación CFDI', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'bancos', label: 'Cuentas Bancarias', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'materialidad', label: 'Materialidad Fiscal', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'catalogos-sat', label: 'Catálogos SAT', category: 'Gestión Financiera (Sensibilidad Media)' },
+    { id: 'expediente_materialidad', label: 'Expediente de Materialidad', category: 'Gestión Financiera (Sensibilidad Media)' },
 
     // Nivel Bajo (Comercialización/Ventas)
-    { id: 'cotizaciones', label: 'Cotizaciones', category: 'Gestión Comercial (Sensibilidad Baja)' },
-    { id: 'proformas', label: 'Proformas / Pre-facturas', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'cotizaciones', label: 'Solicitudes Cotización', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'proformas', label: 'Proformas Maestras', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'ordenes_compra', label: 'Órdenes de Compra', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'contratos', label: 'Contratos', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'evidencia', label: 'Evidencia Fotográfica', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'reportes', label: 'Centro de Reportes', category: 'Gestión Comercial (Sensibilidad Baja)' },
 ];
+
 
 export const RoleManager: React.FC<RoleManagerProps> = ({ supabase, currentUser }) => {
     const [roles, setRoles] = useState<any[]>([]);

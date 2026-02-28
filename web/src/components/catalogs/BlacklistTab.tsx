@@ -98,6 +98,7 @@ const BlacklistTab = () => {
                     <input
                         type="text"
                         placeholder="Auditar RFC o Razón Social..."
+                        aria-label="Auditar RFC o Razón Social en la lista negra"
                         style={{
                             width: '100%',
                             backgroundColor: 'transparent',

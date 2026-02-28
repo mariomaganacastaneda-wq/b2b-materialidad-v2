@@ -86,13 +86,13 @@ const GENERATE_FAMILY = (hex: string) => {
 };
 
 const PRESET_COLORS = [
-    { name: 'Indigo', primary: '#6366f1' },
+    { name: 'Cyan', primary: '#06b6d4' },
     { name: 'Sky', primary: '#0ea5e9' },
     { name: 'Emerald', primary: '#10b981' },
     { name: 'Amber', primary: '#f59e0b' },
     { name: 'Rose', primary: '#f43f5e' },
     { name: 'Slate', primary: '#64748b' },
-    { name: 'Violet', primary: '#8b5cf6' },
+    { name: 'Teal', primary: '#14b8a6' },
     { name: 'Orange', primary: '#f97316' },
 ];
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Shield, Activity, Mail, Trash2, Save, Eye } from 'lucide-react';
+import { User, Shield, Activity, Mail, Trash2, Save, Eye, MessageCircle, Send } from 'lucide-react';
 /* OrgAccessList is imported in the parent and passed or imported here? 
    Since it was in UserDirectory.tsx as a sub-component, I should probably move it to its own file or keep it in UserDirectory for now.
    Actually, the user asked to make it like CompanyDetails. Let's assume OrgAccessList stays available.
@@ -52,7 +52,9 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
             onUpdate({
                 full_name: localUser.full_name,
                 role: localUser.role,
-                is_active: localUser.is_active
+                is_active: localUser.is_active,
+                phone_whatsapp: localUser.phone_whatsapp,
+                telegram_chat_id: localUser.telegram_chat_id
             });
         }
     };
@@ -144,6 +146,35 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
                             ))}
                         </select>
                         {!isAdmin && <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Solo administradores pueden cambiar roles.</p>}
+                    </div>
+
+                    {/* Información de Contacto (Perfil Integrado) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid #334155' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>
+                            <Activity size={14} /> INFORMACIÓN DE CONTACTO
+                        </div>
+                        <div className="input-group">
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <MessageCircle size={14} color="#25D366" /> WhatsApp
+                            </label>
+                            <input
+                                type="text"
+                                value={localUser?.phone_whatsapp || ''}
+                                onChange={(e) => handleChange('phone_whatsapp', e.target.value)}
+                                placeholder="+521234567890"
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Send size={14} color="#0088cc" /> Telegram Chat ID
+                            </label>
+                            <input
+                                type="text"
+                                value={localUser?.telegram_chat_id || ''}
+                                onChange={(e) => handleChange('telegram_chat_id', e.target.value)}
+                                placeholder="ID de chat para notificaciones"
+                            />
+                        </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid #334155' }}>

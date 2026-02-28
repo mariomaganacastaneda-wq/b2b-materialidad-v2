@@ -263,7 +263,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
         // 1. Calcular el nuevo estado local (Optimistic Update)
         let localUpdate: any = {};
-        let finalThemeConfig = { ...(selectedOrg.theme_config || {}) };
+        const finalThemeConfig = { ...(selectedOrg.theme_config || {}) };
         let hasThemeUpdates = false;
 
         if (typeof fieldOrObject === 'string') {
@@ -468,7 +468,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <div className="premium-panel p-8 max-w-2xl mx-auto mt-8 relative overflow-hidden">
                     {/* Decorative Background Element */}
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div className="relative z-10">
                         <h2 className="text-2xl font-black mb-8 flex items-center gap-3">
@@ -552,8 +552,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                         onClick={handleUpdateProfile}
                                         disabled={isUpdatingProfile}
                                         className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${profileUpdateSuccess
-                                                ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]'
-                                                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg active:scale-95 disabled:opacity-50'
+                                            ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                                            : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg active:scale-95 disabled:opacity-50'
                                             }`}
                                     >
                                         {isUpdatingProfile ? (
@@ -573,7 +573,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                         {['EMAIL', 'TELEGRAM', 'WHATSAPP'].map(channel => {
                                             const isSelected = currentUser?.notification_prefered_channels?.includes(channel);
                                             const colors = {
-                                                'EMAIL': 'peer-checked:bg-blue-500 peer-checked:border-blue-500 hover:border-blue-200',
+                                                'EMAIL': 'peer-checked:bg-cyan-500 peer-checked:border-cyan-500 hover:border-cyan-200',
                                                 'TELEGRAM': 'peer-checked:bg-emerald-500 peer-checked:border-emerald-500 hover:border-emerald-200',
                                                 'WHATSAPP': 'peer-checked:bg-green-500 peer-checked:border-green-500 hover:border-green-200'
                                             } as any;

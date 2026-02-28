@@ -40,7 +40,7 @@ const Proformas = ({ selectedOrg }: ProformasProps) => {
                 <h1 className="text-3xl font-bold">Proformas</h1>
                 <a
                     href="/proformas/nueva"
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+                    className="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-cyan-600/20"
                     onClick={(e) => {
                         e.preventDefault();
                         window.history.pushState({}, '', '/proformas/nueva');
@@ -78,7 +78,7 @@ const Proformas = ({ selectedOrg }: ProformasProps) => {
                                         window.history.pushState({}, '', `/proformas/${q.id}`);
                                         window.dispatchEvent(new PopStateEvent('popstate'));
                                     }}>
-                                        <td className="p-4 font-mono text-indigo-400 font-bold">{customFolio}</td>
+                                        <td className="p-4 font-mono text-cyan-400 font-bold">{customFolio}</td>
                                         <td className="p-4 text-slate-300">{q.description || 'Proforma sin descripción'}</td>
                                         <td className="p-4 font-bold text-white">${new Intl.NumberFormat('es-MX').format(q.amount_total)}</td>
                                         <td className="p-4">

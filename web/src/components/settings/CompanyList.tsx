@@ -62,6 +62,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({
                     <input
                         type="text"
                         placeholder="Buscar por Nombre o RFC..."
+                        aria-label="Buscar empresa por nombre o RFC"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ width: '100%', padding: '8px 12px 8px 32px', fontSize: '12px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'white' }}

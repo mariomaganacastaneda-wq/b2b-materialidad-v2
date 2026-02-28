@@ -7,6 +7,7 @@ interface UserListProps {
     onSelectUser: (user: any) => void;
     searchTerm: string;
     setSearchTerm: (term: string) => void;
+    currentUser?: any;
 }
 
 export const UserList: React.FC<UserListProps> = ({
@@ -14,7 +15,8 @@ export const UserList: React.FC<UserListProps> = ({
     selectedUserId,
     onSelectUser,
     searchTerm,
-    setSearchTerm
+    setSearchTerm,
+    currentUser
 }) => {
     const filteredUsers = users.filter(u =>
         !searchTerm ||
@@ -38,6 +40,7 @@ export const UserList: React.FC<UserListProps> = ({
                     <input
                         type="text"
                         placeholder="Buscar por nombre o email..."
+                        aria-label="Buscar colaboradores por nombre o email"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
@@ -58,6 +61,46 @@ export const UserList: React.FC<UserListProps> = ({
             </div>
 
             <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                {/* --- MI PERFIL SHORTCUT --- */}
+                {!searchTerm && currentUser && (
+                    <div
+                        onClick={() => onSelectUser(currentUser)}
+                        style={{
+                            padding: '16px 20px',
+                            cursor: 'pointer',
+                            borderBottom: '2px solid rgba(99, 102, 241, 0.2)',
+                            backgroundColor: selectedUserId === currentUser.id ? 'var(--primary-glow)' : 'rgba(99, 102, 241, 0.05)',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            marginBottom: '4px'
+                        }}
+                    >
+                        <div style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid var(--primary-color)',
+                            flexShrink: 0
+                        }}>
+                            {currentUser.avatar_url ? (
+                                <img src={currentUser.avatar_url} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} alt="" />
+                            ) : (
+                                <ShieldCheck size={18} color="var(--primary-color)" />
+                            )}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'white' }}>Mi Perfil</div>
+                            <div style={{ fontSize: '11px', color: '#94a3b8' }}>Configura tus datos personales</div>
+                        </div>
+                    </div>
+                )}
+
                 {filteredUsers.length > 0 ? (
                     filteredUsers.map((u: any) => (
                         <div

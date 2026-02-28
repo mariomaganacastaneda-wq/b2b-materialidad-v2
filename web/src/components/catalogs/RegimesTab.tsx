@@ -68,6 +68,7 @@ const RegimesTab = () => {
                     <input
                         type="text"
                         placeholder="Filtrar regímenes (Ej. 601, Sueldos)..."
+                        aria-label="Filtrar regímenes fiscales"
                         style={{
                             width: '100%',
                             backgroundColor: '#020617',

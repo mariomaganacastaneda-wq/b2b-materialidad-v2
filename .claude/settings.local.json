@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -lah /c/Proyectos/Memoria/B2B_Materialidad/*.md)",
+      "Bash(wc -l supabase/migrations/*.sql)",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "mcp__claude_ai_Supabase__list_tables",
+      "mcp__claude_ai_Supabase__list_projects",
+      "mcp__n8n__n8n_list_workflows",
+      "mcp__n8n__n8n_get_workflow",
+      "mcp__n8n__n8n_executions",
+      "Bash(python3 -c \" import json, sys data = json.load\\(sys.stdin\\) text = data[0][''text''] obj = json.loads\\(text\\) exec_data = obj[''data''] # Get final node output for node_name, node_data in exec_data.get\\(''data'', {}\\).get\\(''resultData'', {}\\).get\\(''runData'', {}\\).items\\(\\): if ''Respond'' in node_name or ''Formatear'' in node_name: for run in node_data: for item in run.get\\(''data'', {}\\).get\\(''main'', [[]]\\)[0]: print\\(f''=== {node_name} ===''\\) print\\(json.dumps\\(item.get\\(''json'', {}\\), indent=2, ensure_ascii=False\\)[:3000]\\) \")",
+      "Bash(python3 -c \":*)",
+      "Bash(npx vite build)",
+      "mcp__n8n__search_nodes",
+      "Bash(grep -l \"from_po_id\\\\|purchase_order\" \"C:/Proyectos/Memoria/B2B_Materialidad/supabase/migrations\"/*)",
+      "Bash(grep -B5 -A5 \"from_po_id\\\\|ALTER TABLE.*quotations.*ADD\" \"C:/Proyectos/Memoria/B2B_Materialidad/supabase/migrations\"/*)",
+      "Bash(grep -n \"ADD COLUMN.*from_po_id\\\\|bank_account_id\\\\|req_quotation\\\\|req_evidence\" \"C:/Proyectos/Memoria/B2B_Materialidad/supabase/migrations\"/*)",
+      "Bash(find \"C:/Proyectos/Memoria/B2B_Materialidad\" -name \"*.sql\" -type f -exec grep -l \"from_po_id\" {} ;)",
+      "mcp__claude_ai_Supabase__list_migrations"
+    ]
+  }
+}

@@ -11,7 +11,10 @@ import {
   BarChart3,
   CheckCircle2,
   Shield,
-  FileSignature
+  FileSignature,
+  ChevronDown,
+  Wallet,
+  ShoppingCart
 } from 'lucide-react';
 import { supabase, hasSupabaseConfig, updateSupabaseAuth, setClerkTokenProvider } from './lib/supabase';
 import {
@@ -26,7 +29,6 @@ import {
 // Componentes importados
 import ProformaManager from './components/commercial/ProformaManager';
 import MaterialityBoard from './components/commercial/MaterialityBoard';
-import Quotations from './pages/Proformas';
 import QuotationRequests from './pages/QuotationRequests';
 import Evidence from './pages/Evidence';
 import Contracts from './pages/Contracts';
@@ -36,6 +38,7 @@ import BankAccountsPage from './pages/BankAccounts';
 import Invoices from './pages/Invoices';
 import { SecurityCenter } from './pages/SecurityCenter';
 import { PurchaseOrders } from './pages/PurchaseOrders';
+import Pagos from './pages/Pagos';
 
 // Branding and Diagnostics
 export const EnvDiagnostic = () => {
@@ -54,9 +57,9 @@ const useTheme = (org: any) => {
   useEffect(() => {
     if (org) {
       // 1. PRIMARY (30%)
-      const primaryBase = org.theme_config?.primary_color || '#6366f1';
-      const primaryLight = org.theme_config?.primary_light || '#a5b4fc';
-      const primaryDark = org.theme_config?.primary_dark || '#4338ca';
+      const primaryBase = org.theme_config?.primary_color || '#06b6d4';
+      const primaryLight = org.theme_config?.primary_light || '#22d3ee';
+      const primaryDark = org.theme_config?.primary_dark || '#0891b2';
 
       // 2. SECONDARY / ACCENT (10%)
       const accent = org.theme_config?.accent_color || '#FFC107';
@@ -191,7 +194,7 @@ const DashboardPage = ({ userProfile }: { userProfile: any }) => {
     if (!supabase) return;
 
     let quoteQuery = supabase.from('quotations').select('*').limit(5);
-    let complianceQuery = supabase.from('v_organizations_csf_status').select('*').limit(10);
+    const complianceQuery = supabase.from('v_organizations_csf_status').select('*').limit(10);
 
     // Si el perfil activo no es ADMIN, filtramos por su ID de perfil (Esto simula RLS para el Admin suplantador)
     if (userProfile && userProfile.role !== 'ADMIN') {
@@ -284,7 +287,7 @@ const DashboardPage = ({ userProfile }: { userProfile: any }) => {
                 </td>
                 <td style={{ padding: '16px 24px', fontWeight: 'bold' }}>${q.amount_total?.toLocaleString()}</td>
                 <td style={{ padding: '16px 24px' }}>
-                  <span style={{ padding: '4px 10px', borderRadius: '99px', fontSize: '12px', backgroundColor: '#312e81', color: '#818cf8', border: '1px solid #4338ca' }}>
+                  <span style={{ padding: '6px 14px', borderRadius: '99px', fontSize: '12px', backgroundColor: 'rgba(6, 182, 212, 0.15)', color: '#22d3ee', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
                     {q.status}
                   </span>
                 </td>
@@ -567,42 +570,55 @@ export function App() {
     }
   };
 
+  // Sub-items del flujo de Materialidad (orden de negocio)
+  const materialityChildren = [
+    { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
+    { label: 'Contratos', path: '/contratos', icon: FileSignature, screenId: 'contratos', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
+    { label: 'Órdenes Compra', path: '/ordenes-compra', icon: ShoppingCart, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
+    { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
+    { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
+    { label: 'Pagos', path: '/pagos', icon: Wallet, screenId: 'pagos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE'] },
+  ];
+  const materialityChildPaths = materialityChildren.map(c => c.path);
+
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard, screenId: 'dashboard', roles: ['*'] },
-    { label: 'Materialidad', path: '/materialidad', icon: Shield, screenId: 'materialidad', roles: ['ADMIN', 'CONTABLE', 'FACTURACION'] },
-    { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
-    { label: 'Órdenes Compra', path: '/ordenes-compra', icon: FileText, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
-    { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
+    { label: 'Materialidad', path: '/materialidad', icon: Shield, screenId: 'materialidad', roles: ['ADMIN', 'CONTABLE', 'FACTURACION'], isParent: true },
     { label: 'Bancos', path: '/bancos', icon: FileCheck, screenId: 'bancos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'REPRESENTANTE'] },
-    { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
-    { label: 'Contratos', path: '/contratos', icon: FileSignature, screenId: 'contratos', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
     { label: 'Reportes', path: '/reportes', icon: BarChart3, screenId: 'reportes', roles: ['ADMIN', 'CONTABLE', 'REPRESENTANTE'] },
     { label: 'Catálogos SAT', path: '/catalogos-sat', icon: LayoutGrid, screenId: 'catalogos-sat', roles: ['ADMIN', 'FACTURACION', 'CONTABLE'] },
-    { label: 'Configuración', path: '/settings', icon: Settings, screenIds: ['settings_empresa', 'settings_usuarios', 'settings_roles'], roles: ['ADMIN', 'VENDEDOR', 'CXC', 'CONTABLE'] },
+    { label: 'Configuración', path: '/settings', icon: Settings, screenIds: ['settings_empresa', 'settings_usuarios', 'settings_roles', 'settings_emisoras'], roles: ['ADMIN', 'VENDEDOR', 'CXC', 'CONTABLE'] },
     { label: 'Seguridad', path: '/security', icon: Shield, screenId: 'security', roles: ['ADMIN'] },
   ];
+
+  const [materialityOpen, setMaterialityOpen] = useState(true);
 
   const hardcodedAdmins = ['user_39fz5fO1nTqgiZdV3oBEevy2FfT', 'user_39ldmMY70oeZqxolww1N55Ptvw6'];
   const isActualAdmin = (clerkUser && hardcodedAdmins.includes(clerkUser.id) && !impersonatedUser) || (userProfile?.role === 'ADMIN' && !impersonatedUser);
 
-  const filteredNavItems = navItems.filter(item => {
+  const canViewItem = (item: any) => {
     if (item.roles.includes('*')) return true;
     if (isActualAdmin) return true;
-
-    // Buscar permiso para esta pantalla específica o lista de pantallas
     if (item.screenIds) {
-      return item.screenIds.some(id => userRolePermissions.find(p => p.screen_id === id)?.can_view);
+      return item.screenIds.some((id: string) => userRolePermissions.find((p: any) => p.screen_id === id)?.can_view);
     }
-    const perm = userRolePermissions.find(p => p.screen_id === item.screenId);
+    const perm = userRolePermissions.find((p: any) => p.screen_id === item.screenId);
     return perm?.can_view;
-  });
+  };
+
+  const filteredNavItems = navItems.filter(canViewItem);
+  const filteredMaterialityChildren = materialityChildren.filter(canViewItem);
+
+  // Auto-expand cuando la ruta actual es un child de materialidad
+  const isOnMaterialityChild = materialityChildPaths.some(p => location.pathname.startsWith(p));
+  if (isOnMaterialityChild && !materialityOpen) setMaterialityOpen(true);
 
   // Nuclear Protection: Si estamos cargando Clerk, o TENEMOS usuario pero la sesión AÚN NO está lista, BLOQUEAR renderizado.
   if (!isLoaded || (clerkUser && !sessionReady)) {
     return (
       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f172a', color: 'white' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
+          <div className="animate-spin rounded-full h-11 w-11 border-b-2 border-cyan-500"></div>
           <div style={{ textAlign: 'center' }}>
             <p style={{ color: '#94a3b8', fontSize: '18px', fontWeight: 'bold' }}>
               {!isLoaded ? 'Cargando Autenticación...' : 'Sincronizando con B2B Cloud...'}
@@ -643,7 +659,7 @@ export function App() {
           backgroundImage: 'radial-gradient(circle at center, rgba(99, 102, 241, 0.15) 0%, transparent 70%)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-            <div style={{ width: '60px', height: '60px', backgroundColor: 'var(--primary-color)', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '24px', boxShadow: '0 0 30px var(--primary-glow)' }}>B2B</div>
+            <div style={{ width: '60px', height: '60px', backgroundColor: 'var(--primary-color)', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '24px', boxShadow: '0 0 30px var(--primary-glow)', minWidth: '60px', minHeight: '60px' }}>B2B</div>
             <div style={{ fontSize: '32px', fontWeight: '800', letterSpacing: '-0.025em' }}>Materialidad <span style={{ color: 'var(--primary-base)', fontWeight: '400' }}>Fiscal</span></div>
           </div>
           <p style={{ color: '#94a3b8', fontSize: '16px', marginBottom: '10px' }}>Bienvenido al sistema de cumplimiento forense corporativo.</p>
@@ -722,8 +738,8 @@ export function App() {
                   appearance={{
                     elements: {
                       avatarBox: {
-                        width: '40px',
-                        height: '40px',
+                        width: '44px',
+                        height: '44px',
                         borderRadius: '50%',
                         border: '1px solid #334155'
                       }
@@ -741,28 +757,80 @@ export function App() {
               translate="no"
               style={{ width: '260px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: 'var(--neutro-claro)' }}
             >
-              {filteredNavItems.map(item => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    color: location.pathname === item.path ? 'white' : '#94a3b8',
-                    backgroundColor: location.pathname === item.path ? 'var(--primary-glow)' : 'transparent',
-                    padding: '12px 16px',
-                    borderRadius: '10px',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s ease',
-                    fontWeight: location.pathname === item.path ? '600' : '400',
-                    border: location.pathname === item.path ? '1px solid var(--primary-glow)' : '1px solid transparent'
-                  }}
-                >
-                  <item.icon size={18} color={location.pathname === item.path ? 'var(--primary-base)' : '#94a3b8'} style={{ transition: 'color 0.5s' }} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+              {filteredNavItems.map(item => {
+                const isActive = location.pathname === item.path || (item.isParent && isOnMaterialityChild);
+                const linkStyle = {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  color: isActive ? 'white' : '#94a3b8',
+                  backgroundColor: isActive ? 'var(--primary-glow)' : 'transparent',
+                  padding: '14px 16px',
+                  borderRadius: '10px',
+                  textDecoration: 'none' as const,
+                  transition: 'all 0.2s ease',
+                  fontWeight: isActive ? '600' : '400',
+                  border: isActive ? '1px solid var(--primary-glow)' : '1px solid transparent',
+                  minHeight: '44px'
+                };
+
+                if (item.isParent) {
+                  return (
+                    <div key={item.path}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Link to={item.path} style={{ ...linkStyle, flex: 1 }}>
+                          <item.icon size={18} color={isActive ? 'var(--primary-base)' : '#94a3b8'} style={{ transition: 'color 0.5s' }} />
+                          <span>{item.label}</span>
+                        </Link>
+                        <button
+                          onClick={() => setMaterialityOpen(!materialityOpen)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: '#94a3b8', display: 'flex', alignItems: 'center' }}
+                        >
+                          <ChevronDown size={16} style={{ transform: materialityOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }} />
+                        </button>
+                      </div>
+                      {materialityOpen && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+                          {filteredMaterialityChildren.map(child => {
+                            const childActive = location.pathname.startsWith(child.path);
+                            return (
+                              <Link
+                                key={child.path}
+                                to={child.path}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '10px',
+                                  color: childActive ? 'white' : '#64748b',
+                                  backgroundColor: childActive ? 'rgba(var(--primary-rgb, 6,182,212), 0.1)' : 'transparent',
+                                  padding: '10px 16px 10px 44px',
+                                  borderRadius: '8px',
+                                  textDecoration: 'none',
+                                  transition: 'all 0.2s ease',
+                                  fontWeight: childActive ? '600' : '400',
+                                  fontSize: '13px',
+                                  minHeight: '36px',
+                                  borderLeft: childActive ? '2px solid var(--primary-base)' : '2px solid transparent'
+                                }}
+                              >
+                                <child.icon size={15} color={childActive ? 'var(--primary-base)' : '#64748b'} style={{ transition: 'color 0.5s' }} />
+                                <span>{child.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link key={item.path} to={item.path} style={linkStyle}>
+                    <item.icon size={18} color={location.pathname === item.path ? 'var(--primary-base)' : '#94a3b8'} style={{ transition: 'color 0.5s' }} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
 
               <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
                 <button
@@ -808,12 +876,12 @@ export function App() {
                 <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
-                <Route path="/proformas" element={<Quotations selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/facturas" element={<Invoices userProfile={userProfile} />} />
-                <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} />} />
+                <Route path="/facturas" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
+                <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
+                <Route path="/pagos" element={<Pagos selectedOrg={selectedOrg} />} />
                 <Route path="/evidencia" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/evidencia/:id" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/catalogos-sat" element={<SATCatalogsPage />} />

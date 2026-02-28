@@ -69,6 +69,7 @@ const UsesTab = () => {
                     <input
                         type="text"
                         placeholder="Filtrar por uso (Ej. G03, Gastos)..."
+                        aria-label="Filtrar usos de CFDI"
                         style={{
                             width: '100%',
                             backgroundColor: '#020617',

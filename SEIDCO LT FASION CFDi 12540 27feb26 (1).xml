@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.0" Folio="12540" Fecha="2026-02-27T11:38:50" Sello="G+S9pD0HKi12EAyGlX7YCS7FTrl/Hg0YMGK/owJwsROQK0baiQDPbC/MbTXYq52DzgOhq9osZauEZRBdZXffBIHhawEq3BVZKpqfRM7vtBtWvwuzDTErxLvpcQbaaE3XLbCXnJ44bIoDe8N15AkAIIZIgHonhWXQOvqYP9WEM0+kmOINN7a4eLMuVjwy0rLY40xKMafxWfOEPtEo0CifZlGLfkXrEiHxLaswl8ZbjAeYDqNfkIzmvJ9NHVKlDlNYM+dbSqsmqUkV1a+sTv8aQuVEqtsKmNvwt9I/FjA6kym9KKXoX30Vmu6CWijOFAd3w4gj5/U8QTTvSknDKjRoDg==" FormaPago="99" NoCertificado="00001000000513767880" Certificado="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" CondicionesDePago="CONTADO" SubTotal="24650.00" Moneda="MXN" TipoCambio="1" Total="28594.00" TipoDeComprobante="I" Exportacion="01" MetodoPago="PPD" LugarExpedicion="15500">
+    <cfdi:Emisor Rfc="SSI101213VD1" Nombre="SEIDCO SERVICIOS DE INGENIERIA Y ADMINISTRACION INTEGRAL" RegimenFiscal="601"/>
+    <cfdi:Receptor Rfc="LFA140313H67" Nombre="LT FASHION" DomicilioFiscalReceptor="53390" RegimenFiscalReceptor="623" UsoCFDI="G03"/>
+    <cfdi:Conceptos>
+        <cfdi:Concepto ClaveProdServ="72103300" Cantidad="16.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="Adeudo 2025 ON P. Delta - Cambio de luminario tipo TUBO LED 8.5W entrada tipo base G5, 120 V./60 Hz, 850 lúmenes y 4000 k Marca Tecno lite o similar en calidad, en piso de venta, a una altura de 6.00 m empleando escalera de tijera.  " ValorUnitario="1100.00" Importe="17600.00">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="17600.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="2816.00"/>
+                </cfdi:Traslados>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+        <cfdi:Concepto ClaveProdServ="72103300" Cantidad="7.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SERV" Descripcion="Adeudo 2025 ON P. Delta - Cambio de foco tipo LED 8.5W entrada tipo A19 , 120 V. 60 H, 850 Lumenes y 4000 k Marca Tecno lite o similar en calidad, sobre escaleras electricas, a una altura de 6.50 m empleando andamiaje, plataformas y escalera de tijera.  " ValorUnitario="750.00" Importe="5250.00">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="5250.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="840.00"/>
+                </cfdi:Traslados>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+        <cfdi:Concepto ClaveProdServ="72103300" Cantidad="1.0000" ClaveUnidad="E48" ObjetoImp="02" Unidad="SER" Descripcion="Adeudo 2025 ON P. Delta - Cambio de luminaria en letrero de kids fundido, luz neutra tipo regleta LED 8.5W entrada tipo A19, 120 V./60 Hz, 850 lúmenes y 4000 k Marca Tecno lite o similar en calidad.  " ValorUnitario="1800.00" Importe="1800.00">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="1800.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="288.00"/>
+                </cfdi:Traslados>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+    </cfdi:Conceptos>
+    <cfdi:Impuestos TotalImpuestosTrasladados="3944.00">
+        <cfdi:Traslados>
+            <cfdi:Traslado Base="24650.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="3944.00"/>
+        </cfdi:Traslados>
+    </cfdi:Impuestos>
+    <cfdi:Complemento>
+        <tfd:TimbreFiscalDigital Version="1.1" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" SelloSAT="e7t51r7/Anq7TtcOFm//WVXcCTJCxxjP749IC3Trr+XYtEDmD1VUbM467jlis+E0dHEWClkE98p+sLnh9YN/uxP/nHApD49nxgX4AKttrVISaOwb/hMKkQW/sz1HD8VJi0qdmTi+fZrA1k/aGYV3iVT0JW2TBfzprU+p6nDNPY8oseIhdAvbT1scf0ySVwdsziEhIFaXbzfrTgi3PaPgbxrZYKaMcvDKiPwsQcpm2pEbEzSMr+TzsAwozagxQveTFyZ8Ptr3jpIQZ+U8ev+0XYpZTM3l6/bRxHKy4Gkm0vgN6TgUMntpQj+4i+gBkdLpkeWwjXrGNAXRKN4lLVrCIQ==" NoCertificadoSAT="00001000000709182898" UUID="0951D90A-535B-46A7-A4D8-67A3736BA706" FechaTimbrado="2026-02-27T11:38:54" SelloCFD="G+S9pD0HKi12EAyGlX7YCS7FTrl/Hg0YMGK/owJwsROQK0baiQDPbC/MbTXYq52DzgOhq9osZauEZRBdZXffBIHhawEq3BVZKpqfRM7vtBtWvwuzDTErxLvpcQbaaE3XLbCXnJ44bIoDe8N15AkAIIZIgHonhWXQOvqYP9WEM0+kmOINN7a4eLMuVjwy0rLY40xKMafxWfOEPtEo0CifZlGLfkXrEiHxLaswl8ZbjAeYDqNfkIzmvJ9NHVKlDlNYM+dbSqsmqUkV1a+sTv8aQuVEqtsKmNvwt9I/FjA6kym9KKXoX30Vmu6CWijOFAd3w4gj5/U8QTTvSknDKjRoDg==" RfcProvCertif="MAS0810247C0" xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital"/>
+    </cfdi:Complemento>
+</cfdi:Comprobante>

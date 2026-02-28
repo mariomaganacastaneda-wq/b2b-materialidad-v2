@@ -171,7 +171,7 @@ const ProductsServicesTab = () => {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '12px 20px',
-                        backgroundColor: isExpanded ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
+                        backgroundColor: isExpanded ? 'rgba(6, 182, 212, 0.05)' : 'transparent',
                         borderBottom: '1px solid rgba(255,255,255,0.03)',
                         borderRadius: isExpanded ? '12px 12px 0 0' : '8px',
                         cursor: 'pointer',
@@ -365,7 +365,7 @@ const ProductsServicesTab = () => {
                                 </div>
 
                                 {item.similar_words && (
-                                    <div style={{ padding: '12px', backgroundColor: 'rgba(99, 102, 241, 0.05)', borderRadius: '10px', border: '1px solid rgba(99, 102, 241, 0.1)' }}>
+                                    <div style={{ padding: '12px', backgroundColor: 'rgba(6, 182, 212, 0.05)', borderRadius: '10px', border: '1px solid rgba(6, 182, 212, 0.1)' }}>
                                         <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--primary-base)', textTransform: 'uppercase', marginBottom: '4px' }}>Palabras Similares / Búsqueda</div>
                                         <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.5' }}>
                                             {item.similar_words}
@@ -403,6 +403,7 @@ const ProductsServicesTab = () => {
                     <input
                         type="text"
                         placeholder="Buscar en la taxonomía SAT (División, Grupo, Clase)..."
+                        aria-label="Buscar en la taxonomía SAT de productos y servicios"
                         style={{
                             width: '100%',
                             backgroundColor: '#020617',
@@ -424,7 +425,7 @@ const ProductsServicesTab = () => {
                         <div style={{ fontSize: '9px', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px' }}>Total Catálogo</div>
                         <div style={{ fontSize: '16px', fontWeight: '900', color: 'white' }}>{products.length.toLocaleString()}</div>
                     </div>
-                    <div style={{ padding: '10px 20px', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)', textAlign: 'center' }}>
+                    <div style={{ padding: '10px 20px', backgroundColor: 'rgba(6, 182, 212, 0.1)', borderRadius: '12px', border: '1px solid rgba(6, 182, 212, 0.2)', textAlign: 'center' }}>
                         <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--primary-base)', textTransform: 'uppercase', marginBottom: '2px' }}>Divisiones</div>
                         <div style={{ fontSize: '16px', fontWeight: '900', color: 'white' }}>{products.filter(p => p.level === 'DIVISION').length}</div>
                     </div>

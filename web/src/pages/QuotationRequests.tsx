@@ -140,7 +140,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
         const s = status ? status.toLowerCase() : 'solicitada';
         switch (s) {
             case 'solicitada': return <Clock className="w-4 h-4 text-amber-500" />;
-            case 'enviada': return <Send className="w-4 h-4 text-blue-500" />;
+            case 'enviada': return <Send className="w-4 h-4 text-cyan-500" />;
             case 'aceptada': return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
             case 'completada': return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
             case 'rechazada': return <XCircle className="w-4 h-4 text-red-500" />;
@@ -152,7 +152,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
         const s = status ? status.toLowerCase() : 'solicitada';
         switch (s) {
             case 'solicitada': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-            case 'enviada': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+            case 'enviada': return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
             case 'aceptada': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
             case 'completada': return 'bg-emerald-600/10 text-emerald-400 border-emerald-500/20';
             case 'rechazada': return 'bg-red-500/10 text-red-500 border-red-500/20';
@@ -171,7 +171,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FileText className="text-indigo-500" />
+                        <FileText className="text-cyan-500" />
                         {quotationId ? 'Documento de Cotización' : 'Gestión de Cotizaciones'}
                     </h1>
                     <p className="text-slate-400 text-sm mt-1">
@@ -185,7 +185,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeTab === tab
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
                         >
@@ -234,7 +234,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => navigate(`/proformas/${q.id}`)}
-                                                className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
                                                 title="Abrir Proforma Original"
                                             >
                                                 <FileEdit className="w-4 h-4" />
@@ -279,7 +279,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                         <div className="flex items-center justify-center gap-2">
                                             <button
                                                 onClick={() => navigate(`/proformas/${q.id}`)}
-                                                className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-all"
+                                                className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                 title="Ir a Proforma Maestra"
                                             >
                                                 <ExternalLink className="w-4 h-4" />
@@ -288,7 +288,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                             {q.request_file_url && (
                                                 <button
                                                     onClick={() => handleViewRequestFile(q.request_file_url)}
-                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                     title="Ver Cotización Subida"
                                                 >
                                                     <Eye className="w-4 h-4" />
@@ -298,7 +298,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                             {(!q.related_quotation_status || q.related_quotation_status === 'solicitada' || q.related_quotation_status === 'rechazada') && (
                                                 <button
                                                     onClick={() => { setSelectedQuote(q); setShowUploadModal(true); }}
-                                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
                                                     title="Subir PDF de Cotización"
                                                 >
                                                     <Upload className="w-4 h-4" />
@@ -335,11 +335,11 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
             {/* MODAL DE CARGA */}
             {showUploadModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-indigo-500/10">
-                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-indigo-600/10 to-transparent">
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-cyan-500/10">
+                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-cyan-600/10 to-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Upload className="text-indigo-500 w-5 h-5" />
+                                    <Upload className="text-cyan-500 w-5 h-5" />
                                     Subir Cotización
                                 </h3>
                                 <p className="text-xs text-slate-400 mt-1">Sube el documento PDF o Imagen de la cotización formal.</p>
@@ -351,7 +351,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Imagen</label>
-                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-blue-500/50 bg-blue-500/5' : 'border-white/10 hover:border-indigo-500/30'}`}>
+                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
                                         <input
                                             type="file"
                                             accept=".pdf,.png,.jpg,.jpeg"
@@ -360,7 +360,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                         />
                                         <div className="text-center">
                                             {files.pdf ? (
-                                                <div className="flex items-center justify-center gap-2 text-blue-400 font-bold text-sm">
+                                                <div className="flex items-center justify-center gap-2 text-cyan-400 font-bold text-sm">
                                                     <FileText size={16} /> {files.pdf.name}
                                                 </div>
                                             ) : (
@@ -386,7 +386,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                     onClick={handleUpload}
                                     className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading || !files.pdf
                                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                        : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/20'
+                                        : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-cyan-500/20'
                                         }`}
                                 >
                                     {uploading ? (

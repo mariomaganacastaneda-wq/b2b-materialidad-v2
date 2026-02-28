@@ -1,24 +1,23 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Design Tokens - Flat Premium Palette */
-  --primary-color: #0369a1;
-  /* Cyan-700 */
-  --primary-deep: #0c4a6e;
-  --primary-tint: #e0f2fe;
+  /* Design Tokens - HSL based for easier manipulation */
+  --primary-h: 201;
+  --primary-s: 96%;
+  --primary-l: 32%;
+  --primary-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  --primary-deep: hsl(var(--primary-h), var(--primary-s), 24%);
+  --primary-glow: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15);
+  --primary-base: #06b6d4;
+  /* Cyan-500 fallback */
 
   --bg-main: #f8fafc;
-  /* Slate-50 */
   --bg-card: #ffffff;
   --bg-sidebar: #0f172a;
-  /* Slate-900 */
 
   --text-main: #020617;
-  /* Slate-950 */
   --text-body: #334155;
-  /* Slate-700 */
   --text-muted: #64748b;
-  /* Slate-500 */
 
   --border-light: #f1f5f9;
   --border-standard: #e2e8f0;
@@ -27,9 +26,12 @@
   --accent-warning: #f59e0b;
   --accent-error: #ef4444;
 
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  line-height: 1.6;
+  /* Typography: Fluid and accessible */
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size: clamp(14px, 1vw + 10px, 16px);
+  line-height: calc(1.5 + 0.1vw);
   font-weight: 400;
+  letter-spacing: -0.011em;
 
   color-scheme: light;
   color: var(--text-body);
@@ -39,6 +41,15 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body {

@@ -29,8 +29,8 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ selectedOrg }) => {
         <div className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-6 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-[#1e40af] tracking-tight flex items-center gap-2 uppercase notranslate" translate="no">
-                        <Icon name="account_balance_wallet" className="text-blue-600" />
+                    <h1 className="text-2xl font-black text-cyan-700 tracking-tight flex items-center gap-2 uppercase notranslate" translate="no">
+                        <Icon name="account_balance_wallet" className="text-cyan-600" />
                         Tesorería y Bancos
                     </h1>
                     <p className="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest notranslate" translate="no">

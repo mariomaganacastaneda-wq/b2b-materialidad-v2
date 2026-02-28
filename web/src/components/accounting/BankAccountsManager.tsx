@@ -140,7 +140,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm relative"> {/* Eliminado overflow-hidden para permitir que el catálogo salga de la caja */}
                 <div className="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2 notranslate" translate="no">
-                        <Icon name="account_balance_wallet" className="text-[#1e40af]" />
+                        <Icon name="account_balance_wallet" className="text-cyan-600" />
                         <h3 className="text-[11px] font-black uppercase text-slate-600 tracking-wider">
                             {editingId ? 'Actualizar Cuenta o Caja' : 'Registrar Nueva Cuenta o Caja'}
                         </h3>
@@ -163,7 +163,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                             form="bank-form"
                             type="submit"
                             disabled={isSaving}
-                            className="bg-[#1e40af] text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-blue-100 hover:bg-blue-800 transition-all disabled:opacity-50 flex items-center gap-2"
+                            className="bg-cyan-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-cyan-100 hover:bg-cyan-800 transition-all disabled:opacity-50 flex items-center gap-2"
                         >
                             {isSaving ? (
                                 <span className="animate-spin h-3 w-3 border-2 border-white/30 border-t-white rounded-full" />
@@ -182,7 +182,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                             <select
                                 value={formData.account_type}
                                 onChange={(e) => setFormData({ ...formData, account_type: e.target.value as any })}
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100"
                             >
                                 <option value="BANCO">CUENTA BANCARIA</option>
                                 <option value="EFECTIVO">CAJA DE EFECTIVO</option>
@@ -203,7 +203,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                         }}
                                         onFocus={() => setIsDropdownOpen(true)}
                                         placeholder="Buscar banco (BBVA, Banorte...)"
-                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 placeholder:text-slate-300"
+                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100 placeholder:text-slate-300"
                                     />
                                     {isDropdownOpen && (
                                         <>
@@ -233,10 +233,10 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                                                 setSearchTerm(bank.name);
                                                                 setIsDropdownOpen(false);
                                                             }}
-                                                            className="w-full text-left px-4 py-2.5 hover:bg-blue-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
+                                                            className="w-full text-left px-4 py-2.5 hover:bg-cyan-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
                                                         >
                                                             <span className="text-[10px] font-bold text-slate-700 uppercase">{bank.name}</span>
-                                                            <span className="text-[8px] font-black text-slate-300 group-hover:text-blue-400 bg-slate-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
+                                                            <span className="text-[8px] font-black text-slate-300 group-hover:text-cyan-400 bg-slate-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
                                                         </button>
                                                     ))}
                                                 {bankCatalog.filter(b => b.name.toLowerCase().includes((formData.bank_name || searchTerm).toLowerCase())).length === 0 && (
@@ -255,7 +255,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                     value={formData.bank_name}
                                     onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
                                     placeholder="Nombre de la Caja (ej: Caja Chica)"
-                                    className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
+                                    className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100"
                                 />
                             )}
                         </div>
@@ -267,7 +267,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                 value={formData.account_number}
                                 onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
                                 placeholder="0123... o Referencia interna"
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100"
                             />
                         </div>
 
@@ -276,7 +276,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                             <select
                                 value={formData.currency}
                                 onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-100"
+                                className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100"
                             >
                                 <option value="MXN">MXN - PESOS</option>
                                 <option value="USD">USD - DÓLARES</option>
@@ -290,7 +290,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Icon name="list_alt" className="text-[#1e40af]" />
+                        <Icon name="list_alt" className="text-cyan-600" />
                         <h3 className="text-[11px] font-black uppercase text-slate-500 tracking-wider">Cuentas Registradas</h3>
                     </div>
                     <span className="text-[9px] font-bold text-slate-400 uppercase">{accounts.length} cuentas en total</span>
@@ -342,7 +342,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                             {acc.account_number}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                            <span className="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-md">
                                                 {acc.currency}
                                             </span>
                                         </td>
@@ -364,7 +364,7 @@ const BankAccountsManager: React.FC<BankAccountsManagerProps> = ({ selectedOrg }
                                                     setSearchTerm(acc.bank_name);
                                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                                 }}
-                                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                className="p-1.5 text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-all"
                                                 title="Editar"
                                             >
                                                 <Icon name="edit" className="text-sm" />

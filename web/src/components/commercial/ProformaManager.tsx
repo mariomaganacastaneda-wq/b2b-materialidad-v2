@@ -52,7 +52,7 @@ const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel, st
     <div className={`flex flex-col gap-1.5 group ${disabled ? 'opacity-70' : ''}`}>
         <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-                <p className={`text-sm font-bold leading-tight transition-colors truncate ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#1e40af]'}`}>{label}</p>
+                <p className={`text-sm font-bold leading-tight transition-colors truncate ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#0891b2]'}`}>{label}</p>
                 <div className="mt-0.5">
                     <p className="text-[10px] text-slate-400 font-medium leading-snug">{sub}</p>
                 </div>
@@ -65,8 +65,8 @@ const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel, st
                     onChange={e => { if (!disabled) onChange(e.target.checked) }}
                     disabled={disabled}
                 />
-                <div className={`w-10 h-5 bg-slate-200 rounded-full peer ${disabled ? 'peer-checked:bg-slate-400' : 'peer-checked:bg-[#1e40af]'} after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner`} />
-                <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? (disabled ? 'text-slate-500' : 'text-[#1e40af]') : 'text-slate-400'}`}>
+                <div className={`w-10 h-5 bg-slate-200 rounded-full peer ${disabled ? 'peer-checked:bg-slate-400' : 'peer-checked:bg-cyan-600'} after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner`} />
+                <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? (disabled ? 'text-slate-500' : 'text-cyan-600') : 'text-slate-400'}`}>
                     {checked ? 'ON' : 'OFF'}
                 </span>
             </label>
@@ -193,7 +193,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
     useEffect(() => {
         const fetchResults = async () => {
             // El motor de béºsqueda prioritiza: 1. Tag Activo, 2. Béºsqueda Manual, 3. Actividad Base
-            let queryTag = activeTag || search;
+            const queryTag = activeTag || search;
 
             if (!queryTag && !activityCode && isOpen) return;
             if (!isOpen && !search && !activeTag) return;
@@ -422,27 +422,27 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
     return (
         <div ref={inputRef} className="relative w-full">
             <div
-                className={`flex items-center justify-between px-3 h-8 rounded-lg transition-all cursor-pointer border ${isOpen ? 'bg-white border-blue-500 ring-2 ring-blue-50 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}
+                className={`flex items-center justify-between px-3 h-8 rounded-lg transition-all cursor-pointer border ${isOpen ? 'bg-white border-cyan-500 ring-2 ring-cyan-50 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}
                 onClick={handleOpen}
             >
                 <div className="flex items-center gap-2 overflow-hidden flex-1">
                     {activeTag ? (
                         <div
                             onMouseDown={handleEditTag}
-                            className="flex items-center gap-1 bg-blue-600 text-white px-2 py-0.5 rounded-md text-[9px] font-black animate-in zoom-in-95 duration-200 cursor-edit group/tag shrink-0"
+                            className="flex items-center gap-1 bg-cyan-600 text-white px-2 py-0.5 rounded-md text-[9px] font-black animate-in zoom-in-95 duration-200 cursor-edit group/tag shrink-0"
                             title="Clic para editar concepto"
                         >
                             <Icon name="edit" className="text-[8px] opacity-0 group-hover/tag:opacity-100 transition-opacity" />
                             <span className="uppercase tracking-tighter">{activeTag}</span>
                             <button
                                 onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTag(null); }}
-                                className="hover:bg-blue-700 rounded-full p-0.5 transition-colors ml-1"
+                                className="hover:bg-cyan-700 rounded-full p-0.5 transition-colors ml-1"
                             >
                                 <Icon name="close" className="text-[8px]" />
                             </button>
                         </div>
                     ) : (
-                        <Icon name="inventory_2" className={`text-xs shrink-0 ${isOpen ? 'text-blue-500' : 'text-slate-400'}`} />
+                        <Icon name="inventory_2" className={`text-xs shrink-0 ${isOpen ? 'text-cyan-500' : 'text-slate-400'}`} />
                     )}
 
                     <span className={`text-[10px] font-bold truncate ${value ? 'text-slate-700' : 'text-slate-400 uppercase tracking-tighter'}`}>
@@ -450,7 +450,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     </span>
                 </div>
 
-                <Icon name={isOpen ? 'close' : 'expand_more'} className={`text-[10px] shrink-0 ml-2 ${isOpen ? 'text-blue-500' : 'text-slate-300'}`} />
+                <Icon name={isOpen ? 'close' : 'expand_more'} className={`text-[10px] shrink-0 ml-2 ${isOpen ? 'text-cyan-500' : 'text-slate-300'}`} />
             </div>
 
             {isOpen && (
@@ -458,16 +458,17 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     <div className="flex flex-col h-full max-h-[500px] overflow-hidden">
                         <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-4 shrink-0 shadow-sm relative z-10">
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest whitespace-nowrap">Inteligencia SAT</span>
+                                <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest whitespace-nowrap">Inteligencia SAT</span>
                                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">CFDI 4.0 Pro</span>
                             </div>
-                            <div className="flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-3 h-10 hover:border-blue-400 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100/50 transition-all group/inner-search shadow-inner">
-                                <Icon name="search" className="text-sm text-slate-300 group-focus-within/inner-search:text-blue-500" />
+                            <div className="flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-3 h-10 hover:border-cyan-400 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 transition-all group/inner-search shadow-inner">
+                                <Icon name="search" className="text-sm text-slate-300 group-focus-within/inner-search:text-cyan-500" />
                                 <input
                                     type="text"
                                     autoFocus
                                     className="w-full bg-transparent border-none p-0 text-sm font-black text-slate-700 focus:ring-0 placeholder:text-slate-300 placeholder:font-medium uppercase tracking-tight"
                                     placeholder="Â¿Qué© servicio estás buscando?"
+                                    aria-label="Buscar productos o servicios SAT"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     onKeyDown={e => {
@@ -488,9 +489,9 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                 )}
                             </div>
                             {loading && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full animate-pulse">
-                                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                                    <span className="text-[8px] font-black text-blue-500 uppercase">Procesando</span>
+                                <div className="flex items-center gap-1 px-2 py-1 bg-cyan-50 rounded-full animate-pulse">
+                                    <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                                    <span className="text-[8px] font-black text-cyan-500 uppercase">Procesando</span>
                                 </div>
                             )}
                             <button
@@ -541,7 +542,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     {userTags.length > 0 && (
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2 px-1">
-                                                <Icon name="history" className="text-indigo-500 text-[10px]" />
+                                                <Icon name="history" className="text-cyan-500 text-[10px]" />
                                                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">En esta sesié³n:</span>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto no-scrollbar">
@@ -550,15 +551,15 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                                         <button
                                                             onMouseDown={(e) => { e.preventDefault(); setActiveTag(tag); }}
                                                             className={`px-2 py-0.5 rounded text-[8px] font-black transition-all border pr-4 ${activeTag === tag
-                                                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                                                                : 'bg-indigo-50/50 text-indigo-700 border-indigo-100 hover:border-indigo-300'
+                                                                ? 'bg-cyan-600 text-white border-cyan-600 shadow-sm'
+                                                                : 'bg-cyan-50/50 text-cyan-700 border-cyan-100 hover:border-cyan-300'
                                                                 }`}
                                                         >
                                                             {tag}
                                                         </button>
                                                         <button
                                                             onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setUserTags(prev => prev.filter(t => t !== tag)); if (activeTag === tag) setActiveTag(null); }}
-                                                            className="absolute right-1 top-1/2 -translate-y-1/2 text-indigo-400 hover:text-indigo-600 opacity-0 group-hover/utag:opacity-100 transition-opacity"
+                                                            className="absolute right-1 top-1/2 -translate-y-1/2 text-cyan-400 hover:text-cyan-600 opacity-0 group-hover/utag:opacity-100 transition-opacity"
                                                         >
                                                             <Icon name="close" className="text-[7px]" />
                                                         </button>
@@ -571,7 +572,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     {smartTags.length > 0 && (
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2 px-1">
-                                                <Icon name="psychology" className="text-blue-500 text-[10px]" />
+                                                <Icon name="psychology" className="text-cyan-500 text-[10px]" />
                                                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Sugerencias IA:</span>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto no-scrollbar">
@@ -580,8 +581,8 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                                         key={tag}
                                                         onMouseDown={(e) => { e.preventDefault(); setActiveTag(tag); }}
                                                         className={`px-2 py-0.5 rounded text-[8px] font-black transition-all border ${activeTag === tag
-                                                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                                                            : 'bg-slate-50 text-slate-500 border-slate-100 hover:border-blue-200 hover:text-blue-600'
+                                                            ? 'bg-cyan-600 text-white border-cyan-600 shadow-sm'
+                                                            : 'bg-slate-50 text-slate-500 border-slate-100 hover:border-cyan-200 hover:text-cyan-600'
                                                             }`}
                                                     >
                                                         {tag}
@@ -618,7 +619,7 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                     <Icon name="search_off" className="text-3xl text-slate-200" />
                                     <div className="text-[10px] text-slate-400 italic text-center max-w-[200px]">
                                         No encontramos resultados para "{search || activeTag}". <br />
-                                        <span className="font-bold text-blue-500">Prueba con un concepto más general o busca otro tag.</span>
+                                        <span className="font-bold text-cyan-500">Prueba con un concepto más general o busca otro tag.</span>
                                     </div>
                                 </div>
                             )}
@@ -643,20 +644,20 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                         setActiveTag(null);
                                     }}
                                 >
-                                    <div className="flex flex-col shrink-0 items-center w-12 bg-slate-50 rounded p-1 group-hover:bg-blue-50 transition-colors">
-                                        <span className="text-[9px] font-black text-blue-700 font-mono tracking-tighter">{prod.code}</span>
+                                    <div className="flex flex-col shrink-0 items-center w-12 bg-slate-50 rounded p-1 group-hover:bg-cyan-50 transition-colors">
+                                        <span className="text-[9px] font-black text-cyan-700 font-mono tracking-tighter">{prod.code}</span>
                                     </div>
                                     <div className="flex flex-col min-w-0">
                                         <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                                             <span className={`text-[6px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0 ${prod.source === 'Actividad Principal' ? 'bg-emerald-100 text-emerald-700' :
                                                 prod.source === 'Actividad Relacionada' ? 'bg-amber-100 text-amber-700' :
-                                                    prod.source === 'Sugerencia por Ejemplo' ? 'bg-purple-100 text-purple-700' :
-                                                        'bg-blue-100 text-blue-700'
+                                                    prod.source === 'Sugerencia por Ejemplo' ? 'bg-teal-100 text-teal-700' :
+                                                        'bg-cyan-100 text-cyan-700'
                                                 }`}>
                                                 {prod.source}
                                             </span>
                                             {prod.activityContext && (
-                                                <span className={`text-[6px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter flex items-center gap-1 shrink-0 ${prod.source === 'Sugerencia por Ejemplo' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-white'}`}>
+                                                <span className={`text-[6px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter flex items-center gap-1 shrink-0 ${prod.source === 'Sugerencia por Ejemplo' ? 'bg-teal-600 text-white' : 'bg-slate-800 text-white'}`}>
                                                     <Icon name={prod.source === 'Sugerencia por Ejemplo' ? 'auto_awesome' : 'business_center'} className="text-[7px]" />
                                                     {prod.source === 'Sugerencia por Ejemplo' ? 'INTENCIé“N: ' : 'ACTIVIDAD: '}{prod.activityContext}
                                                 </span>
@@ -669,22 +670,22 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                                                 {prod.has_ieps && <span className="text-[6px] font-black px-1 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100">IEPS</span>}
                                             </div>
                                         </div>
-                                        <p className="text-[10px] text-slate-700 font-bold truncate uppercase tracking-tight group-hover:text-blue-600 transition-colors">{prod.name}</p>
+                                        <p className="text-[10px] text-slate-700 font-bold truncate uppercase tracking-tight group-hover:text-cyan-600 transition-colors">{prod.name}</p>
                                         {prod.similar_words && (
                                             <p className="text-[8px] text-slate-400 truncate italic">
-                                                <span className="font-bold text-blue-400/50">Similares:</span> {prod.similar_words}
+                                                <span className="font-bold text-cyan-400/50">Similares:</span> {prod.similar_words}
                                             </p>
                                         )}
                                         {prod.reason && <p className="text-[8px] text-slate-400 truncate italic">{prod.reason}</p>}
                                     </div>
-                                    <Icon name="add_circle" className="text-slate-200 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all text-sm" />
+                                    <Icon name="add_circle" className="text-slate-200 group-hover:text-cyan-500 opacity-0 group-hover:opacity-100 transition-all text-sm" />
                                 </div>
                             ))}
                         </div>
                         {results.length > 0 && !loading && (
                             <div className="bg-slate-50 px-3 py-1.5 border-t border-slate-100 shrink-0 flex justify-between">
                                 <span className="text-[8px] text-slate-400 font-bold">Mostrando {results.length} resultados potenciales</span>
-                                <span className="text-[8px] text-blue-500 font-black animate-pulse uppercase">Mega-Béºsqueda Activa</span>
+                                <span className="text-[8px] text-cyan-500 font-black animate-pulse uppercase">Mega-Béºsqueda Activa</span>
                             </div>
                         )}
                     </div>
@@ -805,7 +806,7 @@ const UnitSelector: React.FC<{ value: string, suggestedUnit?: string, onSelect: 
     return (
         <div ref={containerRef} className="relative w-full">
             <div
-                className={`flex items-center gap-1.5 px-3 h-8 rounded-lg transition-all cursor-text border ${isOpen ? 'bg-white border-blue-500 shadow-sm ring-2 ring-blue-50' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}
+                className={`flex items-center gap-1.5 px-3 h-8 rounded-lg transition-all cursor-text border ${isOpen ? 'bg-white border-cyan-500 shadow-sm ring-2 ring-cyan-50' : 'bg-slate-50 border-slate-200 hover:border-slate-300'}`}
                 onClick={handleOpen}
             >
                 <input
@@ -813,10 +814,11 @@ const UnitSelector: React.FC<{ value: string, suggestedUnit?: string, onSelect: 
                     type="text"
                     value={isOpen ? search : value}
                     placeholder="UND"
+                    aria-label="Seleccionar unidad de medida"
                     autoComplete="off"
                     onChange={e => { setSearch(e.target.value); if (!isOpen) handleOpen(); }}
                 />
-                <Icon name="straighten" className={`text-xs shrink-0 ${isOpen ? 'text-blue-500' : 'text-slate-300'}`} />
+                <Icon name="straighten" className={`text-xs shrink-0 ${isOpen ? 'text-cyan-500' : 'text-slate-300'}`} />
             </div>
             {isOpen && (
                 <DropdownPortal anchor={anchor} width={280}>
@@ -824,7 +826,7 @@ const UnitSelector: React.FC<{ value: string, suggestedUnit?: string, onSelect: 
                         <div className="bg-slate-50 px-2.5 py-2 border-b border-slate-100 flex justify-between items-center shrink-0">
                             <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Unidad CFDI</span>
-                                {loading && <div className="text-[9px] text-blue-500 font-bold animate-pulse">...</div>}
+                                {loading && <div className="text-[9px] text-cyan-500 font-bold animate-pulse">...</div>}
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
@@ -840,7 +842,7 @@ const UnitSelector: React.FC<{ value: string, suggestedUnit?: string, onSelect: 
                                     <button
                                         key={cat}
                                         onMouseDown={(e) => { e.preventDefault(); setSelectedCategory(selectedCategory === cat ? null : cat); }}
-                                        className={`flex flex-col items-center gap-1 p-1.5 rounded-md border transition-all ${selectedCategory === cat ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-50 border-slate-100 text-slate-400 hover:bg-white hover:border-blue-200 hover:text-blue-500'}`}
+                                        className={`flex flex-col items-center gap-1 p-1.5 rounded-md border transition-all ${selectedCategory === cat ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-slate-50 border-slate-100 text-slate-400 hover:bg-white hover:border-cyan-200 hover:text-cyan-500'}`}
                                     >
                                         <Icon name={UNIT_CAT_ICONS[cat] || 'category'} className="text-[14px]" />
                                         <span className="text-[7px] font-black uppercase tracking-tighter">{cat}</span>
@@ -852,12 +854,12 @@ const UnitSelector: React.FC<{ value: string, suggestedUnit?: string, onSelect: 
                             {results.map((unit) => (
                                 <div
                                     key={unit.code}
-                                    className={`px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors flex items-center justify-between group ${unit.code === suggestedUnit ? 'bg-blue-50 border-blue-100' : ''}`}
+                                    className={`px-3 py-2 hover:bg-cyan-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors flex items-center justify-between group ${unit.code === suggestedUnit ? 'bg-cyan-50 border-cyan-100' : ''}`}
                                     onMouseDown={() => { onSelect(unit); setIsOpen(false); setSearch(''); setSelectedCategory(null); }}
                                 >
                                     <div className="flex flex-col min-w-0">
                                         <div className="flex items-center gap-2 mb-0.5">
-                                            <span className="text-[10px] font-black text-blue-600 leading-tight">{unit.code}</span>
+                                            <span className="text-[10px] font-black text-cyan-600 leading-tight">{unit.code}</span>
                                             {unit.category && (
                                                 <span className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter bg-slate-100 px-1 rounded">{unit.category}</span>
                                             )}
@@ -910,14 +912,14 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
     return (
         <div ref={containerRef} className="relative w-full">
             <div
-                className={`flex items-center justify-between px-3 h-9 rounded-lg transition-all cursor-pointer border ${isOpen ? 'bg-white border-blue-500 shadow-sm ring-2 ring-blue-50' : 'bg-slate-50/50 border-slate-200 hover:border-slate-300'}`}
+                className={`flex items-center justify-between px-3 h-9 rounded-lg transition-all cursor-pointer border ${isOpen ? 'bg-white border-cyan-500 shadow-sm ring-2 ring-cyan-50' : 'bg-slate-50/50 border-slate-200 hover:border-slate-300'}`}
                 onClick={handleOpen}
             >
                 <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-black text-blue-700 leading-none mb-0.5">{currentUsage.code}</span>
+                    <span className="text-[10px] font-black text-cyan-700 leading-none mb-0.5">{currentUsage.code}</span>
                     <span className="text-[9px] text-slate-500 font-bold truncate uppercase tracking-tighter">{currentUsage.description || 'SELECCIONAR USO'}</span>
                 </div>
-                <Icon name="expand_more" className={`text-xs ml-2 ${isOpen ? 'text-blue-500' : 'text-slate-300'}`} />
+                <Icon name="expand_more" className={`text-xs ml-2 ${isOpen ? 'text-cyan-500' : 'text-slate-300'}`} />
             </div>
 
             {isOpen && (
@@ -936,17 +938,17 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
                         {filteredUsages.map(u => (
                             <div
                                 key={u.code}
-                                className={`px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors group ${value === u.code ? 'bg-blue-50' : ''}`}
+                                className={`px-4 py-2 hover:bg-cyan-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors group ${value === u.code ? 'bg-cyan-50' : ''}`}
                                 onMouseDown={() => { onSelect(u.code); setIsOpen(false); }}
                             >
                                 <div className="flex items-center gap-2 mb-0.5">
-                                    <span className="text-[10px] font-black text-blue-600">{u.code}</span>
+                                    <span className="text-[10px] font-black text-cyan-600">{u.code}</span>
                                     <div className="flex gap-1">
-                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">FéSICA</span>}
-                                        {u.applies_to_moral && <span className="text-[6px] font-black px-1 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">MORAL</span>}
+                                        {u.applies_to_physical && <span className="text-[6px] font-black px-1 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">Fé SICA</span>}
+                                        {u.applies_to_moral && <span className="text-[6px] font-black px-1 rounded bg-cyan-50 text-cyan-600 border border-cyan-100">MORAL</span>}
                                     </div>
                                 </div>
-                                <p className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter group-hover:text-blue-700">{u.description}</p>
+                                <p className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter group-hover:text-cyan-700">{u.description}</p>
                             </div>
                         ))}
                     </div>
@@ -961,7 +963,7 @@ const UsageSelector: React.FC<{ value: string, onSelect: (val: string) => void, 
 const LogoWithFallback = ({ src, name }: { src: string; name?: string }) => {
     const [error, setError] = useState(false);
     if (error || !src) {
-        return <span className="text-[10px] text-blue-600 font-black">{name?.substring(0, 1) || 'M'}</span>;
+        return <span className="text-[10px] text-cyan-600 font-black">{name?.substring(0, 1) || 'M'}</span>;
     }
     return (
         <img
@@ -1133,7 +1135,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         description: poData.description || prev.description,
                         is_licitation: poData.is_licitation || prev.is_licitation,
                         is_contract_required: poData.is_contract_required || prev.is_contract_required,
-                        request_direct_invoice: poData.request_direct_invoice || prev.request_direct_invoice,
+                        request_direct_invoice: !!poData.billing_type || poData.request_direct_invoice || prev.request_direct_invoice,
+                        req_quotation: poData.requires_quotation ?? prev.req_quotation,
+                        req_evidence: poData.requires_quotation || poData.is_contract_required || !!poData.billing_type ? true : prev.req_evidence,
                         object_of_contract: poData.object_of_contract || prev.object_of_contract,
                         special_clauses: poData.special_clauses || prev.special_clauses,
                         execution_period: poData.execution_period || prev.execution_period,
@@ -1411,7 +1415,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 orgName: selectedOrg.name,
                 orgRFC: selectedOrg.rfc || '',
                 orgLogoUrl: selectedOrg.logo_url || 'none',
-                orgColor: selectedOrg.primary_color || '#1e40af',
+                orgColor: selectedOrg.primary_color || '#06b6d4',
                 orgSecondaryColor: selectedOrg.theme_config?.secondary_color,
                 orgAccentColor: selectedOrg.theme_config?.accent_color,
                 bankAccounts: selectedOrg.bank_accounts
@@ -1425,12 +1429,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const getInvoiceStatusColor = (status: string) => {
         if (!status) return 'bg-slate-50 text-slate-500 border border-slate-200';
         const s = status.toUpperCase();
-        if (s.includes('TIMBRADA') || s === 'EMITIDA') return 'bg-blue-50 text-blue-600 border border-blue-200';
+        if (s.includes('TIMBRADA') || s === 'EMITIDA') return 'bg-cyan-50 text-cyan-600 border border-cyan-200';
         if (s.includes('RECHAZADA') || s === 'CANCELADA') return 'bg-red-50 text-red-600 border border-red-200 line-through';
         if (s === 'EN_REVISION' || s === 'EN_REVISION_VENDEDOR' || s === 'TIMBRADA_INCOMPLETA') return 'bg-amber-50 text-amber-600 border border-amber-200';
         if (s === 'VALIDADA') return 'bg-emerald-50 text-emerald-600 border border-emerald-200';
-        if (s === 'SOLICITADA' || s === 'SOLICITUD') return 'bg-indigo-50 text-indigo-500 border border-indigo-200';
-        if (s.includes('PREFACTURA')) return 'bg-purple-50 text-purple-600 border border-purple-200';
+        if (s === 'SOLICITADA' || s === 'SOLICITUD') return 'bg-cyan-50 text-cyan-500 border border-cyan-200';
+        if (s.includes('PREFACTURA')) return 'bg-teal-50 text-teal-600 border border-teal-200';
 
         return 'bg-slate-50 text-slate-500 border border-slate-200';
     };
@@ -1490,7 +1494,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             saveError: null
         }));
         // Navegar a ruta de creacié³n limpia (pero con estado actual)
-        navigate('/cotizaciones/nueva');
+        navigate('/proformas/nueva');
         alert('Proforma clonada. Ajuste el periodo y conceptos antes de guardar el nuevo registro.');
     };
 
@@ -1747,7 +1751,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
             alert((id && id !== 'nueva') ? 'Proforma actualizada con é©xito' : 'Proforma guardada con é©xito');
 
             if ((!id || id === 'nueva') && quotationId) {
-                navigate(`/cotizaciones/${quotationId}`);
+                navigate(`/proformas/${quotationId}`);
             }
 
             // Opcional: Limpiar formulario tras guardado exitoso
@@ -1882,7 +1886,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         {selectedOrg?.logo_url ? (
                             <img src={selectedOrg.logo_url} alt="Logo" className="w-full h-full object-contain p-1" />
                         ) : (
-                            <Icon name="business" className="text-blue-600 text-xl" />
+                            <Icon name="business" className="text-cyan-600 text-xl" />
                         )}
                     </div>
                     <div>
@@ -1905,7 +1909,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     )}
 
                     <button
-                        onClick={() => navigate('/proformas')}
+                        onClick={() => navigate('/materialidad')}
                         className="px-4 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all flex items-center gap-2"
                     >
                         <Icon name="close" className="text-sm" />
@@ -1926,7 +1930,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     <button
                         onClick={handleSave}
                         disabled={formData.isSaving}
-                        className="bg-[#1e40af] hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2 disabled:opacity-50"
+                        className="bg-[#0891b2] hover:bg-cyan-700 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-lg shadow-cyan-500/30 transition-all flex items-center gap-2 disabled:opacity-50"
                     >
                         <Icon name={formData.isSaving ? 'sync' : 'verified'} className={`text-sm font-bold ${formData.isSaving ? 'animate-spin' : ''}`} />
                         {formData.isSaving ? 'PROCESANDO...' : 'GENERAR PROFORMA'}
@@ -1954,7 +1958,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <section className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
                             <div className="p-2 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="person" className="text-[#1e40af] text-base" />
+                                    <Icon name="person" className="text-[#0891b2] text-base" />
                                     <h2 className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Receptor / Cliente</h2>
                                 </div>
                                 <span className="text-[9px] font-bold text-slate-300 mr-2">VALIDEZ FISCAL REQUERIDA</span>
@@ -1968,7 +1972,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </div>
                                         <div className="relative">
                                             <input
-                                                className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af] transition-all pr-10 font-bold text-slate-700 bg-slate-50/30"
+                                                className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#0891b2] focus:border-[#0891b2] transition-all pr-10 font-bold text-slate-700 bg-slate-50/30"
                                                 placeholder="Buscar o seleccionar cliente..."
                                                 type="text"
                                                 value={showDropdown ? searchTerm : formData.clientName}
@@ -1989,13 +1993,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 {(searchTerm ? filteredClients : clients).map(client => (
                                                     <div
                                                         key={client.id}
-                                                        className="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors group"
+                                                        className="p-3 hover:bg-cyan-50 cursor-pointer border-b border-slate-50 last:border-0 transition-colors group"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleSelectClient(client);
                                                         }}
                                                     >
-                                                        <div className="text-xs font-bold text-slate-700 group-hover:text-blue-600 break-words line-clamp-2">{client.name}</div>
+                                                        <div className="text-xs font-bold text-slate-700 group-hover:text-cyan-600 break-words line-clamp-2">{client.name}</div>
                                                         <div className="text-[9px] text-slate-400 font-mono tracking-tighter">{client.rfc} • {client.contact_email || 'Sin email'}</div>
                                                     </div>
                                                 ))}
@@ -2044,7 +2048,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div>
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Régimen Fiscal</label>
                                         <select
-                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50"
+                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50"
                                             value={formData.clientRegime}
                                             onChange={e => setFormData({ ...formData, clientRegime: e.target.value })}
                                         >
@@ -2067,7 +2071,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div className="pt-0">
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Forma de Pago</label>
                                         <select
-                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
+                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50 truncate pr-8"
                                             value={formData.paymentForm}
                                             onChange={e => setFormData({ ...formData, paymentForm: e.target.value })}
                                         >
@@ -2080,7 +2084,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div className="pt-0">
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Método de Pago</label>
                                         <select
-                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 truncate pr-8"
+                                            className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50 truncate pr-8"
                                             value={formData.paymentMethod}
                                             onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
                                         >
@@ -2097,7 +2101,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         Notas y Observaciones de la Proforma
                                     </label>
                                     <textarea
-                                        className="w-full border-slate-100 rounded-lg text-[10px] p-2 focus:ring-[#1e40af] focus:border-[#1e40af] transition-all min-h-[80px] bg-slate-50/50"
+                                        className="w-full border-slate-100 rounded-lg text-[10px] p-2 focus:ring-[#0891b2] focus:border-[#0891b2] transition-all min-h-[80px] bg-slate-50/50"
                                         placeholder="Notas adicionales o instrucciones especiales para este documento..."
                                         value={formData.notes}
                                         onChange={e => setFormData({ ...formData, notes: e.target.value })}
@@ -2110,12 +2114,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <section className="col-span-12 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
                             <div className="p-2 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="settings_applications" className="text-[#1e40af] text-base" />
+                                    <Icon name="settings_applications" className="text-[#0891b2] text-base" />
                                     <h2 className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Venta e Impuestos</h2>
                                 </div>
                                 <div className="flex items-center gap-2 pr-2">
                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight">Folio</span>
-                                    <span className="text-sm font-mono font-black text-[#1e40af] notranslate" translate="no">
+                                    <span className="text-sm font-mono font-black text-[#0891b2] notranslate" translate="no">
                                         {(() => {
                                             const processDate = formData.created_at ? new Date(formData.created_at) : new Date();
                                             return `${selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF'}-${processDate.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')}-${formData.proforma_number.toString().padStart(2, '0')}`;
@@ -2134,7 +2138,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                     name={selectedOrg.name}
                                                 />
                                             ) : (
-                                                <span className="text-[10px] text-blue-600 font-black">{selectedOrg?.name?.substring(0, 1) || 'M'}</span>
+                                                <span className="text-[10px] text-cyan-600 font-black">{selectedOrg?.name?.substring(0, 1) || 'M'}</span>
                                             )}
                                         </div>
                                         <div className="flex flex-col min-w-0 flex-1">
@@ -2147,7 +2151,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div>
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Moneda</label>
                                         <select
-                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#1e40af] focus:border-[#1e40af] font-bold text-blue-700 bg-slate-50 notranslate"
+                                            className="w-full border-slate-200 rounded-lg text-xs h-9 focus:ring-[#0891b2] focus:border-[#0891b2] font-bold text-cyan-700 bg-slate-50 notranslate"
                                             value={formData.currency}
                                             onChange={e => setFormData({ ...formData, currency: e.target.value })}
                                             translate="no"
@@ -2161,7 +2165,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <div>
                                     <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Cuenta de Depé³sito</label>
                                     <select
-                                        className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50 font-medium notranslate"
+                                        className="w-full border-slate-200 rounded-lg text-[10px] h-9 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50 font-medium notranslate"
                                         value={formData.bank_account_id || ''}
                                         onChange={e => setFormData({ ...formData, bank_account_id: e.target.value })}
                                         translate="no"
@@ -2184,14 +2188,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="receipt_long" className="text-[#1e40af] text-lg" />
+                                    <Icon name="receipt_long" className="text-[#0891b2] text-lg" />
                                     <h2 className="text-xs font-bold uppercase text-slate-500 tracking-wider">Conceptos del Servicio</h2>
                                 </div>
                                 <div className="h-6 w-px bg-slate-200 mx-2" />
                                 <div className="flex items-center gap-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad Econé³mica:</label>
                                     <select
-                                        className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-[#1e40af] focus:border-[#1e40af] bg-white min-w-[200px]"
+                                        className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-[#0891b2] focus:border-[#0891b2] bg-white min-w-[200px]"
                                         value={formData.economicActivity}
                                         onChange={e => setFormData({ ...formData, economicActivity: e.target.value })}
                                     >
@@ -2206,7 +2210,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             </div>
                             <button
                                 onClick={addItem}
-                                className="text-xs font-bold text-[#1e40af] flex items-center gap-1 hover:text-blue-700 transition-colors"
+                                className="text-xs font-bold text-[#0891b2] flex items-center gap-1 hover:text-cyan-700 transition-colors"
                             >
                                 <Icon name="add_circle" className="text-sm" />
                                 AGREGAR CONCEPTO
@@ -2326,7 +2330,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                     <span className="text-[10px] text-slate-300 font-bold">$</span>
                                                     <div className="relative flex-1">
                                                         <input
-                                                            className="w-24 border-none bg-transparent p-0 text-[11px] text-right focus:ring-0 font-bold text-blue-700 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                            className="w-24 border-none bg-transparent p-0 text-[11px] text-right focus:ring-0 font-bold text-cyan-700 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                             type="number"
                                                             step="any"
                                                             value={item.unitPrice}
@@ -2372,7 +2376,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center transition-all">
                             <button
                                 onClick={addItem}
-                                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#1e40af] text-[#1e40af] hover:bg-[#1e40af] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+                                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#0891b2] text-[#0891b2] hover:bg-[#0891b2] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
                             >
                                 <Icon name="add" className="text-sm" />
                                 AÑADIR CONCEPTO
@@ -2389,7 +2393,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         {/* CONFIGURATION */}
                         <section className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                             <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
-                                <Icon name="settings" className="text-[#1e40af]" />
+                                <Icon name="settings" className="text-[#0891b2]" />
                                 <h2 className="text-xs font-bold uppercase text-slate-500 tracking-wider">Configuración</h2>
                             </div>
                             <div className="p-8 space-y-8">
@@ -2435,7 +2439,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div className="flex-1 min-w-[200px]">
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Periodo de Ejecución</label>
                                         <input
-                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50/30 font-bold text-slate-700"
+                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50/30 font-bold text-slate-700"
                                             placeholder="Ej: MARZO 2024"
                                             type="text"
                                             value={formData.execution_period}
@@ -2463,7 +2467,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <div className="flex-1 min-w-[200px]">
                                         <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Referencia de Contrato</label>
                                         <input
-                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#1e40af] focus:border-[#1e40af] bg-slate-50/30 font-bold text-slate-700"
+                                            className="w-full border-slate-200 rounded-xl text-xs h-10 px-4 focus:ring-[#0891b2] focus:border-[#0891b2] bg-slate-50/30 font-bold text-slate-700"
                                             placeholder="Ej: AD-SM-001"
                                             type="text"
                                             value={formData.contract_reference}
@@ -2485,7 +2489,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <span className="font-medium">IVA (16%)</span>
                                 <span className="font-bold text-slate-700">{iva.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                             </div>
-                            <div className="flex justify-between text-xl font-bold text-[#1e40af] pt-4 border-t border-slate-200">
+                            <div className="flex justify-between text-xl font-bold text-[#0891b2] pt-4 border-t border-slate-200">
                                 <span className="uppercase text-sm mt-1 tracking-widest font-black">Total {formData.currency}</span>
                                 <span className="tracking-tight text-2xl">{total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                             </div>
@@ -2494,14 +2498,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             <div className="mt-6 pt-6 border-t-2 border-dashed border-slate-100">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="p-1.5 bg-blue-50 rounded-lg">
-                                            <Icon name="account_balance_wallet" className="text-[#1e40af] text-lg" />
+                                        <div className="p-1.5 bg-cyan-50 rounded-lg">
+                                            <Icon name="account_balance_wallet" className="text-[#0891b2] text-lg" />
                                         </div>
                                         <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Control de Cobranza</h3>
                                     </div>
                                     <button
                                         onClick={() => setIsAccountModalOpen(true)}
-                                        className="text-[9px] font-extrabold text-blue-600 hover:text-blue-800 flex items-center gap-1 uppercase tracking-tighter bg-blue-50 px-2 py-1 rounded-md transition-all active:scale-95"
+                                        className="text-[9px] font-extrabold text-cyan-600 hover:text-cyan-800 flex items-center gap-1 uppercase tracking-tighter bg-cyan-50 px-2 py-1 rounded-md transition-all active:scale-95"
                                     >
                                         <Icon name="account_balance" className="text-xs" />
                                         Mis Cuentas
@@ -2519,7 +2523,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         </div>
                                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/50">
                                             <span className="block text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest">Pendiente</span>
-                                            <span className={`text-sm font-black ${(total - payments.reduce((acc, p) => acc + Number(p.amount), 0)) > 0 ? 'text-blue-700' : 'text-emerald-500'}`}>
+                                            <span className={`text-sm font-black ${(total - payments.reduce((acc, p) => acc + Number(p.amount), 0)) > 0 ? 'text-cyan-700' : 'text-emerald-500'}`}>
                                                 {Math.max(0, total - payments.reduce((acc, p) => acc + Number(p.amount), 0)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                                             </span>
                                         </div>
@@ -2528,7 +2532,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     {/* Boté³n de Accié³n Principal */}
                                     <button
                                         onClick={() => setIsPaymentModalOpen(true)}
-                                        className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                                        className="w-full py-3 bg-[#0891b2] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-cyan-200 hover:bg-cyan-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                                     >
                                         <Icon name="add_circle" className="text-base" />
                                         Registrar Pago de esta Proforma
@@ -2540,7 +2544,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Últimos Abonos</span>
                                             <div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">
                                                 {payments.map(p => (
-                                                    <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg group hover:border-blue-200 transition-all">
+                                                    <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg group hover:border-cyan-200 transition-all">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-1.5">
                                                                 <span className="text-[9px] font-black text-slate-700">{Number(p.amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
@@ -2559,7 +2563,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                                             .createSignedUrl(p.evidence_url, 60);
                                                                         if (data?.signedUrl) window.open(data.signedUrl, '_blank');
                                                                     }}
-                                                                    className="p-1 px-2 text-[7px] font-black uppercase text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-all flex items-center gap-1"
+                                                                    className="p-1 px-2 text-[7px] font-black uppercase text-cyan-600 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-all flex items-center gap-1"
                                                                     title="Ver Comprobante"
                                                                 >
                                                                     <Icon name="description" className="text-[10px]" />
@@ -2597,7 +2601,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 <div className="flex items-center gap-6">
                     <button
                         onClick={handlePreview}
-                        className="flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-[#1e40af] transition-all uppercase tracking-widest"
+                        className="flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-[#0891b2] transition-all uppercase tracking-widest"
                     >
                         <Icon name="visibility" className="text-base" />
                         Vista Previa PDF
@@ -2605,7 +2609,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     <button
                         onClick={handleSendEmail}
                         disabled={formData.isSaving}
-                        className="flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-[#1e40af] transition-all uppercase tracking-widest disabled:opacity-50"
+                        className="flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-[#0891b2] transition-all uppercase tracking-widest disabled:opacity-50"
                     >
                         <Icon name={formData.isSaving ? 'sync' : 'mail'} className={`text-base ${formData.isSaving ? 'animate-spin' : ''}`} />
                         Enviar por email
@@ -2620,7 +2624,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
                             <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="add_card" className="text-[#1e40af] text-lg" />
+                                    <Icon name="add_card" className="text-[#0891b2] text-lg" />
                                     <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Registrar Pago a Proforma</h3>
                                 </div>
                                 <button onClick={() => setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -2680,7 +2684,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             required
                                             autoFocus
                                             defaultValue={Math.max(0, total - payments.reduce((acc, p) => acc + Number(p.amount), 0)).toFixed(2)}
-                                            className="w-full pl-7 pr-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-sm font-black text-[#1e40af] focus:ring-2 focus:ring-blue-100 focus:border-[#1e40af] transition-all"
+                                            className="w-full pl-7 pr-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-sm font-black text-[#0891b2] focus:ring-2 focus:ring-cyan-100 focus:border-[#0891b2] transition-all"
                                         />
                                     </div>
                                 </div>
@@ -2693,7 +2697,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             type="date"
                                             required
                                             defaultValue={new Date().toISOString().split('T')[0]}
-                                            className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                            className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-cyan-100"
                                         />
                                     </div>
                                     <div>
@@ -2702,7 +2706,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             name="method"
                                             required
                                             defaultValue="03"
-                                            className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                            className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-cyan-100"
                                         >
                                             {(paymentFormsData as any[]).filter(f => typeof f.code === 'number' || !isNaN(Number(f.code))).map(f => (
                                                 <option key={f.code} value={f.code.toString().padStart(2, '0')}>
@@ -2718,7 +2722,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <select
                                         name="account"
                                         required
-                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                        className="w-full px-3 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-cyan-100"
                                     >
                                         {bankAccounts.filter(acc => acc.is_active).length === 0 && <option value="">No hay cuentas activas registradas</option>}
                                         {bankAccounts.filter(acc => acc.is_active).map(acc => (
@@ -2735,7 +2739,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         name="reference"
                                         type="text"
                                         placeholder="N° Operación o Cheque"
-                                        className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-100"
+                                        className="w-full px-4 py-2 bg-slate-50 border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-cyan-100"
                                     />
                                 </div>
 
@@ -2743,8 +2747,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Comprobante (PDF/Imagen)</label>
                                     <div className="flex items-center gap-2">
                                         <label className="flex-1 cursor-pointer">
-                                            <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all group">
-                                                <Icon name={paymentFile ? 'check_circle' : 'upload_file'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-blue-500'} />
+                                            <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-cyan-300 hover:bg-cyan-50/50 transition-all group">
+                                                <Icon name={paymentFile ? 'check_circle' : 'upload_file'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-cyan-500'} />
                                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">
                                                     {paymentFile ? paymentFile.name : 'Subir Comprobante'}
                                                 </span>
@@ -2771,7 +2775,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <button
                                     type="submit"
                                     disabled={isUploading}
-                                    className="w-full py-3 bg-[#1e40af] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 mt-4"
+                                    className="w-full py-3 bg-[#0891b2] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-cyan-200 hover:bg-cyan-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 mt-4"
                                 >
                                     <Icon name={isUploading ? 'sync' : 'save_as'} className={isUploading ? 'animate-spin' : ''} />
                                     {isUploading ? 'Subiendo...' : 'Confirmar Registro de Pago'}
@@ -2789,7 +2793,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
                             <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="account_balance" className="text-[#1e40af] text-lg" />
+                                    <Icon name="account_balance" className="text-[#0891b2] text-lg" />
                                     <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Gestié³n de Cuentas del Emisor</h3>
                                 </div>
                                 <button onClick={() => setIsAccountModalOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -2830,7 +2834,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             <div className="grid grid-cols-1 gap-4">
                                                 <div>
                                                     <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Tipo de Cuenta</label>
-                                                    <select name="type" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                                                    <select name="type" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-cyan-100 outline-none transition-all">
                                                         <option value="BANCO">CUENTA BANCARIA</option>
                                                         <option value="EFECTIVO">CAJA DE EFECTIVO</option>
                                                     </select>
@@ -2839,7 +2843,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                 <div className="relative">
                                                     <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Institucié³n / Banco</label>
                                                     <div
-                                                        className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all cursor-text"
+                                                        className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-100 transition-all cursor-text"
                                                         onClick={(e) => {
                                                             const rect = e.currentTarget.getBoundingClientRect();
                                                             setBankAnchor(rect);
@@ -2894,10 +2898,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                                                     setBankSearch(bank.name);
                                                                                     setIsBankDropdownOpen(false);
                                                                                 }}
-                                                                                className="w-full text-left px-3 py-2.5 hover:bg-blue-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
+                                                                                className="w-full text-left px-3 py-2.5 hover:bg-cyan-50 flex items-center justify-between group transition-colors border-b border-slate-50 last:border-0"
                                                                             >
                                                                                 <span className="text-[9px] font-bold text-slate-700 uppercase">{bank.name}</span>
-                                                                                <span className="text-[7px] font-black text-slate-300 group-hover:text-blue-400 bg-slate-50 px-1 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
+                                                                                <span className="text-[7px] font-black text-slate-300 group-hover:text-cyan-400 bg-slate-50 px-1 py-0.5 rounded uppercase tracking-tighter">{bank.code}</span>
                                                                             </button>
                                                                         ))}
                                                                     {bankCatalog.filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.includes(bankSearch)).length === 0 && (
@@ -2906,7 +2910,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => setIsBankDropdownOpen(false)}
-                                                                                className="mt-2 text-[8px] font-black text-blue-500 hover:underline uppercase"
+                                                                                className="mt-2 text-[8px] font-black text-cyan-500 hover:underline uppercase"
                                                                             >
                                                                                 Usar texto ingresado
                                                                             </button>
@@ -2924,13 +2928,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                         required
                                                         name="number"
                                                         placeholder="18 dé­gitos para transferencia"
-                                                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-300"
+                                                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 focus:ring-2 focus:ring-cyan-100 outline-none transition-all placeholder:text-slate-300"
                                                     />
                                                 </div>
 
                                                 <div>
                                                     <label className="block text-[8px] font-bold text-slate-400 uppercase mb-1 ml-1">Divisa</label>
-                                                    <select name="currency" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                                                    <select name="currency" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:ring-2 focus:ring-cyan-100 outline-none transition-all">
                                                         <option value="MXN">Pesos Mexicanos (MXN)</option>
                                                         <option value="USD">Dé³lares (USD)</option>
                                                     </select>
@@ -2939,7 +2943,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
                                             <button
                                                 type="submit"
-                                                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-blue-100 mt-2"
+                                                className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-cyan-100 mt-2"
                                             >
                                                 Registrar Cuenta
                                             </button>

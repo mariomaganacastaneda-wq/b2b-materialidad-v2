@@ -1,0 +1,32 @@
+﻿
+[UX AUDIT] 34 files checked
+--------------------------------------------------
+[!] ISSUES (11):
+  - [Color] index.html: PURPLE DETECTED ('#A78BFA'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Cognitive Load] index.css: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] main.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Cognitive Load] SystemVersionsTab.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Color] ProformaManager.tsx: PURPLE DETECTED ('purple'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Color] CompanyDetails.tsx: PURPLE DETECTED ('#8B5CF6'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Cognitive Load] Evidence.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+  - [Color] Invoices.tsx: PURPLE DETECTED ('purple'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Color] Quotations.tsx: PURPLE DETECTED ('purple'). Banned by Maestro rules. Use Teal/Cyan/Emerald instead.
+  - [Cognitive Load] SATCatalogs.tsx: Form inputs without labels. Use <label> for accessibility and clarity.
+[*] WARNINGS (296):
+  - [Cognitive Load] index.html: High visual noise detected. Many colors and borders increase cognitive load.
+  - [Typography] index.html: Uppercase text without tracking. ALL CAPS needs +5-10% spacing.
+  - [Performance] index.html: Animating expensive properties (width, padding, top, bottom, right, margin, left, height). Use transform/opacity where possible.
+  - [Accessibility] index.html: Animations found without prefers-reduced-motion check
+  - [Visual] index.html: Many border declarations (91). Simplify for cleaner look.
+  - [Color] index.html: 22 distinct colors. Consider 60-30-10 rule: dominant (60%), secondary (30%), accent (10%).
+  - [Color] index.html: Color variables without HSL. Consider HSL for easier palette adjustment (Hue, Saturation, Lightness).
+  - [Animation] index.html: Async operations without loading indicator. Add skeleton or spinner for perceived performance.
+  - [Color] index.html: Color variables without HSL. Consider HSL for easier palette adjustment (Hue, Saturation, Lightness).
+  - [Fitts' Law] App.tsx: Small targets (< 44px)
+  - [Cognitive Load] App.tsx: High visual noise detected. Many colors and borders increase cognitive load.
+  - [Typography] App.tsx: No line length constraint (45-75ch). Use max-w-prose or max-w-[65ch].
+  - [Typography] App.tsx: Text elements found without line-height. Body: 1.4-1.6, Headings: 1.1-1.3
+  - [Typography] App.tsx: Fixed font sizes without clamp(). Consider fluid typography: clamp(MIN, PREFERRED, MAX)
+  - [Performance] App.tsx: Animating expensive properties (padding, width, top, bottom, right, margin, left, height). Use transform/opacity where possible.
+[+] PASSED CHECKS: 21
+STATUS: FAIL

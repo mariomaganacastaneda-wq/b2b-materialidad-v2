@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__n8n__get_node",
+      "mcp__n8n__n8n_workflow_versions",
+      "mcp__n8n__n8n_validate_workflow",
+      "Bash(npx tsc --noEmit --skipLibCheck)",
+      "Bash(npx tsc --noEmit)"
+    ]
+  }
+}

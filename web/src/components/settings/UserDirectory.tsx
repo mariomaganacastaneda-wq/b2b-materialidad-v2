@@ -233,6 +233,7 @@ const OrgAccessList: React.FC<{ profileId: string; supabase: any }> = ({ profile
                 <input
                     type="text"
                     placeholder="Buscar empresa por nombre o RFC..."
+                    aria-label="Buscar empresa por nombre o RFC"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
@@ -390,6 +391,7 @@ export const UserDirectory: React.FC<UserDirectoryProps> = ({ users, setUsers, s
                 onSelectUser={setSelectedUser}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                currentUser={currentUser}
             />
 
             <UserDetails

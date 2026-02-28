@@ -112,7 +112,7 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <Camera className="text-indigo-500" />
+                        <Camera className="text-cyan-500" />
                         Evidencia Fotográfica
                     </h1>
                     <p className="text-slate-400 text-sm mt-1">
@@ -161,7 +161,7 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
                                                 {e.quotationObj?.id && (
                                                     <button
                                                         onClick={() => navigate(`/ proformas / ${e.quotationObj.id}`)}
-                                                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                        className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
                                                         title="Abrir Proforma Original"
                                                     >
                                                         <FileEdit className="w-4 h-4" />
@@ -190,14 +190,14 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
                                                 ) : e.type === 'FOTO' ? (
                                                     <ImageIcon className="w-4 h-4 text-emerald-400" />
                                                 ) : (
-                                                    <FileText className="w-4 h-4 text-blue-400" />
+                                                    <FileText className="w-4 h-4 text-cyan-400" />
                                                 )}
                                                 <div>
                                                     <div className={`font - bold text - xs ${e.isPending ? 'text-amber-400' : 'text-slate-300'}`}>
                                                         {e.type}
                                                     </div>
                                                     {e.file_url ? (
-                                                        <a href={supabase.storage.from('evidence').getPublicUrl(e.file_url).data.publicUrl} target="_blank" rel="noreferrer" className="text-[10px] text-indigo-400 hover:underline">
+                                                        <a href={supabase.storage.from('evidence').getPublicUrl(e.file_url).data.publicUrl} target="_blank" rel="noreferrer" className="text-[10px] text-cyan-400 hover:underline">
                                                             Ver Archivo
                                                         </a>
                                                     ) : e.isPending && (

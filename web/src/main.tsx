@@ -8,21 +8,38 @@ import { ClerkProvider } from "@clerk/clerk-react"
 window.onerror = (msg, url, lineNo, columnNo, error) => {
   const rootElement = document.getElementById('root');
   if (rootElement) {
-    rootElement.innerHTML = `
-      <div style="padding: 40px; background: #0f172a; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: system-ui;">
-        <div style="background: #450a0a; padding: 30px; border-radius: 12px; border: 1px solid #991b1b; max-width: 800px; overflow: auto;">
-          <h1 style="color: #fecaca; margin-bottom: 16px;">💥 Error Crítico de Ejecución</h1>
-          <p style="color: white; font-weight: bold;">${msg}</p>
-          <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; font-size: 12px; color: #fca5a5; margin-top: 15px;">
-URL: ${url}
-Línea: ${lineNo}
-Columna: ${columnNo}
-Stack: ${error?.stack || 'N/A'}
-          </pre>
-          <p style="margin-top: 20px; color: #94a3b8; fontSize: 12px;">Esto indica un error en el código minificado. Por favor, reporta este error.</p>
-        </div>
-      </div>
-    `;
+    // Limpiamos el contenido previo
+    rootElement.innerHTML = '';
+
+    // Creamos el contenedor principal
+    const container = document.createElement('div');
+    container.style.cssText = "padding: 40px; background: #0f172a; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: system-ui;";
+
+    const card = document.createElement('div');
+    card.style.cssText = "background: #450a0a; padding: 30px; border-radius: 12px; border: 1px solid #991b1b; max-width: 800px; overflow: auto;";
+
+    const title = document.createElement('h1');
+    title.style.cssText = "color: #fecaca; margin-bottom: 16px;";
+    title.textContent = "💥 Error Crítico de Ejecución";
+
+    const message = document.createElement('p');
+    message.style.cssText = "color: white; font-weight: bold;";
+    message.textContent = String(msg);
+
+    const debugInfo = document.createElement('pre');
+    debugInfo.style.cssText = "background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; font-size: 12px; color: #fca5a5; margin-top: 15px;";
+    debugInfo.textContent = `URL: ${url}\nLínea: ${lineNo}\nColumna: ${columnNo}\nStack: ${error?.stack || 'N/A'}`;
+
+    const footer = document.createElement('p');
+    footer.style.cssText = "margin-top: 20px; color: #94a3b8; font-size: 12px;";
+    footer.textContent = "Esto indica un error en el código minificado. Por favor, reporta este error.";
+
+    card.appendChild(title);
+    card.appendChild(message);
+    card.appendChild(debugInfo);
+    card.appendChild(footer);
+    container.appendChild(card);
+    rootElement.appendChild(container);
   }
   return false;
 };

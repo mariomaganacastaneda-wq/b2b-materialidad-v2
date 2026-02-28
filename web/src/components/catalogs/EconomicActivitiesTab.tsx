@@ -183,10 +183,10 @@ const EconomicActivitiesTab = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '6px',
-                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                backgroundColor: 'rgba(6, 182, 212, 0.1)',
                                 padding: '4px 10px',
                                 borderRadius: '20px',
-                                border: '1px solid rgba(99, 102, 241, 0.2)'
+                                border: '1px solid rgba(6, 182, 212, 0.2)'
                             }}>
                                 <Hash size={12} color="var(--primary-base)" />
                                 <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--primary-base)' }}>{suggested.length}</span>
@@ -216,7 +216,7 @@ const EconomicActivitiesTab = () => {
                         marginLeft: `${depth * 24}px`,
                         marginBottom: '8px',
                         borderRadius: '0 0 12px 12px',
-                        borderBottom: '1px solid rgba(99, 102, 241, 0.1)'
+                        borderBottom: '1px solid rgba(6, 182, 212, 0.1)'
                     }} className="fade-in">
                         {hasChildren ? (
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -274,10 +274,10 @@ const EconomicActivitiesTab = () => {
                                                         fontSize: '9px',
                                                         padding: '3px 8px',
                                                         borderRadius: '6px',
-                                                        background: prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+                                                        background: prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(6, 182, 212, 0.1)',
                                                         color: prod.matching_score >= 1.0 ? '#10b981' : 'var(--primary-base)',
                                                         fontWeight: '800',
-                                                        border: `1px solid ${prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'}`,
+                                                        border: `1px solid ${prod.matching_score >= 1.0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(6, 182, 212, 0.2)'}`,
                                                         textAlign: 'center'
                                                     }}>
                                                         {prod.matching_score >= 1.0 ? 'PRINCIPAL' : `SCORE: ${prod.matching_score.toFixed(2)}`}
@@ -336,6 +336,7 @@ const EconomicActivitiesTab = () => {
                     <input
                         type="text"
                         placeholder="Buscar en la taxonomía SCIAN..."
+                        aria-label="Buscar en la taxonomía SCIAN"
                         style={{
                             width: '100%',
                             backgroundColor: '#020617',
@@ -358,7 +359,7 @@ const EconomicActivitiesTab = () => {
                         <div style={{ fontSize: '9px', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px' }}>Registros</div>
                         <div style={{ fontSize: '16px', fontWeight: '900', color: 'white' }}>{activities.length}</div>
                     </div>
-                    <div style={{ padding: '10px 20px', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)', textAlign: 'center' }}>
+                    <div style={{ padding: '10px 20px', backgroundColor: 'rgba(6, 182, 212, 0.1)', borderRadius: '12px', border: '1px solid rgba(6, 182, 212, 0.2)', textAlign: 'center' }}>
                         <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--primary-base)', textTransform: 'uppercase', marginBottom: '2px' }}>Sectores</div>
                         <div style={{ fontSize: '16px', fontWeight: '900', color: 'white' }}>{activities.filter(a => a.level === 'SECTOR').length}</div>
                     </div>
