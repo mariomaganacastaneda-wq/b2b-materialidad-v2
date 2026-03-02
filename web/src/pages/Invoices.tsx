@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Invoice } from '../types';
-import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit, Shield } from 'lucide-react';
+import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit, Shield, Download } from 'lucide-react';
 
 interface InvoicesProps {
     userProfile: any;
@@ -362,6 +362,20 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
         }
     };
 
+    const handleViewFile = async (filePath: string) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('invoices')
+                .createSignedUrl(filePath, 3600);
+            if (error) throw error;
+            if (data?.signedUrl) {
+                window.open(data.signedUrl, '_blank');
+            }
+        } catch (err: any) {
+            alert('Error al abrir archivo: ' + err.message);
+        }
+    };
+
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'SOLICITUD': return <Clock className="w-4 h-4 text-amber-500" />;
@@ -555,9 +569,21 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-1.5">
-                                                <div title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'Prefactura Autorizada' : 'Prefactura Pendiente')) : 'Sin Prefactura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'bg-emerald-500' : 'bg-cyan-500')) : 'bg-yellow-500'}`}>PF</div>
-                                                <div title={inv.pdf_url ? (inv.status === 'CANCELADA' ? 'Factura Cancelada' : 'Factura Cargada') : 'Sin Factura'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.pdf_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>F</div>
-                                                <div title={inv.xml_url ? (inv.status === 'CANCELADA' ? 'XML Cancelado' : 'XML Cargado') : 'Sin XML'} className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white cursor-help ${inv.xml_url ? (inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500') : 'bg-yellow-500'}`}>X</div>
+                                                <div
+                                                    title={inv.preinvoice_url ? (['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'Prefactura Rechazada/Cancelada' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'Prefactura Autorizada' : 'Prefactura Pendiente')) : 'Sin Prefactura'}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${inv.preinvoice_url ? `cursor-pointer hover:ring-2 hover:ring-white/30 ${['RECHAZADA', 'CANCELADA'].includes(inv.status) ? 'bg-red-500' : (inv.preinvoice_authorized || ['VALIDADA', 'TIMBRADA'].includes(inv.status) ? 'bg-emerald-500' : 'bg-cyan-500')}` : 'bg-yellow-500 cursor-help'}`}
+                                                    onClick={() => inv.preinvoice_url && handleViewFile(inv.preinvoice_url)}
+                                                >PF</div>
+                                                <div
+                                                    title={inv.pdf_url ? (inv.status === 'CANCELADA' ? 'Factura Cancelada' : 'Factura Cargada — Click para ver') : 'Sin Factura'}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${inv.pdf_url ? `cursor-pointer hover:ring-2 hover:ring-white/30 ${inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500'}` : 'bg-yellow-500 cursor-help'}`}
+                                                    onClick={() => inv.pdf_url && handleViewFile(inv.pdf_url)}
+                                                >F</div>
+                                                <div
+                                                    title={inv.xml_url ? (inv.status === 'CANCELADA' ? 'XML Cancelado' : 'XML Cargado — Click para ver') : 'Sin XML'}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${inv.xml_url ? `cursor-pointer hover:ring-2 hover:ring-white/30 ${inv.status === 'CANCELADA' ? 'bg-red-500' : 'bg-emerald-500'}` : 'bg-yellow-500 cursor-help'}`}
+                                                    onClick={() => inv.xml_url && handleViewFile(inv.xml_url)}
+                                                >X</div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -608,10 +634,11 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                                 {(inv.pdf_url || inv.xml_url) && (
                                                     <button
                                                         onClick={() => {
-                                                            // Handle view details optionally
+                                                            const url = inv.pdf_url || inv.xml_url;
+                                                            if (url) handleViewFile(url);
                                                         }}
                                                         className="p-1.5 bg-slate-500/10 text-slate-400 hover:text-white rounded-lg transition-colors"
-                                                        title="Ver Detalles"
+                                                        title="Ver Factura"
                                                     >
                                                         <Eye size={18} />
                                                     </button>
@@ -676,7 +703,10 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                                     <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                                                         <FileCheck size={16} /> Archivo Cargado
                                                     </div>
-                                                    <button onClick={() => handleDeleteFile('preinvoice_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button onClick={() => handleViewFile(selectedInvoice.preinvoice_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Prefactura"><Eye size={16} /></button>
+                                                        <button onClick={() => handleDeleteFile('preinvoice_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
@@ -752,7 +782,10 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                                     <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
                                                         <FileCheck size={16} /> Archivo Cargado
                                                     </div>
-                                                    <button onClick={() => handleDeleteFile('pdf_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button onClick={() => handleViewFile(selectedInvoice.pdf_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Factura"><Eye size={16} /></button>
+                                                        <button onClick={() => handleDeleteFile('pdf_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.facturaPdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
@@ -803,7 +836,10 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                                     <div className="flex items-center gap-2 text-teal-400 font-bold text-sm">
                                                         <FileCheck size={16} /> Archivo XML Cargado
                                                     </div>
-                                                    <button onClick={() => handleDeleteFile('xml_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button onClick={() => handleViewFile(selectedInvoice.xml_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver XML"><Download size={16} /></button>
+                                                        <button onClick={() => handleDeleteFile('xml_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.xml ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>

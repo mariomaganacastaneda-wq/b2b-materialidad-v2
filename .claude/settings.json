@@ -5,7 +5,20 @@
       "mcp__n8n__n8n_workflow_versions",
       "mcp__n8n__n8n_validate_workflow",
       "Bash(npx tsc --noEmit --skipLibCheck)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:playbooks.com)",
+      "WebFetch(domain:claude-plugins.dev)",
+      "Bash(ls -la \"c:\\\\Proyectos\\\\Memoria\\\\B2B_Materialidad\\\\.agent\\\\agents\"\" 2>/dev/null || echo \"No agents directory found \")",
+      "Read(//c/Proyectos/Memoria/**)",
+      "Bash(git add .gitignore CLAUDE.md WORKLOG.md docs/sistema/01-ARQUITECTURA.md scripts/debug/extract_payment_forms.js scripts/debug/inspect_proforma.js scripts/migrations/extract_units.cjs web/analyze_excel.cjs web/analyze_excel.js web/dump_catalogs.cjs web/extract_cfdi.js web/import_catalogs.cjs web/import_samples.js web/inspect_catalogs.cjs web/inspect_catalogs_v2.cjs web/inspect_proforma.js web/scripts/enrich_sat_catalog.cjs .claude/agents/code-review.md .claude/agents/database.md .claude/agents/debugger.md .claude/agents/documentation-writer.md .claude/agents/explorer.md .claude/agents/finish-branch.md .claude/agents/frontend.md .claude/agents/n8n-builder.md .claude/agents/project-cleaner.md .claude/agents/security.md .claude/agents/test-engineer.md .claude/agents/verification.md)",
+      "Bash(git add \"archivos/\" \"docs/reportes/\" \"docs/guias/\" \"scripts/debug/temp_quotations_old.tsx\" \"scripts/debug/test_db.mjs\" \"scripts/iniciar_b2b.bat\" \"scripts/migrations/batch2.sql\" \"scripts/migrations/temp_batch.sql\" \"scripts/analysis/\")",
+      "Bash(git commit:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Proyectos\\Memoria\\claude-code-kit\\.claude",
+      "c:\\Proyectos\\Memoria\\claude-code-kit\\templates",
+      "c:\\Proyectos\\Memoria\\claude-code-kit"
     ]
   }
 }

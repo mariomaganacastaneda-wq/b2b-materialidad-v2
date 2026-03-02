@@ -17,7 +17,10 @@
       "Bash(grep -B5 -A5 \"from_po_id\\\\|ALTER TABLE.*quotations.*ADD\" \"C:/Proyectos/Memoria/B2B_Materialidad/supabase/migrations\"/*)",
       "Bash(grep -n \"ADD COLUMN.*from_po_id\\\\|bank_account_id\\\\|req_quotation\\\\|req_evidence\" \"C:/Proyectos/Memoria/B2B_Materialidad/supabase/migrations\"/*)",
       "Bash(find \"C:/Proyectos/Memoria/B2B_Materialidad\" -name \"*.sql\" -type f -exec grep -l \"from_po_id\" {} ;)",
-      "mcp__claude_ai_Supabase__list_migrations"
+      "mcp__claude_ai_Supabase__list_migrations",
+      "Bash(git add .gitignore CLAUDE.md)",
+      "Bash(gh repo view obra/superpowers --json name,description,readme)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }

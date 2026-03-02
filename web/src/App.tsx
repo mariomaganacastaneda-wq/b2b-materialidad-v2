@@ -464,6 +464,14 @@ export function App() {
             email: email
           };
           activeProfile.role = 'ADMIN';
+
+          // Sincronizar rol ADMIN en la DB para que get_current_user_role() funcione en RLS
+          if (activeProfile.id) {
+            supabase.from('profiles').update({ role: 'ADMIN' }).eq('id', activeProfile.id).then(({ error }: { error: any }) => {
+              if (error) console.warn('App: Could not sync ADMIN role to DB:', error.message);
+              else console.log('App: [DB_SYNC] ADMIN role synced to profiles table');
+            });
+          }
         }
 
         console.log('App: Final userProfile context:', { id: activeProfile?.id, role: activeProfile?.role });

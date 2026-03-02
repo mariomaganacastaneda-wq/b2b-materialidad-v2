@@ -2651,6 +2651,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
                                     const paymentData = {
                                         quotation_id: id,
+                                        organization_id: selectedOrg.id,
                                         amount: parseFloat(formDataObj.get('amount') as string),
                                         payment_date: formDataObj.get('date'),
                                         payment_method_code: formDataObj.get('method'),
