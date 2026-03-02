@@ -378,7 +378,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                         className={`flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors shadow-lg shadow-emerald-500/20 cursor-pointer ${uploading ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
                         {uploading ? <RefreshCw size={16} className="animate-spin" /> : <UploadCloud size={16} />}
-                        {uploading ? 'Procesando (AI)...' : 'Subir OC (PDF/Excel)'}
+                        {uploading ? 'Procesando (AI)...' : 'Subir OC/Proforma (PDF/Excel)'}
                     </label>
                 </div>
             </div>
