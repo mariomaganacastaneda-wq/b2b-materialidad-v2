@@ -26,14 +26,27 @@ B2B_Materialidad/
 ├── .agent/                     # Antigravity Kit (agentes IA)
 ├── .mcp.json                   # Configuración MCP (n8n)
 ├── .supabase/                  # Config Supabase local
+├── archivos/                   # Documentos y archivos de trabajo
+│   ├── clientes/               # CSFs, constancias fiscales
+│   ├── proformas/              # PDFs de proformas
+│   ├── facturas/               # PDFs de facturas
+│   ├── catalogos/              # Catálogos CFDI (catCFDI.xls, SAT)
+│   ├── catalogos-sat/          # Catálogos actividades SAT
+│   ├── ordenes-compra/         # Órdenes de compra
+│   ├── ejemplos/               # Ejemplos CIF/CSF/proformas
+│   └── logos/                  # Logos de empresas
 ├── clerk-mcp/                  # MCP servidor para Clerk
 ├── csf_backup/                 # Respaldos de CSF
 ├── design-system/              # Sistema de diseño
 ├── docs/                       # Documentación
-│   └── sistema/                # ← ESTA documentación
+│   ├── sistema/                # ← ESTA documentación
+│   ├── reportes/               # Reportes de análisis, UX, seguridad
+│   └── guias/                  # Guías de módulos
 ├── n8n-workflows/              # Workflows de automatización
 ├── scripts/                    # Scripts de utilidad
-├── similar_words/              # Análisis similitud (catálogos SAT)
+│   ├── debug/                  # Scripts de debugging temporal
+│   ├── migrations/             # Migraciones y scripts SQL
+│   └── analysis/               # Análisis (similar-words, etc.)
 ├── supabase/                   # Migraciones y Edge Functions
 │   ├── migrations/             # 47 archivos de migración SQL
 │   ├── functions/              # 6 Edge Functions

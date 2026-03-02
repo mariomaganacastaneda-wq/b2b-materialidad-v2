@@ -1,7 +1,7 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 
-const filePath = process.argv[2] || 'C:/Proyectos/Memoria/B2B_Materialidad/Ejemplos/PROFORMA MVC CESMA SERV. ASESORIA FIN. 2 de 24, Q2 ENE. 2026.xlsx';
+const filePath = process.argv[2] || 'C:/Proyectos/Memoria/B2B_Materialidad/archivos/ejemplos/PROFORMA MVC CESMA SERV. ASESORIA FIN. 2 de 24, Q2 ENE. 2026.xlsx';
 
 if (!fs.existsSync(filePath)) {
     console.error('File not found:', filePath);

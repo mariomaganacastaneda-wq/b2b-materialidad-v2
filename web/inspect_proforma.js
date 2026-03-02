@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const folderPath = path.join(__dirname, '..', 'Ejemplos');
+const folderPath = path.join(__dirname, '..', 'archivos', 'ejemplos');
 const files = [
     'M PROFORMA SEIDCO-CESMA_SERV. LIMP. Y CONS. DE OFCNAS 2 de 24, Q2 ENE. 2026 (1).xlsx',
     'PROFORMA MVC CESMA SERV. ASESORIA FIN. 2 de 24, Q2 ENE. 2026.xlsx'

@@ -1,7 +1,7 @@
 const XLSX = require('xlsx');
 
 try {
-    const workbook = XLSX.readFile('C:\\Proyectos\\Memoria\\B2B_Materialidad\\Copia de catCFDI.xls');
+    const workbook = XLSX.readFile('C:\\Proyectos\\Memoria\\B2B_Materialidad\\archivos\\catalogos\\Copia de catCFDI.xls');
     console.log('Hojas encontradas:', workbook.SheetNames);
 
     // Ver c_UsoCFDI

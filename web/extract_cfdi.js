@@ -2,7 +2,7 @@
 import xlsx from 'xlsx';
 import fs from 'fs';
 
-const FILE_PATH = '../Copia de catCFDI.xls';
+const FILE_PATH = '../archivos/catalogos/Copia de catCFDI.xls';
 const OUTPUT_DIR = './cfdi_batches';
 
 if (!fs.existsSync(OUTPUT_DIR)) {

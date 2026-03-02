@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const filePath = path.join(__dirname, 'Ejemplos', 'M PROFORMA SEIDCO-CESMA_SERV. LIMP. Y CONS. DE OFCNAS 2 de 24, Q2 ENE. 2026 (1).xlsx');
+const filePath = path.join(__dirname, '..', '..', 'archivos', 'ejemplos', 'M PROFORMA SEIDCO-CESMA_SERV. LIMP. Y CONS. DE OFCNAS 2 de 24, Q2 ENE. 2026 (1).xlsx');
 
 try {
     const workbook = XLSX.readFile(filePath);

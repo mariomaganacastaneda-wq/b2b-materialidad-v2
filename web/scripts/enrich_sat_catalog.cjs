@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function enrichCatalog() {
-    const excelPath = path.resolve(__dirname, '../../catalogo-productos-servicios-sat.xls');
+    const excelPath = path.resolve(__dirname, '../../archivos/catalogos/catalogo-productos-servicios-sat.xls');
     if (!fs.existsSync(excelPath)) {
         console.error('Excel no encontrado en:', excelPath);
         return;

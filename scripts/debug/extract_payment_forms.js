@@ -2,7 +2,7 @@ const XLSX = require('./web/node_modules/xlsx');
 const fs = require('fs');
 const path = require('path');
 
-const excelPath = 'c:\\Proyectos\\Memoria\\B2B_Materialidad\\Copia de catCFDI.xls';
+const excelPath = 'c:\\Proyectos\\Memoria\\B2B_Materialidad\\archivos\\catalogos\\Copia de catCFDI.xls';
 const outputPath = 'c:\\Proyectos\\Memoria\\B2B_Materialidad\\web\\src\\lib\\payment_forms.json';
 
 try {

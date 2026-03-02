@@ -13,7 +13,7 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const folderPath = path.join(__dirname, '..', 'Ejemplos');
+const folderPath = path.join(__dirname, '..', 'archivos', 'ejemplos');
 
 // Mapeo manual de nombres encontrados en Excel a IDs de Supabase conocidos
 // Basado en la inspección previa

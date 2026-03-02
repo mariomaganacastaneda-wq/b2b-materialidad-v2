@@ -1,7 +1,7 @@
 const XLSX = require('./web/node_modules/xlsx');
 const fs = require('fs');
 
-const file = 'C:/Proyectos/Memoria/B2B_Materialidad/Copia de catCFDI.xls';
+const file = 'C:/Proyectos/Memoria/B2B_Materialidad/archivos/catalogos/Copia de catCFDI.xls';
 const targetSheet = 'c_ClaveUnidad';
 
 try {

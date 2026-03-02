@@ -2,7 +2,7 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 
 try {
-    const workbook = XLSX.readFile('C:\\Proyectos\\Memoria\\B2B_Materialidad\\Copia de catCFDI.xls');
+    const workbook = XLSX.readFile('C:\\Proyectos\\Memoria\\B2B_Materialidad\\archivos\\catalogos\\Copia de catCFDI.xls');
     let output = '';
 
     const unidadSheet = workbook.Sheets['c_ClaveUnidad'];

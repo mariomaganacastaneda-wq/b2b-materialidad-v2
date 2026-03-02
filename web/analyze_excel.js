@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import fs from 'fs';
 
-const filePath = process.argv[2] || 'C:/Proyectos/Memoria/B2B_Materialidad/Ejemplos/L PROFORMA SOLUTIONS MIMI-CESMA_SERV. SOP. REDES Y COMP.. 2 de 24, Q2 ENE. 2026.xlsx';
+const filePath = process.argv[2] || 'C:/Proyectos/Memoria/B2B_Materialidad/archivos/ejemplos/L PROFORMA SOLUTIONS MIMI-CESMA_SERV. SOP. REDES Y COMP.. 2 de 24, Q2 ENE. 2026.xlsx';
 
 if (!fs.existsSync(filePath)) {
     console.error('File not found:', filePath);
