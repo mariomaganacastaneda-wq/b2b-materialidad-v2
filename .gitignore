@@ -54,3 +54,6 @@ temp_antigravity_kit/
 # Install scripts (no versionar)
 install.sh
 install_opencode.sh
+
+.vercel
+.env*.local

@@ -24,6 +24,8 @@ Agentes disponibles en `.claude/agents/` invocables con `@nombre`:
 | **n8n Builder** | `@n8n-builder` | Workflows n8n: crear, modificar, validar, webhooks, integraciones, agentes AI |
 | **Project Cleaner** | `@project-cleaner` | Organizar directorios, detectar archivos fuera de lugar. NUNCA borra, solo propone |
 | **Proforma Deleter** | `@proforma-deleter` | Eliminar proformas verificando dependencias fiscales |
+| **OC Tester** | `@oc-tester` | Probar workflow OC/Proforma via curl, verificar aritmetica, reportes PASS/FAIL |
+| **OC Optimizer** | `@oc-workflow-optimizer` | Coordinar optimizacion del workflow OC: archivos, n8n, pruebas, verificacion |
 
 ## Protocolo de Colaboración con Antigravity Kit
 

@@ -14,6 +14,7 @@
 | 08 | [Catálogos SAT](08-CATALOGS-SAT.md) | CFDI 4.0, SCIAN, Lista Negra 69-B |
 | 09 | [Theme y Branding](09-THEME-Y-BRANDING.md) | Sistema de diseño dinámico 60-30-10 |
 | 10 | [Diagnóstico OC→Proforma](10-DIAGNOSTICO-OC-PROFORMA.md) | Auditoría del flujo OC→Proforma: bugs críticos, mapeo de roles, datos de prueba y recomendaciones |
+| 11 | [Optimización Workflow OC](11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md) | Proceso completo de optimización del workflow n8n: 10 problemas diagnosticados (P1-P10), soluciones aplicadas, correcciones de fase de pruebas (MIME types, RFC flexible, toggles de materialidad, roles SAP), resultados de 10 archivos de prueba y lecciones aprendidas |
 
 ---
 
@@ -46,4 +47,5 @@
 ---
 
 *Documentación generada: Febrero 2026*
+*Ultima actualizacion: Marzo 2026 (doc 11 ampliado con resultados de pruebas P7-P10)*
 *Versión del sistema documentada: Basada en commit 71bfa6b*

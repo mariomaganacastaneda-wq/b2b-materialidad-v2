@@ -20,7 +20,12 @@
       "mcp__claude_ai_Supabase__list_migrations",
       "Bash(git add .gitignore CLAUDE.md)",
       "Bash(gh repo view obra/superpowers --json name,description,readme)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s -w \"\\\\n\\\\nHTTP_CODE: %{http_code}\\\\nTIME_TOTAL: %{time_total}s\\\\n\" -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/PROFORMA EPIC 03MAR2026 CROMAPRINT AMILCAR, Actividades de ventas y promoción comercial, FEBRERO.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl -s -w \"\\\\n\\\\nHTTP_CODE: %{http_code}\\\\nTIME_TOTAL: %{time_total}s\\\\n\" -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/PROFORMA MMC CROMAPRINT 03MAR2026, MTTO. REDES Y CAMARAS MARZO A ABRIL 2026.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/M 1 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FISCAL 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/M 2 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FIN. 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(node -e \":*)"
     ]
   }
 }

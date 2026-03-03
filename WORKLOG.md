@@ -15,44 +15,33 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 
 ### Última sesión
 
-- **Fecha**: 2026-03-02
-- **Agente**: Claude Code (@project-cleaner)
-- **Resumen**: Reorganización completa del proyecto (5 fases)
+- **Fecha**: 2026-03-03
+- **Agente**: Claude Code (@oc-workflow-optimizer, @n8n-builder, @oc-tester, @documentation-writer, @docs-sync)
+- **Resumen**: Optimización completa del workflow n8n `B2B_Procesar_Orden_Compra_OpenAI` - rediseño, pruebas con 10 archivos, 6 correcciones
 - **Cambios realizados**:
-  - Corregido `.gitignore` corrupto (UTF-16 LE → UTF-8) - las reglas de ignorar NO funcionaban
-  - Movidos 35+ archivos sueltos de la raíz a estructura organizada:
-    - 6 CSFs → `archivos/clientes/`
-    - 5 proformas/facturas → `archivos/proformas/` y `archivos/facturas/`
-    - 2 catálogos XLS → `archivos/catalogos/`
-    - 4 scripts JS → `scripts/debug/`
-    - 2 SQL → `scripts/migrations/`
-    - 13 reportes/docs → `docs/reportes/`
-    - 1 guía → `docs/guias/`
-    - 1 TSX temporal → `scripts/debug/`
-  - Reorganizadas 7 carpetas:
-    - `Ejemplos/` → `archivos/ejemplos/`
-    - `Ejemplos2/` → `archivos/ejemplos2/`
-    - `Exel/` → `archivos/catalogos-sat/`
-    - `VistaPrevia/` → `archivos/proformas/vista-previa/`
-    - `Ordenes de compra OP/` → `archivos/ordenes-compra/`
-    - `similar_words/` → `scripts/analysis/similar-words/`
-    - `Logos/` → `archivos/logos/`
-  - Eliminados 2 XMLs vacíos (0 bytes)
-  - Actualizadas rutas en 13 scripts que referenciaban archivos movidos
-  - Raíz del proyecto: de ~60 items a ~17 items
-- **Archivos modificados**:
-  - `.gitignore` (recodificado UTF-8, actualizado patrones)
-  - `scripts/debug/extract_payment_forms.js` (ruta catCFDI)
-  - `scripts/debug/inspect_proforma.js` (ruta Ejemplos)
-  - `scripts/migrations/extract_units.cjs` (ruta catCFDI)
-  - `web/extract_cfdi.js`, `web/dump_catalogs.cjs`, `web/inspect_catalogs.cjs`, `web/inspect_catalogs_v2.cjs`, `web/import_catalogs.cjs` (ruta catCFDI)
-  - `web/import_samples.js`, `web/inspect_proforma.js`, `web/analyze_excel.js`, `web/analyze_excel.cjs` (ruta Ejemplos)
-  - `web/scripts/enrich_sat_catalog.cjs` (ruta catálogo SAT)
+  - **Workflow n8n (YDv8SEZqn2ny0fCy)**: Rediseñado de 17 nodos (4 muertos) a 16 nodos limpios (0 muertos)
+  - **Nodo nuevo**: Verificación Aritmética (7 reglas: qty×price=subtotal, subtotal+IVA=total, etc.)
+  - **Nodo nuevo**: Rechazo de documentos no transaccionales (CSF, acuses)
+  - **Fix MIME type Excel**: `application/octet-stream` → mapeo correcto por extensión (.xlsx/.xls)
+  - **Fix RFC flexible**: Lógica de 3 niveles (RFC > Nombre > Sin cliente). Nunca rechazar por falta de RFC
+  - **Campos nuevos en respuesta**: `client_resolved` (bool), `client_message` (string para frontend UX)
+  - **Fix toggles materialidad**: `requires_quotation`, `is_contract_required`, `has_advance_payment` = SIEMPRE false por default
+  - **Fix roles SAP**: Instrucciones para OCs donde buyer=header/logo, supplier=vendor
+  - **Prompt mejorado**: Notas textuales, reglas de roles, tipos de documentos, toggles
+  - **Agentes nuevos**: `@oc-tester` (pruebas curl) y `@oc-workflow-optimizer` (coordinador)
+  - **Documentación**: `docs/sistema/11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md` (448+ líneas)
+  - **Pruebas**: 10 archivos probados (6 PDF + 4 Excel), 10/10 PASS
+- **Archivos creados/modificados**:
+  - `.claude/agents/oc-tester.md` (nuevo)
+  - `.claude/agents/oc-workflow-optimizer.md` (nuevo)
+  - `CLAUDE.md` (2 agentes nuevos en tabla)
+  - `docs/sistema/11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md` (nuevo, actualizado)
+  - `docs/sistema/00-INDICE.md` (actualizado)
+  - Workflow n8n actualizado vía MCP (6 actualizaciones parciales)
 - **Estado**: Completado
 - **Pendientes**:
-  - Ejecutar `@docs-sync` para sincronizar documentación del sistema
-  - Configurar tests con `@test-engineer`
-  - Considerar eliminar `opencode-windows-x64.zip` (63MB) de git tracking
+  - Registrar empresa AGA en la plataforma (manual, usuario)
+  - Considerar mejorar detección de billing_type TIMBRADO para CFDIs
 
 ---
 
@@ -117,6 +106,11 @@ Ambos sistemas leen y mantienen:
 ## Historial
 
 (Las sesiones anteriores se registran aquí, más recientes primero)
+
+### 2026-03-02 - Reorganización del proyecto
+- **Agente**: Claude Code (@project-cleaner)
+- **Resumen**: Reorganización completa del proyecto (5 fases), .gitignore corregido, 35+ archivos movidos
+- **Cambios**: Raíz de ~60 a ~17 items, rutas actualizadas en 13 scripts
 
 ### 2026-03-01 - Integración de agentes
 - **Agente**: Claude Code
