@@ -95,7 +95,7 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 ## Documentación Compartida
 
 Ambos sistemas leen y mantienen:
-- `docs/sistema/` → 10 documentos del sistema (via `@docs-sync`)
+- `docs/sistema/` → 11 documentos del sistema (via `@docs-sync`), incluyendo APIs de Context7
 - `WORKLOG.md` → Este archivo (registro de trabajo)
 - `CLAUDE.md` → Instrucciones para Claude Code
 - `.agent/ARCHITECTURE.md` → Arquitectura del Antigravity Kit
