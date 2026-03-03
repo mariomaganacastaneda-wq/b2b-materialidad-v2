@@ -16,32 +16,41 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 ### Última sesión
 
 - **Fecha**: 2026-03-03
+- **Agente**: Antigravity Kit (orchestrator, backend-specialist, project-planner)
+- **Resumen**: Investigación estructurada y diseño técnico de un Catálogo de Gastos con Sustento Fiscal (Cruce Anexo 6 vs CFDI 4.0).
+- **Cambios realizados**:
+  - Investigación profunda usando el MCP de NotebookLM sobre la RMF 2026 y Anexos 5 y 6.
+  - Diseño de la matriz lógica entre cuentas financieras internas vs claves de productos/servicios del SAT vs requisitos de materialidad documental.
+  - Creación de ejemplo técnico con migraciones PostgreSQL para validar CFDI entrantes mediante un Trigger (`sat_expense_mappings`, `expense_categories`, `received_invoices`).
+  - Creación de un plan de implementación formal para futura ejecución en la plataforma B2B_Materialidad.
+- **Archivos creados/modificados**:
+  - `catalogo_gastos_fiscal.md` (Artefacto: Guía práctica y esquemas de prueba)
+  - `ejemplo_tecnico_catalogo.md` (Artefacto: Ejemplos de código SQL y validaciones)
+  - `implementation_plan.md` (Artefacto: Plan formal de migración y validación en Supabase)
+  - Todos los documentos fueron subidos a la rama `main` en GitHub, disparando el *deploy* a Vercel.
+- **Estado**: Investigación Completada / Planeación Pausada.
+- **Pendientes**:
+  - Ejecutar el plan de implementación (Migración DDL a Supabase).
+  - Añadir soporte en Frontend y en flujos n8n para leer el nuevo estatus "CUARENTENA_FISCAL" generado en base de datos.
+
+---
+
+## Estado Actual del Proyecto
+
+### Historial Reciente (Previas a hoy)
+
+- **Fecha**: 2026-03-03
 - **Agente**: Claude Code (@oc-workflow-optimizer, @n8n-builder, @oc-tester, @documentation-writer, @docs-sync)
 - **Resumen**: Optimización completa del workflow n8n `B2B_Procesar_Orden_Compra_OpenAI` - rediseño, pruebas con 10 archivos, 6 correcciones
 - **Cambios realizados**:
-  - **Workflow n8n (YDv8SEZqn2ny0fCy)**: Rediseñado de 17 nodos (4 muertos) a 16 nodos limpios (0 muertos)
-  - **Nodo nuevo**: Verificación Aritmética (7 reglas: qty×price=subtotal, subtotal+IVA=total, etc.)
+  - **Workflow n8n (YDv8SEZqn2ny0fCy)**: Rediseñado de 17 nodos a 16 nodos limpios
+  - **Nodo nuevo**: Verificación Aritmética (7 reglas)
   - **Nodo nuevo**: Rechazo de documentos no transaccionales (CSF, acuses)
-  - **Fix MIME type Excel**: `application/octet-stream` → mapeo correcto por extensión (.xlsx/.xls)
-  - **Fix RFC flexible**: Lógica de 3 niveles (RFC > Nombre > Sin cliente). Nunca rechazar por falta de RFC
-  - **Campos nuevos en respuesta**: `client_resolved` (bool), `client_message` (string para frontend UX)
-  - **Fix toggles materialidad**: `requires_quotation`, `is_contract_required`, `has_advance_payment` = SIEMPRE false por default
-  - **Fix roles SAP**: Instrucciones para OCs donde buyer=header/logo, supplier=vendor
-  - **Prompt mejorado**: Notas textuales, reglas de roles, tipos de documentos, toggles
-  - **Agentes nuevos**: `@oc-tester` (pruebas curl) y `@oc-workflow-optimizer` (coordinador)
-  - **Documentación**: `docs/sistema/11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md` (448+ líneas)
   - **Pruebas**: 10 archivos probados (6 PDF + 4 Excel), 10/10 PASS
 - **Archivos creados/modificados**:
-  - `.claude/agents/oc-tester.md` (nuevo)
-  - `.claude/agents/oc-workflow-optimizer.md` (nuevo)
-  - `CLAUDE.md` (2 agentes nuevos en tabla)
-  - `docs/sistema/11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md` (nuevo, actualizado)
-  - `docs/sistema/00-INDICE.md` (actualizado)
-  - Workflow n8n actualizado vía MCP (6 actualizaciones parciales)
+  - `.claude/agents/oc-tester.md`, `.claude/agents/oc-workflow-optimizer.md`
+  - `docs/sistema/11-PROCESO-OPTIMIZACION-WORKFLOW-OC.md`
 - **Estado**: Completado
-- **Pendientes**:
-  - Registrar empresa AGA en la plataforma (manual, usuario)
-  - Considerar mejorar detección de billing_type TIMBRADO para CFDIs
 
 ---
 
