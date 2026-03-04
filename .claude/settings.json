@@ -18,12 +18,37 @@
       "Bash(where psql.exe)",
       "Bash(npm ls pg)",
       "Bash(npm ls @supabase/supabase-js)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(curl.exe -v -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"C:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/M 1 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FISCAL 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"C:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/M 1 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FISCAL 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@/c/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas/Goodyear P.O. # 8241623309 on 16.11.2023.pdf\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@/c/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas/PROFORMA SEIDCO IGM MARZO 2026, MTTO T.A.E. 7, 2026.pdf\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/PROFORMA MMC CROMAPRINT 03MAR2026, MTTO. REDES Y CAMARAS MARZO A ABRIL 2026.xlsx\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"C:\\\\Proyectos\\\\Memoria\\\\B2B_Materialidad\\\\Archivos_pruebas_2\\\\PROFORMA EPIC 03MAR2026 CROMAPRINT AMILCAR, Actividades de ventas y promoción comercial, FEBRERO.xlsx\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas/PROFORMA SEIDCO IGM MARZO 2026, MTTO T.A.E. 7, 2026.pdf\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(FILE=\"c:/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/PROFORMA MMC CROMAPRINT 03MAR2026, MTTO. REDES Y CAMARAS MARZO A ABRIL 2026.xlsx\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@\"\"$FILE\"\"\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@Archivos_pruebas_2/M 2 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FIN. 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@/c/Proyectos/Memoria/B2B_Materialidad/Archivos_pruebas_2/M 1 PROFORMA MAGAÑA Y VIEIRA-CESMA_SERV. ASESORIA FISCAL 5 de 24, Q1 MARZO 2026, MARTES 03.xlsx\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@/tmp/fiscal_m1.xlsx\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(curl.exe -s -X POST -H \"x-profile-id: user_39lU9IhUe9kZy9LIm1t2JXZ4HFK\" -F \"data=@/tmp/mvc_cesma_fin.xlsx\" \"https://n8n-n8n.5gad6x.easypanel.host/webhook/process-po-pdf\")",
+      "Bash(grep -l \"from_po_id\" /c/Proyectos/Memoria/B2B_Materialidad/supabase/migrations/*.sql)",
+      "Bash(git config --list)",
+      "Bash(git config core.autocrlf)",
+      "Bash(git config core.encoding)",
+      "Bash(git config i18n.commitEncoding)",
+      "Bash(git config i18n.logOutputEncoding)",
+      "Bash(git status -u)",
+      "Bash(git add .editorconfig .gitattributes .vscode/settings.json web/src/lib/pdf.ts web/src/components/commercial/ProformaManager.tsx web/src/App.tsx web/src/components/commercial/DeleteProformaDialog.tsx web/src/components/commercial/MaterialityBoard.tsx web/src/pages/PurchaseOrders.tsx)",
+      "Bash(git push origin main)",
+      "Bash(git add CLAUDE.md .claude/settings.json supabase/migrations/20260303_admin_force_delete_proforma.sql)"
     ],
     "additionalDirectories": [
       "c:\\Proyectos\\Memoria\\claude-code-kit\\.claude",
       "c:\\Proyectos\\Memoria\\claude-code-kit\\templates",
-      "c:\\Proyectos\\Memoria\\claude-code-kit"
+      "c:\\Proyectos\\Memoria\\claude-code-kit",
+      "\\tmp",
+      "c:\\Proyectos\\Memoria\\B2B_Materialidad"
     ]
   }
 }

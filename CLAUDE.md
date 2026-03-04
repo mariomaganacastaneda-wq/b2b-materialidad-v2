@@ -27,6 +27,11 @@ Agentes disponibles en `.claude/agents/` invocables con `@nombre`:
 | **OC Tester** | `@oc-tester` | Probar workflow OC/Proforma via curl, verificar aritmetica, reportes PASS/FAIL |
 | **OC Optimizer** | `@oc-workflow-optimizer` | Coordinar optimizacion del workflow OC: archivos, n8n, pruebas, verificacion |
 
+## Reglas de Git
+
+- **Push a GitHub**: Cuando el usuario pida subir/pushear a GitHub, SIEMPRE ejecutar primero `git status`. Si hay archivos modificados o nuevos sin commitear, hacer `git add` + `git commit` de TODO antes de pushear. Nunca pushear dejando cambios locales sin commitear.
+- **Encoding**: Todo proyecto DEBE tener `.editorconfig` y `.gitattributes` forzando UTF-8. Si no existen, crearlos antes del primer commit.
+
 ## Protocolo de Colaboración con Antigravity Kit
 
 Este proyecto usa **dos sistemas de agentes** en paralelo:
