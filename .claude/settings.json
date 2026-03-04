@@ -41,7 +41,16 @@
       "Bash(git status -u)",
       "Bash(git add .editorconfig .gitattributes .vscode/settings.json web/src/lib/pdf.ts web/src/components/commercial/ProformaManager.tsx web/src/App.tsx web/src/components/commercial/DeleteProformaDialog.tsx web/src/components/commercial/MaterialityBoard.tsx web/src/pages/PurchaseOrders.tsx)",
       "Bash(git push origin main)",
-      "Bash(git add CLAUDE.md .claude/settings.json supabase/migrations/20260303_admin_force_delete_proforma.sql)"
+      "Bash(git add CLAUDE.md .claude/settings.json supabase/migrations/20260303_admin_force_delete_proforma.sql)",
+      "Bash(vercel ls --token)",
+      "Bash(npx vercel whoami)",
+      "Bash(npx vercel ls)",
+      "Bash(npx vercel inspect https://b2b-materialidad-v2-2kj06ywga-mariomaganacastaneda-wqs-projects.vercel.app)",
+      "Bash(npx vercel inspect https://b2b-materialidad-v2-2kj06ywga-mariomaganacastaneda-wqs-projects.vercel.app --logs)",
+      "Bash(npx supabase db push --linked)",
+      "Bash(npx supabase link --project-ref ywovtkubsanalddsdedi)",
+      "mcp__n8n__n8n_health_check",
+      "Bash(npm run build)"
     ],
     "additionalDirectories": [
       "c:\\Proyectos\\Memoria\\claude-code-kit\\.claude",

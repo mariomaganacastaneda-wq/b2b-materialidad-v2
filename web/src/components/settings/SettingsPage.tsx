@@ -5,6 +5,8 @@ import { UserDirectory } from './UserDirectory';
 import { RoleManager } from './RoleManager';
 import { Check, Save, Smartphone, Send } from 'lucide-react';
 import BulkCSFManager from '../catalogs/BulkCSFManager';
+import { GlowCard } from '../ui/GlowCard';
+import { TextGlitch } from '../ui/TextGlitch';
 
 interface SettingsPageProps {
     orgs: any[];
@@ -372,7 +374,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
     return (
         <div className="fade-in">
-            <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px' }}>Configuración del Sistema</h1>
+            <div className="mb-6">
+                <TextGlitch 
+                    text="Configuración del Sistema" 
+                    className="text-3xl font-black text-white tracking-tight"
+                />
+            </div>
 
             <div style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>
                 {canViewTab('empresa') && (
@@ -465,7 +472,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             )}
 
             {activeTab === 'mi_perfil' && (
-                <div className="premium-panel p-8 max-w-2xl mx-auto mt-8 relative overflow-hidden">
+                <GlowCard className="p-8 max-w-2xl mx-auto mt-8 relative overflow-hidden bg-slate-900/60 border-white/5">
                     {/* Decorative Background Element */}
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
                     <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -612,7 +619,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                             </div>
                         </div>
                     </div>
-                </div>
+                </GlowCard>
             )}
         </div>
     );

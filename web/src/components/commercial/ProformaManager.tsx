@@ -4,6 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { generateProformaPDF } from '../../lib/pdf';
 import paymentFormsData from '../../lib/payment_forms.json';
+import { TextGlitch } from '../ui/TextGlitch';
 
 // Material Symbols mapping to keep code clean
 const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
@@ -1886,11 +1887,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen text-slate-900 bg-[#f8fafc] font-['Inter',_sans-serif] overflow-hidden force-light">
-            {/* STITCH HEADER */}
-            <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0 z-20 shadow-sm">
+        <div className="flex flex-col min-h-screen text-slate-700 bg-slate-50 font-['Inter',_sans-serif] overflow-hidden">
+            {/* NEO-DARK HEADER -> NEO-LIGHT HEADER */}
+            <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0 z-20 shadow-sm relative">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"></div>
+                
                 <div className="flex items-center gap-4">
-                    <div className="w-9 h-9 bg-white border border-slate-100 rounded-lg flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                    <div className="w-9 h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center shadow-sm overflow-hidden shrink-0">
                         {selectedOrg?.logo_url ? (
                             <img src={selectedOrg.logo_url} alt="Logo" className="w-full h-full object-contain p-1" />
                         ) : (
@@ -1898,8 +1901,10 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         )}
                     </div>
                     <div>
-                        <h1 className="text-sm font-bold text-slate-800 leading-none">{selectedOrg?.name || "Generador de Proformas"}</h1>
-                        <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+                        <h1 className="text-sm font-bold text-slate-900 leading-none tracking-wide">
+                            <TextGlitch text={selectedOrg?.name || "Generador de Proformas"} />
+                        </h1>
+                        <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">
                             {selectedOrg ? `RFC: ${selectedOrg.rfc}` : "Módulo Comercial"}
                         </p>
                     </div>
@@ -1909,7 +1914,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     {id && id !== 'nueva' && (
                         <button
                             onClick={handleDuplicate}
-                            className="px-4 py-1.5 text-[11px] font-bold text-amber-600 hover:text-white hover:bg-amber-500 border border-amber-500 rounded-lg transition-all flex items-center gap-2"
+                            className="px-4 py-1.5 text-[11px] font-bold text-amber-600 hover:text-amber-700 hover:bg-amber-50 border border-amber-200 rounded-lg transition-all flex items-center gap-2 shadow-sm"
                         >
                             <Icon name="content_copy" className="text-sm" />
                             DUPLICAR
@@ -1918,17 +1923,17 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
 
                     <button
                         onClick={() => navigate('/materialidad')}
-                        className="px-4 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all flex items-center gap-2"
+                        className="px-4 py-1.5 text-[11px] font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 border border-transparent rounded-lg transition-all flex items-center gap-2"
                     >
                         <Icon name="close" className="text-sm" />
                         SALIR
                     </button>
 
-                    <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-100 mr-2">
+                    <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-200 mr-2">
                         <button
                             onClick={handleSave}
                             disabled={formData.isSaving}
-                            className="px-4 py-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:bg-white rounded-lg transition-all disabled:opacity-50"
+                            className="px-4 py-1.5 text-[11px] font-bold text-cyan-700 hover:text-cyan-800 hover:bg-white rounded-lg transition-all disabled:opacity-50 shadow-sm"
                         >
                             {formData.isSaving ? 'Fijando...' : 'BORRADOR'}
                         </button>
@@ -1938,7 +1943,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     <button
                         onClick={handleSave}
                         disabled={formData.isSaving}
-                        className="bg-[#0891b2] hover:bg-cyan-700 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-lg shadow-cyan-500/30 transition-all flex items-center gap-2 disabled:opacity-50"
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-sm hover:shadow-md border border-cyan-400/50 transition-all flex items-center gap-2 disabled:opacity-50"
                     >
                         <Icon name={formData.isSaving ? 'sync' : 'verified'} className={`text-sm font-bold ${formData.isSaving ? 'animate-spin' : ''}`} />
                         {formData.isSaving ? 'PROCESANDO...' : 'GENERAR PROFORMA'}
@@ -1946,15 +1951,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 </div>
             </header>
 
-            {/* STITCH MAIN AREA */}
-            <main className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+            {/* NEO-DARK MAIN AREA */}
+            <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative z-10 w-full">
                 {/* WATERMARK */}
                 {selectedOrg?.logo_url && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
                         <img
                             src={selectedOrg.logo_url}
                             alt="Watermark"
-                            className="w-[500px] h-[500px] object-contain opacity-[0.03] grayscale"
+                            className="w-[500px] h-[500px] object-contain opacity-[0.02] grayscale mix-blend-screen"
                         />
                     </div>
                 )}
@@ -1962,14 +1967,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 <div className="max-w-[1400px] mx-auto space-y-6 relative z-10">
 
                     <div className="grid grid-cols-12 gap-4">
-                        {/* CLIENT DATA SECTION (COL-8) - Mas compacto */}
-                        <section className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
-                            <div className="p-2 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+                        {/* CLIENT DATA SECTION (COL-8) */}
+                        <div className="col-span-12 lg:col-span-8 flex flex-col p-0 overflow-visible bg-white rounded-2xl border border-slate-200 shadow-sm">
+                            <div className="p-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-2xl">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="person" className="text-[#0891b2] text-base" />
-                                    <h2 className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Receptor / Cliente</h2>
+                                    <Icon name="person" className="text-cyan-600 text-base" />
+                                    <h2 className="text-[10px] font-bold uppercase text-slate-700 tracking-wider">Receptor / Cliente</h2>
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-300 mr-2">VALIDEZ FISCAL REQUERIDA</span>
+                                <span className="text-[9px] font-bold text-slate-500 mr-2 border border-slate-200 px-2 py-0.5 rounded-full bg-white shadow-sm">VALIDEZ FISCAL REQUERIDA</span>
                             </div>
                             <div className="p-4 grid grid-cols-3 gap-4">
                                 {/* Columna 1 y 2: Datos de Identidad y Contacto */}
@@ -2116,18 +2121,18 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     />
                                 </div>
                             </div>
-                        </section>
+                        </div>
 
                         {/* COMPACT EMISOR & VOUCHER (COL-4) */}
-                        <section className="col-span-12 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
-                            <div className="p-2 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+                        <div className="col-span-12 lg:col-span-4 flex flex-col p-0 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                            <div className="p-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-2xl">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="settings_applications" className="text-[#0891b2] text-base" />
-                                    <h2 className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Venta e Impuestos</h2>
+                                    <Icon name="settings_applications" className="text-cyan-600 text-base" />
+                                    <h2 className="text-[10px] font-bold uppercase text-slate-700 tracking-wider">Venta e Impuestos</h2>
                                 </div>
                                 <div className="flex items-center gap-2 pr-2">
-                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight">Folio</span>
-                                    <span className="text-sm font-mono font-black text-[#0891b2] notranslate" translate="no">
+                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tight">Folio</span>
+                                    <span className="text-sm font-mono font-black text-cyan-700 notranslate" translate="no">
                                         {(() => {
                                             const processDate = formData.created_at ? new Date(formData.created_at) : new Date();
                                             return `${selectedOrg?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF'}-${processDate.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')}-${formData.proforma_number.toString().padStart(2, '0')}`;
@@ -2188,26 +2193,26 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
 
                             </div>
-                        </section>
+                        </div>
                     </div>
 
                     {/* CONCEPTS TABLE AREA */}
-                    <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-all">
-                        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <div className="flex flex-col p-0 border border-slate-200 bg-white rounded-2xl shadow-sm overflow-visible transition-all">
+                        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between rounded-t-2xl">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                    <Icon name="receipt_long" className="text-[#0891b2] text-lg" />
-                                    <h2 className="text-xs font-bold uppercase text-slate-500 tracking-wider">Conceptos del Servicio</h2>
+                                    <Icon name="receipt_long" className="text-cyan-600 text-lg" />
+                                    <h2 className="text-xs font-bold uppercase text-slate-700 tracking-wider">Conceptos del Servicio</h2>
                                 </div>
                                 <div className="h-6 w-px bg-slate-200 mx-2" />
                                 <div className="flex items-center gap-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">Actividad Económica:</label>
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">Actividad Económica:</label>
                                     <select
-                                        className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-[#0891b2] focus:border-[#0891b2] bg-white min-w-[200px]"
+                                        className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-cyan-500 focus:border-cyan-500 bg-white text-slate-700 min-w-[200px]"
                                         value={formData.economicActivity}
                                         onChange={e => setFormData({ ...formData, economicActivity: e.target.value })}
                                     >
-                                        {orgActivities.length === 0 && <option value="">Sin actividades registradas</option>}
+                                        {orgActivities.length === 0 && <option value="" className="text-slate-500">Sin actividades registradas</option>}
                                         {orgActivities.map(act => (
                                             <option key={act.id} value={act.activity_code}>
                                                 {act.percentage}% - {act.description}
@@ -2218,7 +2223,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             </div>
                             <button
                                 onClick={addItem}
-                                className="text-xs font-bold text-[#0891b2] flex items-center gap-1 hover:text-cyan-700 transition-colors"
+                                className="text-xs font-bold text-cyan-600 flex items-center gap-1 hover:text-cyan-700 transition-all"
                             >
                                 <Icon name="add_circle" className="text-sm" />
                                 AGREGAR CONCEPTO
@@ -2226,8 +2231,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         </div>
                         <div className="max-h-[600px] overflow-y-auto custom-scrollbar flex-1">
                             <table className="w-full text-left border-collapse table-fixed">
-                                <thead className="sticky top-0 bg-white shadow-sm z-10">
-                                    <tr className="bg-slate-50/80 text-slate-400 uppercase text-[9px] font-bold border-b border-slate-100">
+                                <thead className="sticky top-0 bg-white z-10 border-b border-slate-200">
+                                    <tr className="bg-slate-50 text-slate-500 uppercase text-[9px] font-bold">
                                         <th className="px-4 py-2 w-44 tracking-wider">Clave SAT</th>
                                         <th className="px-4 py-2 w-24 text-center tracking-wider">Cant.</th>
                                         <th className="px-4 py-2 w-28 text-center tracking-wider">Unidad</th>
@@ -2237,9 +2242,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         <th className="px-4 py-2 w-12 text-center"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-50">
+                                <tbody className="divide-y divide-slate-100 bg-white">
                                     {formData.items.map((item, idx) => (
-                                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 last:border-none">
+                                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-none">
                                             <td className="px-4 py-2 relative group align-middle">
                                                 <ProductSelector
                                                     value={item.code}
@@ -2302,7 +2307,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             </td>
                                             <td className="px-4 py-2 align-middle">
                                                 <AutoResizeTextarea
-                                                    className="w-full border-none bg-transparent p-0 text-[11px] resize-none focus:ring-0 leading-tight focus:outline-none transition-all text-slate-600"
+                                                    className="w-full border-none bg-transparent p-0 text-[11px] resize-none focus:ring-0 leading-tight focus:outline-none transition-all text-slate-700"
                                                     rows={1}
                                                     placeholder="Descripción del concepto"
                                                     value={item.description}
@@ -2325,7 +2330,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             </td>
                                             <td className="px-4 py-2 text-right align-middle">
                                                 <div className="flex items-center justify-end gap-1">
-                                                    <span className="text-[10px] text-slate-300 font-bold">$</span>
+                                                    <span className="text-[10px] text-slate-400 font-bold">$</span>
                                                     <div className="relative flex-1">
                                                         <input
                                                             className="w-24 border-none bg-transparent p-0 text-[11px] text-right focus:ring-0 font-bold text-cyan-700 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -2346,14 +2351,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                             <div className="absolute -top-3 right-0">
                                                                 <span className="text-[7px] font-black text-emerald-500 uppercase flex items-center gap-0.5 animate-in fade-in zoom-in-90 duration-500">
                                                                     <Icon name="history" className="text-[8px]" />
-                                                                    HISTé“RICO
+                                                                    HISTÓRICO
                                                                 </span>
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-right align-middle bg-slate-50/30">
+                                            <td className="px-4 py-2 text-right align-middle bg-slate-50/50">
                                                 <span className="text-[11px] font-black text-slate-700">
                                                     {(item.quantity * item.unitPrice).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                                                 </span>
@@ -2361,7 +2366,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             <td className="px-4 py-2 text-center align-middle">
                                                 <button
                                                     onClick={() => removeItem(idx)}
-                                                    className="text-slate-300 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
+                                                    className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
                                                 >
                                                     <Icon name="delete" className="text-base" />
                                                 </button>
@@ -2371,28 +2376,28 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center transition-all">
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center transition-all rounded-b-2xl">
                             <button
                                 onClick={addItem}
-                                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#0891b2] text-[#0891b2] hover:bg-[#0891b2] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-cyan-200 text-cyan-600 hover:bg-cyan-50 hover:border-cyan-300 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
                             >
                                 <Icon name="add" className="text-sm" />
                                 AÑADIR CONCEPTO
                             </button>
                             <div className="flex items-center gap-6">
-                                <p className="text-[10px] text-slate-400 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rápidamente.</p>
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full border border-slate-200">Conceptos: {formData.items.length}</span>
+                                <p className="text-[10px] text-slate-500 font-medium tracking-tight">Sugerencia: Use Tab para navegar entre celdas rápidamente.</p>
+                                <span className="text-[10px] font-bold text-cyan-700 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">Conceptos: {formData.items.length}</span>
                             </div>
                         </div>
-                    </section>
+                    </div>
 
                     {/* CONFIG AND TOTALS AREA */}
                     <div className="grid grid-cols-12 gap-6 pb-6">
                         {/* CONFIGURATION */}
-                        <section className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                            <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
-                                <Icon name="settings" className="text-[#0891b2]" />
-                                <h2 className="text-xs font-bold uppercase text-slate-500 tracking-wider">Configuración</h2>
+                        <div className="col-span-12 lg:col-span-8 flex flex-col p-0 overflow-visible bg-white rounded-2xl border border-slate-200 shadow-sm">
+                            <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-2 rounded-t-2xl">
+                                <Icon name="settings" className="text-cyan-600" />
+                                <h2 className="text-xs font-bold uppercase text-slate-700 tracking-wider">Configuración</h2>
                             </div>
                             <div className="p-8 space-y-8">
                                 {/* Toggles Column */}
@@ -2475,35 +2480,35 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
                             </div>
 
-                        </section>
+                        </div>
 
                         {/* TOTALS PANEL */}
-                        <section className="col-span-12 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4 flex flex-col justify-center">
+                        <div className="col-span-12 lg:col-span-4 flex flex-col justify-center p-6 space-y-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
                             <div className="flex justify-between text-xs text-slate-500">
-                                <span className="font-medium">Subtotal</span>
-                                <span className="font-bold text-slate-700">{subtotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
+                                <span className="font-medium tracking-wider">Subtotal</span>
+                                <span className="font-bold text-slate-900">{subtotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                             </div>
                             <div className="flex justify-between text-xs text-slate-500">
-                                <span className="font-medium">IVA (16%)</span>
-                                <span className="font-bold text-slate-700">{iva.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
+                                <span className="font-medium tracking-wider">IVA (16%)</span>
+                                <span className="font-bold text-slate-900">{iva.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                             </div>
-                            <div className="flex justify-between text-xl font-bold text-[#0891b2] pt-4 border-t border-slate-200">
+                            <div className="flex justify-between text-xl font-bold text-cyan-600 pt-4 border-t border-slate-100">
                                 <span className="uppercase text-sm mt-1 tracking-widest font-black">Total {formData.currency}</span>
                                 <span className="tracking-tight text-2xl">{total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                             </div>
 
                             {/* SISTEMA DE PAGOS - CONTROL DE COBRANZA */}
-                            <div className="mt-6 pt-6 border-t-2 border-dashed border-slate-100">
+                            <div className="mt-6 pt-6 border-t-2 border-dashed border-slate-200">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="p-1.5 bg-cyan-50 rounded-lg">
-                                            <Icon name="account_balance_wallet" className="text-[#0891b2] text-lg" />
+                                        <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-200 shadow-sm">
+                                            <Icon name="account_balance_wallet" className="text-cyan-600 text-lg" />
                                         </div>
-                                        <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Control de Cobranza</h3>
+                                        <h3 className="text-[10px] font-black uppercase text-slate-700 tracking-wider">Control de Cobranza</h3>
                                     </div>
                                     <button
                                         onClick={() => setIsAccountModalOpen(true)}
-                                        className="text-[9px] font-extrabold text-cyan-600 hover:text-cyan-800 flex items-center gap-1 uppercase tracking-tighter bg-cyan-50 px-2 py-1 rounded-md transition-all active:scale-95"
+                                        className="text-[9px] font-extrabold text-cyan-600 hover:text-cyan-700 flex items-center gap-1 uppercase tracking-tighter bg-white px-2 py-1 rounded-md border border-slate-200 transition-all active:scale-95 shadow-sm"
                                     >
                                         <Icon name="account_balance" className="text-xs" />
                                         Mis Cuentas
@@ -2513,15 +2518,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 <div className="space-y-3">
                                     {/* Indicadores de Saldo */}
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
+                                        <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-100 shadow-sm">
                                             <span className="block text-[8px] font-black text-emerald-600 uppercase mb-1 tracking-widest">Abonado</span>
-                                            <span className="text-sm font-black text-emerald-700">
+                                            <span className="text-sm font-black text-emerald-600">
                                                 {payments.reduce((acc, p) => acc + Number(p.amount), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                                             </span>
                                         </div>
-                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/50">
-                                            <span className="block text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest">Pendiente</span>
-                                            <span className={`text-sm font-black ${(total - payments.reduce((acc, p) => acc + Number(p.amount), 0)) > 0 ? 'text-cyan-700' : 'text-emerald-500'}`}>
+                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-sm">
+                                            <span className="block text-[8px] font-black text-slate-500 uppercase mb-1 tracking-widest">Pendiente</span>
+                                            <span className={`text-sm font-black ${(total - payments.reduce((acc, p) => acc + Number(p.amount), 0)) > 0 ? 'text-cyan-600' : 'text-emerald-600'}`}>
                                                 {Math.max(0, total - payments.reduce((acc, p) => acc + Number(p.amount), 0)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                                             </span>
                                         </div>
@@ -2530,7 +2535,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     {/* Botón de Acción Principal */}
                                     <button
                                         onClick={() => setIsPaymentModalOpen(true)}
-                                        className="w-full py-3 bg-[#0891b2] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-cyan-200 hover:bg-cyan-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                                        className="w-full py-3 bg-cyan-50 border border-cyan-200 text-cyan-700 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm hover:bg-cyan-100 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                                     >
                                         <Icon name="add_circle" className="text-base" />
                                         Registrar Pago de esta Proforma
@@ -2542,13 +2547,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             <span className="block text-[8px] font-black text-slate-400 uppercase mb-2 px-1">Últimos Abonos</span>
                                             <div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">
                                                 {payments.map(p => (
-                                                    <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg group hover:border-cyan-200 transition-all">
+                                                    <div key={p.id} className="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-lg group hover:border-cyan-300 transition-all shadow-sm">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-1.5">
                                                                 <span className="text-[9px] font-black text-slate-700">{Number(p.amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                                                                 <span className="text-[7px] font-bold text-slate-400 uppercase">{new Date(p.payment_date).toLocaleDateString()}</span>
                                                             </div>
-                                                            <span className="text-[7px] text-slate-400 font-medium truncate w-32">
+                                                            <span className="text-[7px] text-slate-500 font-medium truncate w-32">
                                                                 {p.org_bank_accounts?.bank_name} - {p.reference || 'Sin Ref.'}
                                                             </span>
                                                         </div>
@@ -2561,14 +2566,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                                             .createSignedUrl(p.evidence_url, 60);
                                                                         if (data?.signedUrl) window.open(data.signedUrl, '_blank');
                                                                     }}
-                                                                    className="p-1 px-2 text-[7px] font-black uppercase text-cyan-600 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-all flex items-center gap-1"
+                                                                    className="p-1 px-2 text-[7px] font-black uppercase text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-md transition-all flex items-center gap-1"
                                                                     title="Ver Comprobante"
                                                                 >
                                                                     <Icon name="description" className="text-[10px]" />
                                                                     DOC
                                                                 </button>
                                                             )}
-                                                            <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase tracking-tighter">Liquidado</span>
+                                                            <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 uppercase tracking-tighter shadow-sm">Liquidado</span>
                                                             <button
                                                                 onMouseDown={async (e) => {
                                                                     e.preventDefault();
@@ -2577,7 +2582,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                                                         loadPayments(id!);
                                                                     }
                                                                 }}
-                                                                className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                                                className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all"
                                                             >
                                                                 <Icon name="delete" className="text-xs" />
                                                             </button>
@@ -2589,7 +2594,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     )}
                                 </div>
                             </div>
-                        </section>
+                        </div>
                     </div>
                 </div >
             </main >

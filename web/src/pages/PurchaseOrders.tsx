@@ -35,9 +35,10 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                 .select(`
           *,
           issuer:organizations!issuer_org_id(name, rfc),
+          client_org:organizations!client_org_id(name, rfc),
           quotations!from_po_id(id, proforma_number, created_at, organizations(rfc))
         `)
-                .eq('client_org_id', selectedOrg.id)
+                .or(`client_org_id.eq.${selectedOrg.id},issuer_org_id.eq.${selectedOrg.id}`)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -130,37 +131,61 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                 throw new Error(n8nData.error || n8nData.summary || "La IA no pudo procesar este documento correctamente.");
             }
 
-            const { quotation, quotation_items, validation_messages } = n8nData;
+            const { quotation, quotation_items, validation_messages, issuer_rfc, document_type } = n8nData;
 
-            // Validacion de emisora: comparar RFC del documento con org configurada
-            if (quotation.client_rfc && selectedOrg.rfc && quotation.client_rfc !== selectedOrg.rfc) {
-                const continuar = window.confirm(
-                    `La emisora del documento (${quotation.client_name || quotation.client_rfc}) ` +
-                    `tiene un RFC diferente al de tu organizacion actual.\n\n` +
-                    `Documento: ${quotation.client_rfc}\n` +
-                    `Organizacion actual: ${selectedOrg.rfc} (${selectedOrg.name})\n\n` +
-                    `¿Deseas continuar? Se registrara con la organizacion actual como emisora.`
-                );
-                if (!continuar) {
-                    await supabase.storage.from('purchase_orders').remove([filePath]);
-                    return;
+            // Determinar roles segun tipo de documento
+            // - OC: el buyer (client_rfc) EMITIO el documento, nosotros (supplier/issuer_rfc) lo recibimos
+            // - PROFORMA/FACTURA: el supplier (issuer_rfc) EMITIO el documento
+            const normalizeRfc = (rfc: string) => (rfc || '').replace(/[-\s.]/g, '').toUpperCase();
+            const isOC = (document_type || '').toUpperCase() === 'ORDEN_COMPRA';
+
+            let issuerOrgId: string | null = null;
+            let clientOrgId: string | null = null;
+
+            if (isOC) {
+                // OC RECIBIDA: el buyer (client_rfc) emitio la OC, nosotros la recibimos
+                // issuer_org_id = quien emitio la OC = el buyer
+                // client_org_id = quien la recibe = nosotros (selectedOrg)
+                clientOrgId = selectedOrg.id;
+
+                if (quotation.client_rfc) {
+                    const { data: buyerOrg } = await supabase
+                        .from('organizations')
+                        .select('id')
+                        .eq('rfc', quotation.client_rfc)
+                        .single();
+                    if (buyerOrg) issuerOrgId = buyerOrg.id;
                 }
-                // Sobreescribir emisora con la org configurada
-                quotation.client_rfc = selectedOrg.rfc;
-                quotation.client_name = selectedOrg.name || quotation.client_name;
-            }
+            } else {
+                // PROFORMA/COTIZACION/FACTURA: el supplier (issuer_rfc) emitio el documento
+                const weAreIssuer = normalizeRfc(issuer_rfc) === normalizeRfc(selectedOrg.rfc || '');
 
-            let issuerOrgId = null;
-            if (quotation.client_rfc) {
-                const { data: orgData } = await supabase
-                    .from('organizations')
-                    .select('id')
-                    .eq('rfc', quotation.client_rfc)
-                    .single();
-                if (orgData) issuerOrgId = orgData.id;
-            }
+                if (weAreIssuer) {
+                    // Nosotros emitimos el documento (ej: nuestra proforma)
+                    issuerOrgId = selectedOrg.id;
 
-            const clientOrgId = selectedOrg.id;
+                    if (quotation.client_rfc) {
+                        const { data: clientOrg } = await supabase
+                            .from('organizations')
+                            .select('id')
+                            .eq('rfc', quotation.client_rfc)
+                            .single();
+                        if (clientOrg) clientOrgId = clientOrg.id;
+                    }
+                } else {
+                    // Otro nos envio el documento (ej: proforma de un proveedor)
+                    clientOrgId = selectedOrg.id;
+
+                    if (issuer_rfc) {
+                        const { data: issuerOrg } = await supabase
+                            .from('organizations')
+                            .select('id')
+                            .eq('rfc', issuer_rfc)
+                            .single();
+                        if (issuerOrg) issuerOrgId = issuerOrg.id;
+                    }
+                }
+            }
 
             const { data: urlData } = supabase.storage
                 .from('purchase_orders')
@@ -281,7 +306,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
         const items = order.items || await loadOrderDetails(order.id);
 
         // Excluir campos pesados que revientan el límite de URL
-        const { raw_ocr_data, validation_messages, quotations, issuer, ...cleanOrder } = order;
+        const { raw_ocr_data, validation_messages, quotations, issuer, client_org, ...cleanOrder } = order;
         cleanOrder.items = items;
 
         const queryStr = encodeURIComponent(JSON.stringify({
@@ -310,6 +335,23 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
             case 'REJECTED': return 'RECHAZADA';
             default: return status;
         }
+    };
+
+    // Determinar la contraparte del documento (el "otro" participante)
+    const getCounterparty = (order: any) => {
+        const weAreIssuer = order.issuer_org_id === selectedOrg.id;
+        if (weAreIssuer) {
+            return {
+                name: order.client_org?.name || order.client_name || 'Sin identificar',
+                rfc: order.client_org?.rfc || order.client_rfc || '',
+                role: 'Cliente'
+            };
+        }
+        return {
+            name: order.issuer?.name || 'Sin identificar',
+            rfc: order.issuer?.rfc || '',
+            role: 'Emisor'
+        };
     };
 
     const StatusIcon = ({ status, size = 12 }: { status: string, size?: number }) => {
@@ -352,6 +394,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
             const folio = buildFolio(o)?.toLowerCase() || '';
             return (o.po_number?.toLowerCase().includes(s) ||
                 o.issuer?.name?.toLowerCase().includes(s) ||
+                o.client_org?.name?.toLowerCase().includes(s) ||
                 o.client_name?.toLowerCase().includes(s) ||
                 folio.includes(s));
         }
@@ -441,7 +484,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest">
                                 <th className="p-4">Folio OC / Emisor</th>
                                 <th className="p-4">Proforma</th>
-                                <th className="p-4">Cliente</th>
+                                <th className="p-4">Contraparte</th>
                                 <th className="p-4 text-right">Total</th>
                                 <th className="p-4 text-center">Estado</th>
                                 <th className="p-4">Fecha</th>
@@ -460,7 +503,8 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                                         : (order.po_number || 'S/N')}
                                                 </div>
                                                 <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[200px]">
-                                                    {order.issuer ? order.issuer.name : 'Sin identificar'}
+                                                    {order.issuer?.name || 'Sin identificar'}
+                                                    {order.issuer_org_id === selectedOrg.id && <span className="ml-1 text-cyan-500">(nosotros)</span>}
                                                 </div>
                                             </div>
                                         </div>
@@ -480,10 +524,20 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                         )}
                                     </td>
                                     <td className="p-4">
-                                        <div className="text-slate-300 text-xs font-medium truncate max-w-[180px]">
-                                            {order.client_name || selectedOrg.name}
-                                        </div>
-                                        <div className="text-[10px] text-slate-500 font-mono">{order.client_rfc || ''}</div>
+                                        {(() => {
+                                            const cp = getCounterparty(order);
+                                            return (
+                                                <>
+                                                    <div className="text-slate-300 text-xs font-medium truncate max-w-[180px]">
+                                                        {cp.name}
+                                                    </div>
+                                                    <div className="text-[10px] text-slate-500 font-mono">
+                                                        {cp.rfc && <span>{cp.rfc} · </span>}
+                                                        <span className="text-slate-600">{cp.role}</span>
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="font-bold text-emerald-400 text-sm">
@@ -598,9 +652,16 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             {/* Metadata */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">
-                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Cliente (Receptor)</div>
-                                    <div className="text-sm text-white font-medium mt-1">{viewingOrder.client_name || '---'}</div>
-                                    <div className="text-xs text-slate-400">{viewingOrder.client_rfc || ''} {viewingOrder.client_regime_code ? `| ${viewingOrder.client_regime_code}` : ''}</div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                        {viewingOrder.issuer_org_id === selectedOrg.id ? 'Cliente' : 'Emisor / Contraparte'}
+                                    </div>
+                                    <div className="text-sm text-white font-medium mt-1">
+                                        {getCounterparty(viewingOrder).name}
+                                    </div>
+                                    <div className="text-xs text-slate-400">
+                                        {getCounterparty(viewingOrder).rfc}
+                                        {viewingOrder.client_regime_code ? ` | ${viewingOrder.client_regime_code}` : ''}
+                                    </div>
                                 </div>
                                 {[
                                     { label: 'Uso CFDI', value: viewingOrder.usage_cfdi_code },

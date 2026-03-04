@@ -10,6 +10,8 @@ import {
     Trash2
 } from 'lucide-react';
 import DeleteProformaDialog from '../components/commercial/DeleteProformaDialog';
+import { GlowCard } from '../components/ui/GlowCard';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 // Material Symbols mapping
 const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
@@ -165,12 +167,15 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
             {/* HEADER AREA */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
                             <Icon name="analytics" className="text-white text-2xl" />
                         </div>
-                        Gis Materialidad B2B
-                    </h1>
+                        <TextGlitch 
+                            text="Proformas y Cotizaciones" 
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
                     <p className="text-slate-400 text-sm font-medium mt-1">Gestión forense de proformas y cumplimiento fiscal</p>
                 </div>
 
@@ -238,7 +243,7 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-slate-800/40 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
+                    <GlowCard className="overflow-hidden p-0 bg-slate-900/40 border-white/5">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest">
@@ -396,7 +401,7 @@ const ProformaDashboard = ({ selectedOrg }: { selectedOrg: any }) => {
                                 })}
                             </tbody>
                         </table>
-                    </div>
+                    </GlowCard>
                 )}
             </div>
 
@@ -479,13 +484,13 @@ const StatCard = ({ label, value, total, color }: any) => {
     };
 
     return (
-        <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5 flex flex-col gap-1`}>
+        <GlowCard className={`bg-gradient-to-br py-4 px-5 flex flex-col gap-1 ${colors[color]}`}>
             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{label}</span>
             <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-black">{value}</span>
                 {total !== null && <span className="text-xs font-bold opacity-40">de {total}</span>}
             </div>
-        </div>
+        </GlowCard>
     );
 };
 

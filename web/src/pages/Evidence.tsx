@@ -10,6 +10,8 @@ import {
     Hash,
     Clock
 } from 'lucide-react';
+import { GlowCard } from '../components/ui/GlowCard';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface EvidenceProps {
     userProfile: any;
@@ -111,10 +113,15 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
         <div className="fade-in space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <Camera className="text-cyan-500" />
-                        Evidencia Fotográfica
-                    </h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <Camera className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text="Evidencia Fotográfica" 
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
                     <p className="text-slate-400 text-sm mt-1">
                         Control y seguimiento de evidencia material.
                     </p>
@@ -127,7 +134,7 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
                 </div>
             )}
 
-            <div className="glass-card !p-0 overflow-hidden">
+            <GlowCard className="overflow-hidden p-0 bg-slate-900/40 border-white/5">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
@@ -239,7 +246,7 @@ const Evidence = ({ selectedOrg }: EvidenceProps) => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </GlowCard>
         </div>
     );
 };

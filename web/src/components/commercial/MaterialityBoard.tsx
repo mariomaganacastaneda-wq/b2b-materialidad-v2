@@ -10,6 +10,9 @@ import {
     Trash2
 } from 'lucide-react';
 import DeleteProformaDialog from './DeleteProformaDialog';
+import { GlowCard } from '../ui/GlowCard';
+import { TextGlitch } from '../ui/TextGlitch';
+import NumberTicker from '../ui/NumberTicker';
 
 // Material Symbols mapping
 const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
@@ -183,11 +186,11 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
             {/* HEADER AREA */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
+                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                         <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
                             <Icon name="analytics" className="text-white text-2xl" />
                         </div>
-                        Gis Materialidad B2B
+                        <TextGlitch text="FISCERTA Materialidad B2B" />
                     </h1>
                     <p className="text-slate-400 text-sm font-medium mt-1">Gestión forense de proformas y cumplimiento fiscal</p>
                 </div>
@@ -255,161 +258,163 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-slate-800/40 border border-white/10 rounded-2xl overflow-x-auto shadow-2xl backdrop-blur-sm">
-                        <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
-                            <thead>
-                                <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest">
-                                    <th className="p-5 w-[240px]">Folio / Cliente</th>
-                                    <th className="p-5 w-[100px]">Total</th>
-                                    <th className="p-5 w-[120px] text-center">Estatus Fiscal</th>
-                                    <th className="p-5 text-center">Gatillos de Materialidad</th>
-                                    <th className="p-5 w-[50px]"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {filtered.map(q => {
-                                    const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus } = getMaterialityStatus(q);
+                    <GlowCard className="p-0 overflow-hidden bg-slate-950/80 backdrop-blur-xl">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
+                                <thead>
+                                    <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-white/5">
+                                        <th className="p-5 w-[240px]">Folio / Cliente</th>
+                                        <th className="p-5 w-[100px]">Total</th>
+                                        <th className="p-5 w-[120px] text-center">Estatus Fiscal</th>
+                                        <th className="p-5 text-center">Gatillos de Materialidad</th>
+                                        <th className="p-5 w-[50px]"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {filtered.map(q => {
+                                        const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus } = getMaterialityStatus(q);
 
-                                    return (
-                                        <tr key={q.id} className="hover:bg-white/5 transition-colors group">
-                                            <td className="p-5 overflow-hidden">
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    <button
-                                                        onClick={() => navigate(`/proformas/${q.id}`)}
-                                                        className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                        title="Abrir Proforma"
-                                                    >
-                                                        <FileEdit className="w-4 h-4" />
-                                                    </button>
-                                                    {isAdmin && (
+                                        return (
+                                            <tr key={q.id} className="hover:bg-cyan-500/5 transition-colors group border-b border-white/5">
+                                                <td className="p-5 overflow-hidden">
+                                                    <div className="flex items-center gap-3 min-w-0">
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                                const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
-                                                                const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
-                                                                setDeleteTarget({ id: q.id, label: `${orgPrefix}-${dateStr}-${folNum}` });
-                                                            }}
-                                                            className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                            title="Eliminar Proforma"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    )}
-                                                    <div className="flex flex-col min-w-0">
-                                                        <span
                                                             onClick={() => navigate(`/proformas/${q.id}`)}
-                                                            className="cursor-pointer font-mono text-cyan-400 font-bold bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-1 rounded text-xs border border-cyan-500/20 whitespace-nowrap transition-colors inline-block w-fit"
+                                                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            title="Abrir Proforma"
                                                         >
-                                                            {(() => {
-                                                                const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                                const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
-                                                                const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
-                                                                return `${orgPrefix}-${dateStr}-${folNum}`;
-                                                            })()}
+                                                            <FileEdit className="w-4 h-4" />
+                                                        </button>
+                                                        {isAdmin && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                                    const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                                    const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
+                                                                    setDeleteTarget({ id: q.id, label: `${orgPrefix}-${dateStr}-${folNum}` });
+                                                                }}
+                                                                className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                                title="Eliminar Proforma"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        )}
+                                                        <div className="flex flex-col min-w-0">
+                                                            <span
+                                                                onClick={() => navigate(`/proformas/${q.id}`)}
+                                                                className="cursor-pointer font-mono text-cyan-400 font-bold bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-1 rounded text-xs border border-cyan-500/30 whitespace-nowrap transition-colors inline-block w-fit shadow-[0_0_10px_rgba(6,182,212,0.1)]"
+                                                            >
+                                                                {(() => {
+                                                                    const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                                    const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                                    const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
+                                                                    return `${orgPrefix}-${dateStr}-${folNum}`;
+                                                                })()}
+                                                            </span>
+                                                            <span className="text-slate-200 font-bold text-[12px] mt-1 group-hover:text-white transition-colors uppercase truncate" title={q.client_name}>
+                                                                {q.client_name || 'Cliente sin asignar'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="p-5">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-white font-bold text-sm font-mono">
+                                                            ${new Intl.NumberFormat('es-MX').format(q.amount_total)}
                                                         </span>
-                                                        <span className="text-white font-bold text-[12px] mt-1 group-hover:text-cyan-300 transition-colors uppercase truncate" title={q.client_name}>
-                                                            {q.client_name || 'Cliente sin asignar'}
+                                                        <span className="text-slate-500 text-[10px] font-bold">
+                                                            {q.currency || 'MXN'}
                                                         </span>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="p-5">
-                                                <div className="flex flex-col">
-                                                    <span className="text-white font-bold text-sm">
-                                                        ${new Intl.NumberFormat('es-MX').format(q.amount_total)}
+                                                </td>
+                                                <td className="p-5 text-center">
+                                                    <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border ${q.status === 'ACEPTADA' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' :
+                                                        q.status === 'PENDIENTE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10' :
+                                                            'bg-slate-500/10 text-slate-400 border-slate-500/20 shadow-slate-500/10'
+                                                        }`}>
+                                                        {q.status}
                                                     </span>
-                                                    <span className="text-slate-600 text-[10px] font-bold">
-                                                        {q.currency || 'MXN'}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="p-5 text-center">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${q.status === 'ACEPTADA' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                    q.status === 'PENDIENTE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                                                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
-                                                    }`}>
-                                                    {q.status}
-                                                </span>
-                                            </td>
-                                            <td className="p-5">
-                                                <div className="flex items-start justify-between w-full pt-1">
-                                                    <MaterialityIndicator
-                                                        icon="shopping_cart"
-                                                        label="O.C."
-                                                        active={hasPO}
-                                                        tooltip="Ver Orden de Compra de origen"
-                                                        onClick={() => q.from_po_id && navigate(`/ordenes-compra/${q.from_po_id}`)}
-                                                    />
-                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
-                                                    <MaterialityIndicator
-                                                        icon="receipt_long"
-                                                        label="COT"
-                                                        active={hasQuotation}
-                                                        tooltip="Ver Cotizaciones"
-                                                        onClick={() => navigate(`/cotizaciones/${q.id}`)}
-                                                        statusText={formatStatus(finalQuotationStatus)}
-                                                        colorOverride={getQuotationColor(finalQuotationStatus)}
-                                                    />
-                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
-                                                    <MaterialityIndicator
-                                                        icon="description"
-                                                        label="CONT"
-                                                        active={hasContract}
-                                                        tooltip="Ver Contratos"
-                                                        onClick={() => navigate(`/contratos/${q.id}`)}
-                                                        statusText={formatStatus(finalContractStatus)}
-                                                        colorOverride={getContractColor(finalContractStatus)}
-                                                    />
-                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
-                                                    <MaterialityIndicator
-                                                        icon="payments"
-                                                        label="FACT"
-                                                        active={hasInvoice}
-                                                        tooltip="Ver/Editar Factura"
-                                                        onClick={() => navigate(`/facturas/${q.id}`)}
-                                                        statusText={formatStatus(finalInvoiceStatus)}
-                                                        colorOverride={getInvoiceColor(finalInvoiceStatus)}
-                                                    />
-                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
-                                                    <MaterialityIndicator
-                                                        icon="account_balance_wallet"
-                                                        label={paymentPercentage > 0 ? `${paymentPercentage}%` : "PAGO"}
-                                                        active={paymentPercentage > 0}
-                                                        colorOverride={
-                                                            paymentPercentage === 0 ? undefined :
-                                                                paymentPercentage === 100 ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" :
-                                                                    "bg-amber-500/20 border-amber-500/40 text-amber-400"
-                                                        }
-                                                        tooltip={`Pagado: ${paymentPercentage}%`}
-                                                        onClick={() => navigate(`/pagos/${q.id}`)}
-                                                    />
-                                                    <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
-                                                    <MaterialityIndicator
-                                                        icon="photo_camera"
-                                                        label="EVI"
-                                                        active={hasEvidence}
-                                                        tooltip="Ver/Editar Evidencia"
-                                                        onClick={() => navigate(`/evidencia/${q.id}`)}
-                                                        statusText={formatStatus(finalEvidenceStatus)}
-                                                        colorOverride={getEvidenceColor(finalEvidenceStatus)}
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="p-5 text-right">
-                                                <button
-                                                    className="p-2 text-slate-600 hover:text-white transition-colors"
-                                                    onClick={() => navigate(`/proformas/${q.id}`)}
-                                                >
-                                                    <ArrowRight size={18} />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                                </td>
+                                                <td className="p-5">
+                                                    <div className="flex items-start justify-between w-full pt-1">
+                                                        <MaterialityIndicator
+                                                            icon="shopping_cart"
+                                                            label="O.C."
+                                                            active={hasPO}
+                                                            tooltip="Ver Orden de Compra de origen"
+                                                            onClick={() => q.from_po_id && navigate(`/ordenes-compra/${q.from_po_id}`)}
+                                                        />
+                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                        <MaterialityIndicator
+                                                            icon="receipt_long"
+                                                            label="COT"
+                                                            active={hasQuotation}
+                                                            tooltip="Ver Cotizaciones"
+                                                            onClick={() => navigate(`/cotizaciones/${q.id}`)}
+                                                            statusText={formatStatus(finalQuotationStatus)}
+                                                            colorOverride={getQuotationColor(finalQuotationStatus)}
+                                                        />
+                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                        <MaterialityIndicator
+                                                            icon="description"
+                                                            label="CONT"
+                                                            active={hasContract}
+                                                            tooltip="Ver Contratos"
+                                                            onClick={() => navigate(`/contratos/${q.id}`)}
+                                                            statusText={formatStatus(finalContractStatus)}
+                                                            colorOverride={getContractColor(finalContractStatus)}
+                                                        />
+                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                        <MaterialityIndicator
+                                                            icon="payments"
+                                                            label="FACT"
+                                                            active={hasInvoice}
+                                                            tooltip="Ver/Editar Factura"
+                                                            onClick={() => navigate(`/facturas/${q.id}`)}
+                                                            statusText={formatStatus(finalInvoiceStatus)}
+                                                            colorOverride={getInvoiceColor(finalInvoiceStatus)}
+                                                        />
+                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                        <MaterialityIndicator
+                                                            icon="account_balance_wallet"
+                                                            label={paymentPercentage > 0 ? `${paymentPercentage}%` : "PAGO"}
+                                                            active={paymentPercentage > 0}
+                                                            colorOverride={
+                                                                paymentPercentage === 0 ? undefined :
+                                                                    paymentPercentage === 100 ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" :
+                                                                        "bg-amber-500/20 border-amber-500/40 text-amber-400"
+                                                            }
+                                                            tooltip={`Pagado: ${paymentPercentage}%`}
+                                                            onClick={() => navigate(`/pagos/${q.id}`)}
+                                                        />
+                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
+                                                        <MaterialityIndicator
+                                                            icon="photo_camera"
+                                                            label="EVI"
+                                                            active={hasEvidence}
+                                                            tooltip="Ver/Editar Evidencia"
+                                                            onClick={() => navigate(`/evidencia/${q.id}`)}
+                                                            statusText={formatStatus(finalEvidenceStatus)}
+                                                            colorOverride={getEvidenceColor(finalEvidenceStatus)}
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="p-5 text-right">
+                                                    <button
+                                                        className="p-2 text-slate-600 hover:text-cyan-400 transition-colors"
+                                                        onClick={() => navigate(`/proformas/${q.id}`)}
+                                                    >
+                                                        <ArrowRight size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </GlowCard>
                 )}
             </div>
 
@@ -486,20 +491,28 @@ const MaterialityIndicator = ({ icon, label, active, tooltip, onClick, colorOver
 );
 
 const StatCard = ({ label, value, total, color }: any) => {
-    const colors: any = {
-        emerald: 'from-emerald-600/20 to-emerald-500/5 border-emerald-500/20 text-emerald-400',
-        amber: 'from-amber-600/20 to-amber-500/5 border-amber-500/20 text-amber-400',
-        cyan: 'from-cyan-600/20 to-cyan-500/5 border-cyan-500/20 text-cyan-400',
+    const defaultColor = 'rgba(6, 182, 212, 0.15)'; // base cyan
+    const glowColor =
+        color === 'emerald' ? 'rgba(16, 185, 129, 0.15)' :
+        color === 'amber' ? 'rgba(245, 158, 11, 0.15)' :
+        defaultColor;
+        
+    const textColors: any = {
+        emerald: 'text-emerald-400',
+        amber: 'text-amber-400',
+        cyan: 'text-cyan-400',
     };
 
     return (
-        <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5 flex flex-col gap-1`}>
-            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{label}</span>
-            <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-black">{value}</span>
-                {total !== null && <span className="text-xs font-bold opacity-40">de {total}</span>}
+        <GlowCard glowColor={glowColor} className="flex flex-col gap-1 p-5 border-white/5">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
+            <div className="flex items-baseline gap-2 mt-1">
+                <span className={`text-3xl font-bold tracking-tight ${textColors[color]}`}>
+                    {typeof value === 'number' ? <NumberTicker value={value} /> : value}
+                </span>
+                {total !== null && <span className="text-xs font-bold text-slate-500">de {total}</span>}
             </div>
-        </div>
+        </GlowCard>
     );
 };
 

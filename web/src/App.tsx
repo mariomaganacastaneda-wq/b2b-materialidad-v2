@@ -26,6 +26,12 @@ import {
   useAuth
 } from '@clerk/clerk-react';
 
+// Nuevos componentes UI Futuristas
+import { GlowCard } from './components/ui/GlowCard';
+import { RetroGrid } from './components/ui/RetroGrid';
+import { TextGlitch } from './components/ui/TextGlitch';
+import NumberTicker from './components/ui/NumberTicker';
+
 // Componentes importados
 import ProformaManager from './components/commercial/ProformaManager';
 import MaterialityBoard from './components/commercial/MaterialityBoard';
@@ -181,7 +187,7 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   <div style={{ padding: '100px', textAlign: 'center', opacity: 0.5 }}>
     <ImageIcon size={64} style={{ marginBottom: '20px', margin: '0 auto' }} />
     <h1 style={{ fontSize: '24px' }}>{title}</h1>
-    <p>Módulo en desarrollo para SEIDCO V1.2</p>
+    <p>Módulo en desarrollo para FISCERTA Materialidad Fiscal B2B</p>
   </div>
 );
 
@@ -217,89 +223,102 @@ const DashboardPage = ({ userProfile }: { userProfile: any }) => {
   };
 
   return (
-    <div className="fade-in">
-      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px' }}>Panel de Control</h1>
+    <div className="fade-in relative z-0 min-h-[calc(100vh-120px)] w-full">
+      <RetroGrid className="opacity-40" />
+      <h1 className="text-[28px] font-bold mb-8 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+        <TextGlitch text="Panel de Control" />
+      </h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-        <div className="glass-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <GlowCard glowColor="rgba(6, 182, 212, 0.15)">
+          <div className="flex justify-between items-start">
             <div>
-              <div style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Volumen de Ventas (Cotizado)</div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold' }}>$1,245,000</div>
+              <div className="text-slate-400 text-sm mb-2 font-medium tracking-wide">Volumen de Ventas (Cotizado)</div>
+              <div className="text-[32px] font-bold text-white drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
+                <NumberTicker value={1245000} prefix="$" />
+              </div>
             </div>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'var(--primary-light)', color: 'var(--primary-base)' }}>
+            <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 ring-1 ring-cyan-500/20">
               <BarChart3 size={24} />
             </div>
           </div>
-        </div>
+        </GlowCard>
 
-        <div className="glass-card" style={{ borderLeft: '4px solid #f59e0b' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <GlowCard glowColor="rgba(245, 158, 11, 0.15)" className="border-l-2 border-l-amber-500/50">
+          <div className="flex justify-between items-start">
             <div>
-              <div style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Monitoreo Fiscal (CSF)</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div className="text-slate-400 text-sm mb-2 font-medium tracking-wide">Monitoreo Fiscal (CSF)</div>
+              <div className="flex flex-col gap-1.5">
                 {compliance && compliance.filter(c => c.status_compliance !== 'VALID').length > 0 ? (
                   compliance.filter(c => c.status_compliance !== 'VALID').map(c => (
-                    <div key={c.id} style={{ fontSize: '12px', color: getComplianceColor(c.status_compliance), fontWeight: '600' }}>
+                    <div key={c.id} className="text-xs font-semibold" style={{ color: getComplianceColor(c.status_compliance) }}>
                       ⚠️ {c.name}: {c.status_compliance === 'EXPIRED' ? 'Expirada' : 'Pronta a vencer'}
                     </div>
                   ))
                 ) : (
-                  <div style={{ fontSize: '14px', color: '#10b981', fontWeight: '600' }}>✓ Todas las CSF vigentes</div>
+                  <div className="text-sm text-emerald-400 font-semibold flex items-center gap-1.5 drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                    <CheckCircle2 size={16} /> TODAS LAS CSF VIGENTES
+                  </div>
                 )}
               </div>
             </div>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'var(--primary-light)', color: 'var(--color-warning)', opacity: 0.8 }}>
+            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20">
               <FileCheck size={24} />
             </div>
           </div>
-        </div>
+        </GlowCard>
 
-        <div className="glass-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <GlowCard glowColor="rgba(16, 185, 129, 0.15)">
+          <div className="flex justify-between items-start">
             <div>
-              <div style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Estatus de Cumplimiento</div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>98%</div>
+              <div className="text-slate-400 text-sm mb-2 font-medium tracking-wide">Estatus de Cumplimiento</div>
+              <div className="text-[32px] font-bold text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.4)]">
+                <NumberTicker value={98} suffix="%" />
+              </div>
             </div>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'var(--primary-light)', color: 'var(--color-success)' }}>
+            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">
               <CheckCircle2 size={24} />
             </div>
           </div>
-        </div>
+        </GlowCard>
       </div>
 
-      <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '16px' }}>Actividad Reciente</h2>
-      <div className="glass-card" style={{ padding: '0' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <h2 className="text-xl font-semibold mb-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+        Actividad Reciente
+      </h2>
+      <GlowCard className="p-0 border border-white/5 bg-[#0a0f1d]/80 backdrop-blur-md">
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <th style={{ padding: '16px 24px', color: '#94a3b8', fontWeight: '500', fontSize: '14px' }}>Cliente / Proyecto</th>
-              <th style={{ padding: '16px 24px', color: '#94a3b8', fontWeight: '500', fontSize: '14px' }}>Monto</th>
-              <th style={{ padding: '16px 24px', color: '#94a3b8', fontWeight: '500', fontSize: '14px' }}>Estado</th>
+            <tr className="text-left border-b border-white/5 bg-white/[0.02]">
+              <th className="py-4 px-6 text-slate-400 font-medium text-sm tracking-wider">Cliente / Proyecto</th>
+              <th className="py-4 px-6 text-slate-400 font-medium text-sm tracking-wider">Monto</th>
+              <th className="py-4 px-6 text-slate-400 font-medium text-sm tracking-wider">Estado</th>
             </tr>
           </thead>
           <tbody>
             {(data && Array.isArray(data)) ? data.map((q: any) => (
-              <tr key={q.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <td style={{ padding: '16px 24px' }}>
-                  <div style={{ fontWeight: '500' }}>{q.description || 'Suministro Industrial'}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>#{q.consecutive_id} - Goodyear</div>
+              <tr key={q.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 px-6">
+                  <div className="font-semibold text-slate-200">{q.description || 'Suministro Industrial'}</div>
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">#{q.consecutive_id} - Goodyear</div>
                 </td>
-                <td style={{ padding: '16px 24px', fontWeight: 'bold' }}>${q.amount_total?.toLocaleString()}</td>
-                <td style={{ padding: '16px 24px' }}>
-                  <span style={{ padding: '6px 14px', borderRadius: '99px', fontSize: '12px', backgroundColor: 'rgba(6, 182, 212, 0.15)', color: '#22d3ee', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+                <td className="py-4 px-6 font-bold text-slate-200 font-mono">
+                  ${q.amount_total?.toLocaleString()}
+                </td>
+                <td className="py-4 px-6">
+                  <span className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 ring-1 ring-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
                     {q.status}
                   </span>
                 </td>
               </tr>
             )) : (
               <tr>
-                <td colSpan={3} style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>No hay actividad cargada</td>
+                <td colSpan={3} className="p-8 text-center text-slate-500 font-medium">No hay actividad cargada</td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </GlowCard>
     </div>
   );
 };
@@ -673,10 +692,12 @@ export function App() {
           <p style={{ color: '#94a3b8', fontSize: '16px', marginBottom: '10px' }}>Bienvenido al sistema de cumplimiento forense corporativo.</p>
           <div className="glass-card" style={{ padding: '30px', display: 'flex', flexDirection: 'column', gap: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <SignInButton mode="modal">
-              <button className="primary-button" style={{ width: '280px', height: '45px', fontSize: '15px' }}>Iniciar Sesión</button>
+              <button className="premium-button flex items-center justify-center bg-cyan-600 hover:bg-cyan-500 text-white w-full rounded-lg" style={{ width: '280px', height: '45px', fontSize: '15px' }}>
+                Acceder al Sistema
+              </button>
             </SignInButton>
           </div>
-          <div style={{ marginTop: '40px', fontSize: '12px', color: '#475569' }}>SEIDCO V1.3 - Advanced Compliance Architecture</div>
+          <div style={{ marginTop: '40px', fontSize: '12px', color: '#475569' }}>FISCERTA Materialidad Fiscal B2B - Advanced Compliance Architecture</div>
         </div>
       </SignedOut>
 
@@ -715,10 +736,10 @@ export function App() {
           )}
 
           <header
-            className="notranslate"
+            className="notranslate border-b border-white/5 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center justify-between px-8"
             // @ts-ignore
             translate="no"
-            style={{ height: '70px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', padding: '0 32px', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.8)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}
+            style={{ height: '70px' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ width: '45px', height: '45px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 0 20px var(--primary-glow)' }}>
@@ -760,10 +781,9 @@ export function App() {
 
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
             <aside
-              className="notranslate"
+              className="notranslate w-[260px] border-r border-white/5 p-6 flex flex-col gap-1 bg-slate-950/50 backdrop-blur-md"
               // @ts-ignore
               translate="no"
-              style={{ width: '260px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: 'var(--neutro-claro)' }}
             >
               {filteredNavItems.map(item => {
                 const isActive = location.pathname === item.path || (item.isParent && isOnMaterialityChild);
@@ -854,13 +874,9 @@ export function App() {
               </div>
             </aside>
 
-            <main style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '40px',
-              background: 'radial-gradient(circle at top right, var(--primary-glow), transparent)',
-              position: 'relative'
-            }}>
+            <main className="flex-1 overflow-y-auto p-10 relative bg-slate-950">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
               {/* Marca de agua sutil del logotipo en el fondo */}
               {selectedOrg?.logo_url && (
                 <div style={{
@@ -903,13 +919,13 @@ export function App() {
             </main>
           </div>
 
-          <style>{`
+            <style>{`
             :root {
-              --primary-base: #6366f1;
-              --primary-light: rgba(99, 102, 241, 0.1);
-              --primary-glow: rgba(99, 102, 241, 0.3);
-              --accent-color: #818cf8;
-              --neutro-oscuro: #ffffff;
+              --primary-base: #06b6d4;
+              --primary-light: rgba(6, 182, 212, 0.1);
+              --primary-glow: rgba(6, 182, 212, 0.15);
+              --accent-color: #22d3ee;
+              --neutro-oscuro: #f8fafc;
               --neutro-claro: #020617;
               --color-success: #10b981;
               --color-error: #ef4444;
@@ -925,14 +941,14 @@ export function App() {
               transition: background-color 0.5s, color 0.5s;
             }
             .glass-card {
-                background: rgba(30, 41, 59, 0.4);
-                backdrop-filter: blur(8px);
+                background: rgba(10, 15, 29, 0.4);
+                backdrop-filter: blur(12px);
                 border: 1px solid rgba(255, 255, 255, 0.05);
                 border-radius: 16px;
                 padding: 24px;
                 transition: transform 0.2s ease, border-color 0.2s ease;
             }
-            .glass-card:hover { border-color: var(--primary-glow); }
+            .glass-card:hover { border-color: rgba(6, 182, 212, 0.3); }
             .fade-in { animation: fadeIn 0.5s ease-out; }
             @keyframes fadeIn {
                 from { opacity: 0; transform: translateY(10px); }
@@ -958,7 +974,7 @@ export function App() {
             }
             .secondary-button {
                 background: none;
-                border: 1px solid #334155;
+                border: 1px solid rgba(255, 255, 255, 0.1);
                 color: #94a3b8;
                 padding: 10px 20px;
                 border-radius: 10px;

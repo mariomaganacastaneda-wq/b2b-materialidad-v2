@@ -12,6 +12,8 @@ import {
     FileText,
     ExternalLink
 } from 'lucide-react';
+import { GlowCard } from '../components/ui/GlowCard';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface ContractsProps {
     selectedOrg: any;
@@ -234,10 +236,15 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         <div className="fade-in space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FileSignature className="text-cyan-500" />
-                        {quotationId ? 'Contratos de Proforma' : 'Gestión de Contratos'}
-                    </h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <FileSignature className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text={quotationId ? 'Contratos de Proforma' : 'Gestión de Contratos'}
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
                     <p className="text-slate-400 text-sm mt-1">
                         Control de firmas y documentación legal de las proformas.
                     </p>
@@ -266,7 +273,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                 </div>
             )}
 
-            <div className="glass-card !p-0 overflow-hidden">
+            <GlowCard className="overflow-hidden p-0 bg-slate-900/40 border-white/5">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
@@ -389,12 +396,12 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </GlowCard>
 
             {/* MODAL DE CARGA */}
             {showUploadModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden shadow-cyan-500/10">
+                    <GlowCard className="w-full max-w-md p-0 overflow-hidden bg-slate-900 border-white/10 shadow-2xl shadow-cyan-500/10">
                         <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-cyan-600/10 to-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -462,7 +469,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </GlowCard>
                 </div>
             )}
         </div>
