@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UploadCloud, FileText, CheckCircle, Clock, Search, X, FileCheck, ArrowRight, Eye, RefreshCw, AlertTriangle, SearchX, ExternalLink, StickyNote, FileSignature, ScrollText, Banknote } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate, Link } from 'react-router-dom';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface PurchaseOrderProps {
     currentUser: any;
@@ -421,10 +422,20 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
     return (
         <div className="space-y-6">
             {/* HEADER */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Órdenes de Compra</h1>
-                    <p className="text-slate-500 text-sm font-medium mt-1">OCs recibidas para {selectedOrg.name}</p>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <FileText className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text="Órdenes de Compra"
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
+                    <p className="text-slate-400 text-sm mt-1">
+                        OCs recibidas para {selectedOrg.name}
+                    </p>
                 </div>
                 <div className="relative">
                     <input type="file" accept=".pdf,.xlsx,.xls" id="file-upload-po" className="hidden" onChange={handleFileUpload} disabled={uploading} />

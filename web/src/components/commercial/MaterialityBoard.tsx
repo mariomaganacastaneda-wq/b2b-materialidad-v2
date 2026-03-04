@@ -7,7 +7,8 @@ import {
     ArrowRight,
     SearchX,
     FileEdit,
-    Trash2
+    Trash2,
+    Shield
 } from 'lucide-react';
 import DeleteProformaDialog from './DeleteProformaDialog';
 import { GlowCard } from '../ui/GlowCard';
@@ -185,14 +186,17 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* HEADER AREA */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
-                <div>
-                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                            <Icon name="analytics" className="text-white text-2xl" />
+                <div className="flex items-center gap-4 bg-transparent p-1 rounded-2xl w-fit group cursor-default">
+                    <div className="w-12 h-12 bg-slate-800/80 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/20 group-hover:-translate-y-1 transition-all border border-slate-700/50">
+                        <Shield className="text-cyan-400 w-6 h-6" />
+                    </div>
+                    <div className="flex flex-col justify-center h-full">
+                        <div className="text-3xl md:text-3xl flex items-center gap-2 tracking-tighter font-mono">
+                            <span className="font-bold text-slate-100"><TextGlitch text="Proforma -" /></span>
+                            <span className="font-bold text-slate-100"><TextGlitch text="Materialidad" /></span>
+                            <span className="font-medium text-cyan-400"><TextGlitch text="Fiscal" /></span>
                         </div>
-                        <TextGlitch text="FISCERTA Materialidad B2B" />
-                    </h1>
-                    <p className="text-slate-400 text-sm font-medium mt-1">Gestión forense de proformas y cumplimiento fiscal</p>
+                    </div>
                 </div>
 
                 <a

@@ -8,6 +8,7 @@ import {
     HelpCircle,
     History
 } from 'lucide-react';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 import EconomicActivitiesTab from '../components/catalogs/EconomicActivitiesTab';
 import ProductsServicesTab from '../components/catalogs/ProductsServicesTab';
@@ -46,30 +47,20 @@ const SATCatalogs = () => {
     return (
         <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '48px' }}>
             {/* Header Section */}
-            <div className="glass-card" style={{
-                position: 'relative',
-                overflow: 'hidden',
-                padding: '32px',
-                background: 'linear-gradient(to bottom right, rgba(6, 182, 212, 0.1), rgba(15, 23, 42, 0.6))',
-                borderRadius: '24px'
-            }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, width: '256px', height: '256px', background: 'var(--primary-glow)', filter: 'blur(100px)', marginRight: '-128px', marginTop: '-128px', opacity: 0.3 }}></div>
-                <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ padding: '8px', backgroundColor: 'var(--primary-light)', borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
-                            <LayoutGrid color="var(--primary-base)" size={24} />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <LayoutGrid className="text-white text-xl" />
                         </div>
-                        <span style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--primary-base)' }}>Inteligencia Fiscal</span>
+                        <TextGlitch 
+                            text="Centro de Catálogos SAT"
+                            className="text-3xl font-black text-white tracking-tight"
+                        />
                     </div>
-                    <div>
-                        <h1 style={{ fontSize: '36px', fontWeight: '900', color: 'white', margin: 0, letterSpacing: '-0.025em' }}>
-                            Centro de <span className="text-gradient-premium">Catálogos SAT</span>
-                        </h1>
-                        <p style={{ color: '#94a3b8', marginTop: '8px', maxWidth: '600px', fontSize: '14px', lineHeight: '1.6' }}>
-                            Plataforma unificada para la consulta de marcos regulatorios, taxonomías de actividades
-                            y validaciones de cumplimiento bajo el esquema CFDI 2026.
-                        </p>
-                    </div>
+                    <p className="text-slate-400 text-sm mt-1 font-medium">
+                        Plataforma unificada para la consulta de marcos regulatorios y taxonomías bajo el esquema CFDI 2026.
+                    </p>
                 </div>
             </div>
 

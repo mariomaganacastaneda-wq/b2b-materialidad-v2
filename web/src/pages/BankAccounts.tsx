@@ -1,11 +1,7 @@
 import React from 'react';
 import BankAccountsManager from '../components/accounting/BankAccountsManager';
-
-const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
-    <span className={`material-symbols-outlined select-none ${className}`} style={{ fontSize: 'inherit' }}>
-        {name}
-    </span>
-);
+import { Landmark } from 'lucide-react';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface BankAccountsProps {
     selectedOrg: any;
@@ -27,13 +23,18 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ selectedOrg }) => {
     // So typical page signature here seems to be { selectedOrg: any }
     return (
         <div className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <header className="mb-6 flex items-center justify-between">
+            <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-black text-cyan-700 tracking-tight flex items-center gap-2 uppercase notranslate" translate="no">
-                        <Icon name="account_balance_wallet" className="text-cyan-600" />
-                        Tesorería y Bancos
-                    </h1>
-                    <p className="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest notranslate" translate="no">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <Landmark className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text="Tesorería y Bancos"
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
+                    <p className="text-slate-400 text-sm mt-1 uppercase tracking-widest">
                         Gestión de cuentas bancarias y cajas de efectivo del emisor
                     </p>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Key, Database, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Key, Database, RefreshCw, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface SecurityCenterProps {
     supabase: any;
@@ -59,10 +60,18 @@ export const SecurityCenter: React.FC<SecurityCenterProps> = ({
 
     return (
         <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>Centro de Seguridad</h1>
-                    <p style={{ color: '#94a3b8' }}>Verificación técnica de la infraestructura de identidad y RLS.</p>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <ShieldAlert className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text="Centro de Seguridad"
+                            className="text-3xl font-black text-white tracking-tight uppercase"
+                        />
+                    </div>
+                    <p className="text-slate-400 text-sm mt-1 font-medium">Verificación técnica de la infraestructura de identidad y RLS.</p>
                 </div>
                 <button
                     onClick={runDiagnostics}

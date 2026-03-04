@@ -13,6 +13,7 @@ import {
     XCircle,
     SearchX
 } from 'lucide-react';
+import { TextGlitch } from '../components/ui/TextGlitch';
 import paymentFormsData from '../lib/payment_forms.json';
 
 interface PagosProps {
@@ -212,7 +213,15 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
             {/* HEADER */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Pagos</h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <Wallet className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text="Pagos"
+                            className="text-3xl font-black text-white tracking-tight uppercase"
+                        />
+                    </div>
                     <p className="text-slate-500 text-sm font-medium mt-1">Control de pagos recibidos y por asignar</p>
                 </div>
                 <button

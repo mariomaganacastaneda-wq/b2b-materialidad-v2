@@ -3,7 +3,7 @@ import { CompanyList } from './CompanyList';
 import { CompanyDetails } from './CompanyDetails';
 import { UserDirectory } from './UserDirectory';
 import { RoleManager } from './RoleManager';
-import { Check, Save, Smartphone, Send } from 'lucide-react';
+import { Check, Save, Smartphone, Send, Settings } from 'lucide-react';
 import BulkCSFManager from '../catalogs/BulkCSFManager';
 import { GlowCard } from '../ui/GlowCard';
 import { TextGlitch } from '../ui/TextGlitch';
@@ -375,10 +375,15 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     return (
         <div className="fade-in">
             <div className="mb-6">
-                <TextGlitch 
-                    text="Configuración del Sistema" 
-                    className="text-3xl font-black text-white tracking-tight"
-                />
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                        <Settings className="text-white text-xl" />
+                    </div>
+                    <TextGlitch 
+                        text="Configuración del Sistema" 
+                        className="text-3xl font-black text-white tracking-tight"
+                    />
+                </div>
             </div>
 
             <div style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>

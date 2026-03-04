@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Invoice } from '../types';
 import { FileText, Upload, Trash2, Eye, XCircle, CheckCircle2, Clock, FileCheck, AlertTriangle, FileEdit, Shield, Download } from 'lucide-react';
+import { TextGlitch } from '../components/ui/TextGlitch';
 
 interface InvoicesProps {
     userProfile: any;
@@ -416,10 +417,15 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
         <div className="fade-in space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FileCheck className="text-cyan-500" />
-                        {quotationId ? 'Facturas de Proforma' : 'Gestión de Facturación'}
-                    </h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <FileCheck className="text-white text-xl" />
+                        </div>
+                        <TextGlitch 
+                            text={quotationId ? 'Facturas de Proforma' : 'Gestión de Facturación'}
+                            className="text-2xl font-black text-white tracking-tight"
+                        />
+                    </div>
                     <p className="text-slate-400 text-sm mt-1">
                         Control de ciclo de vida fiscal: Solicitudes, Prefacturas y Timbrado.
                     </p>
