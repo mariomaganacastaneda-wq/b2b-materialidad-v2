@@ -6,8 +6,10 @@ import {
     Search,
     ArrowRight,
     SearchX,
-    FileEdit
+    FileEdit,
+    Trash2
 } from 'lucide-react';
+import DeleteProformaDialog from './DeleteProformaDialog';
 
 // Material Symbols mapping
 const Icon = ({ name, className = "" }: { name: string, className?: string }) => (
@@ -83,13 +85,15 @@ const formatStatus = (s: string | null | undefined): string | null => {
     return s.replace(/_/g, ' ');
 };
 
-const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
+const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, userProfile?: any }) => {
     const navigate = useNavigate();
     const [quotations, setQuotations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
+    const isAdmin = userProfile?.role === 'ADMIN';
 
     const fetchQuotations = async () => {
         if (!selectedOrg?.id) return;
@@ -277,6 +281,21 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
                                                     >
                                                         <FileEdit className="w-4 h-4" />
                                                     </button>
+                                                    {isAdmin && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                                const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                                const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
+                                                                setDeleteTarget({ id: q.id, label: `${orgPrefix}-${dateStr}-${folNum}` });
+                                                            }}
+                                                            className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                            title="Eliminar Proforma"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    )}
                                                     <div className="flex flex-col min-w-0">
                                                         <span
                                                             onClick={() => navigate(`/proformas/${q.id}`)}
@@ -415,6 +434,21 @@ const MaterialityBoard = ({ selectedOrg }: { selectedOrg: any }) => {
                     color="cyan"
                 />
             </div>
+
+            {/* Modal de eliminacion (solo admin) */}
+            {isAdmin && deleteTarget && (
+                <DeleteProformaDialog
+                    quotationId={deleteTarget.id}
+                    proformaLabel={deleteTarget.label}
+                    isOpen={true}
+                    onClose={() => setDeleteTarget(null)}
+                    onDeleted={() => {
+                        setDeleteTarget(null);
+                        fetchQuotations();
+                    }}
+                    isAdmin={true}
+                />
+            )}
         </div>
     );
 };

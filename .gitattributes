@@ -1,0 +1,33 @@
+# Forzar UTF-8 y LF en archivos de texto para evitar corrupcion de acentos en Windows
+* text=auto eol=lf
+
+# Archivos fuente - siempre texto UTF-8
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.env text eol=lf
+*.sh text eol=lf
+
+# Archivos binarios - nunca modificar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

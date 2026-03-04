@@ -132,6 +132,24 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
 
             const { quotation, quotation_items, validation_messages } = n8nData;
 
+            // Validacion de emisora: comparar RFC del documento con org configurada
+            if (quotation.client_rfc && selectedOrg.rfc && quotation.client_rfc !== selectedOrg.rfc) {
+                const continuar = window.confirm(
+                    `La emisora del documento (${quotation.client_name || quotation.client_rfc}) ` +
+                    `tiene un RFC diferente al de tu organizacion actual.\n\n` +
+                    `Documento: ${quotation.client_rfc}\n` +
+                    `Organizacion actual: ${selectedOrg.rfc} (${selectedOrg.name})\n\n` +
+                    `¿Deseas continuar? Se registrara con la organizacion actual como emisora.`
+                );
+                if (!continuar) {
+                    await supabase.storage.from('purchase_orders').remove([filePath]);
+                    return;
+                }
+                // Sobreescribir emisora con la org configurada
+                quotation.client_rfc = selectedOrg.rfc;
+                quotation.client_name = selectedOrg.name || quotation.client_name;
+            }
+
             let issuerOrgId = null;
             if (quotation.client_rfc) {
                 const { data: orgData } = await supabase
@@ -181,10 +199,11 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                     is_licitation: quotation.is_licitation || false,
                     is_contract_required: quotation.is_contract_required || false,
                     request_direct_invoice: quotation.request_direct_invoice || false,
-                    billing_type: quotation.billing_type || 'PREFACTURA',
+                    billing_type: quotation.billing_type || null,
                     requires_quotation: quotation.requires_quotation || false,
                     has_advance_payment: quotation.has_advance_payment || false,
-                    advance_payment_amount: quotation.advance_payment_amount || 0
+                    advance_payment_amount: quotation.advance_payment_amount || 0,
+                    req_evidence: quotation.req_evidence || false
                 })
                 .select()
                 .single();
@@ -256,14 +275,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
     };
 
     const handleConvertToProforma = async (order: any) => {
-        try {
-            await supabase
-                .from('purchase_orders')
-                .update({ status: 'CONVERTED_TO_PROFORMA' })
-                .eq('id', order.id);
-        } catch (err) {
-            console.error('Error actualizando status de OC:', err);
-        }
+        // El status se actualiza a CONVERTED_TO_PROFORMA cuando la proforma se guarde en ProformaManager
 
         // Cargar items de la OC
         const items = order.items || await loadOrderDetails(order.id);
@@ -487,7 +499,7 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                     </td>
                                     <td className="p-4">
                                         <span className="text-slate-400 text-xs">
-                                            {order.emission_date ? new Date(order.emission_date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '--'}
+                                            {order.emission_date ? new Date(order.emission_date + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '--'}
                                         </span>
                                     </td>
                                     <td className="p-4 text-center">
@@ -511,15 +523,13 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                                                     <FileText size={16} />
                                                 </button>
                                             )}
-                                            {order.status === 'PENDING_REVIEW' && (
-                                                <button
-                                                    onClick={() => handleConvertToProforma(order)}
-                                                    className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
-                                                    title="Convertir en Proforma"
-                                                >
-                                                    <ArrowRight size={16} />
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => handleConvertToProforma(order)}
+                                                className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                                title={getLinkedQuotation(order) ? "Crear nueva proforma" : "Convertir en Proforma"}
+                                            >
+                                                <ArrowRight size={16} />
+                                            </button>
                                             <button
                                                 onClick={(e) => handleDeleteOrder(e, order.id)}
                                                 className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
@@ -611,12 +621,14 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             </div>
 
                             {/* Toggles de facturación */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {[
                                     { label: 'Tipo Comprobante', value: viewingOrder.billing_type || 'PREFACTURA', icon: <FileSignature size={14} />, color: viewingOrder.billing_type ? 'emerald' : 'slate' },
                                     { label: 'Req. Cotización', value: viewingOrder.requires_quotation ? 'SÍ' : 'NO', icon: <ScrollText size={14} />, color: viewingOrder.requires_quotation ? 'emerald' : 'slate' },
                                     { label: 'Req. Contrato', value: viewingOrder.is_contract_required ? 'SÍ' : 'NO', icon: <FileText size={14} />, color: viewingOrder.is_contract_required ? 'emerald' : 'slate' },
                                     { label: 'Anticipo', value: viewingOrder.has_advance_payment ? (viewingOrder.advance_payment_amount ? formatCurrency(viewingOrder.advance_payment_amount, viewingOrder.currency) : 'SÍ') : 'NO', icon: <Banknote size={14} />, color: viewingOrder.has_advance_payment ? 'amber' : 'slate' },
+                                    { label: 'Facturación', value: viewingOrder.request_direct_invoice ? 'SÍ' : 'NO', icon: <FileCheck size={14} />, color: viewingOrder.request_direct_invoice ? 'emerald' : 'slate' },
+                                    { label: 'Evidencia', value: viewingOrder.req_evidence ? 'SÍ' : 'NO', icon: <Eye size={14} />, color: viewingOrder.req_evidence ? 'emerald' : 'slate' },
                                 ].map((toggle, i) => (
                                     <div key={i} className={`p-3 rounded-xl border ${toggle.color === 'emerald' ? 'bg-emerald-500/10 border-emerald-500/20' : toggle.color === 'cyan' ? 'bg-cyan-500/10 border-cyan-500/20' : toggle.color === 'amber' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-slate-800/40 border-white/10'}`}>
                                         <div className="flex items-center gap-2 mb-1">
@@ -697,21 +709,13 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             <button onClick={() => setViewingOrder(null)} className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors">
                                 Cerrar
                             </button>
-                            {viewingOrder.status === 'PENDING_REVIEW' && (
-                                <button
-                                    onClick={() => handleConvertToProforma(viewingOrder)}
-                                    className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <ArrowRight size={16} />
-                                    Convertir en Proforma
-                                </button>
-                            )}
-                            {viewingOrder.status === 'CONVERTED_TO_PROFORMA' && (
-                                <button disabled className="flex-1 py-3 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold uppercase tracking-widest cursor-not-allowed flex items-center justify-center gap-2">
-                                    <CheckCircle size={16} />
-                                    Ya Convertida
-                                </button>
-                            )}
+                            <button
+                                onClick={() => handleConvertToProforma(viewingOrder)}
+                                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            >
+                                <ArrowRight size={16} />
+                                {getLinkedQuotation(viewingOrder) ? 'Crear Nueva Proforma' : 'Convertir en Proforma'}
+                            </button>
                         </div>
                     </div>
                 </div>

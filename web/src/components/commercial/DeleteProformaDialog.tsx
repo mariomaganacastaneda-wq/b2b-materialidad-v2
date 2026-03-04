@@ -8,6 +8,7 @@ interface DeleteProformaDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  isAdmin?: boolean;
 }
 
 interface Blocker {
@@ -32,6 +33,7 @@ interface DiagnosticResult {
     items: number;
     invoices: number;
     contracts: number;
+    evidence: number;
   };
   orphaned_payments?: {
     count: number;
@@ -39,10 +41,12 @@ interface DiagnosticResult {
     message: string;
   };
   storage_files?: string[];
+  force?: boolean;
   deleted?: {
     items: number;
     invoices: number;
     contracts: number;
+    evidence: number;
   };
 }
 
@@ -52,6 +56,7 @@ export default function DeleteProformaDialog({
   isOpen,
   onClose,
   onDeleted,
+  isAdmin = false,
 }: DeleteProformaDialogProps) {
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -60,7 +65,7 @@ export default function DeleteProformaDialog({
   const [result, setResult] = useState<DiagnosticResult | null>(null);
 
   useEffect(() => {
-    if (isOpen && quotationId) {
+    if (isOpen && quotationId && !isAdmin) {
       runDiagnostic();
     }
     if (!isOpen) {
@@ -94,6 +99,7 @@ export default function DeleteProformaDialog({
       const { data, error: rpcError } = await supabase.rpc('delete_proforma_safe', {
         p_quotation_id: quotationId,
         p_dry_run: false,
+        ...(isAdmin && { p_force: true }),
       });
       if (rpcError) throw rpcError;
 
@@ -107,10 +113,15 @@ export default function DeleteProformaDialog({
       if (res.storage_files && res.storage_files.length > 0) {
         for (const fileUrl of res.storage_files) {
           try {
-            // Extraer path relativo del bucket quotations
-            const match = fileUrl.match(/quotations\/(.+)/);
-            if (match) {
-              await supabase.storage.from('quotations').remove([match[1]]);
+            // Extraer bucket y path de URL de Supabase Storage
+            const fullMatch = fileUrl.match(/\/storage\/v1\/object\/(?:public|sign)\/([^/]+)\/(.+)/);
+            if (fullMatch) {
+              await supabase.storage.from(fullMatch[1]).remove([fullMatch[2]]);
+            } else {
+              const relMatch = fileUrl.match(/^([^/]+)\/(.+)/);
+              if (relMatch) {
+                await supabase.storage.from(relMatch[1]).remove([relMatch[2]]);
+              }
             }
           } catch {
             // Storage cleanup es best-effort
@@ -135,9 +146,10 @@ export default function DeleteProformaDialog({
 
   if (!isOpen) return null;
 
-  const isBlocked = diagnostic && !diagnostic.success;
-  const canDelete = diagnostic && diagnostic.success && diagnostic.dry_run;
-  const hasOrphanedPayments = diagnostic?.orphaned_payments && diagnostic.orphaned_payments.count > 0;
+  const isBlocked = !isAdmin && diagnostic && !diagnostic.success;
+  const canDelete = isAdmin || (diagnostic && diagnostic.success && diagnostic.dry_run);
+  const hasOrphanedPayments = (diagnostic?.orphaned_payments || result?.orphaned_payments) &&
+    ((diagnostic?.orphaned_payments?.count ?? 0) > 0 || (result?.orphaned_payments?.count ?? 0) > 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={handleClose}>
@@ -160,6 +172,7 @@ export default function DeleteProformaDialog({
               <h2 className="text-white font-bold text-sm">
                 {result ? 'Proforma eliminada' :
                  isBlocked ? 'No se puede eliminar' :
+                 isAdmin ? 'Eliminar proforma (Admin)' :
                  'Eliminar proforma'}
               </h2>
               <p className="text-slate-400 text-xs">{proformaLabel}</p>
@@ -195,8 +208,11 @@ export default function DeleteProformaDialog({
                 <p className="text-emerald-300 text-sm font-medium">{result.message}</p>
                 <div className="mt-2 text-emerald-400/70 text-xs space-y-1">
                   <p>{result.deleted?.items || 0} item(s) de linea eliminados</p>
-                  <p>{result.deleted?.invoices || 0} factura(s) no timbrada(s) eliminada(s)</p>
+                  <p>{result.deleted?.invoices || 0} factura(s) eliminada(s)</p>
                   <p>{result.deleted?.contracts || 0} contrato(s) eliminado(s)</p>
+                  {(result.deleted?.evidence ?? 0) > 0 && (
+                    <p>{result.deleted?.evidence} evidencia(s) eliminada(s)</p>
+                  )}
                 </div>
               </div>
               {result.orphaned_payments && result.orphaned_payments.count > 0 && (
@@ -205,6 +221,29 @@ export default function DeleteProformaDialog({
                   <span className="text-amber-300 text-sm">{result.orphaned_payments.message}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Admin: Confirmacion directa sin diagnostico */}
+          {isAdmin && !result && !loading && !error && (
+            <div className="space-y-3">
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p className="text-red-300 text-sm font-medium">Eliminacion administrativa sin restricciones</p>
+                <p className="text-red-400/70 text-xs mt-2">
+                  Esta accion eliminara la proforma y TODOS sus documentos asociados:
+                </p>
+                <ul className="text-red-400/70 text-xs mt-1 space-y-0.5 list-disc list-inside">
+                  <li>Facturas (incluyendo timbradas)</li>
+                  <li>Contratos (incluyendo con archivo)</li>
+                  <li>Evidencia fotografica</li>
+                  <li>Items de linea</li>
+                </ul>
+                <p className="text-red-300 text-xs mt-2 font-bold">Esta accion no se puede deshacer.</p>
+              </div>
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
+                <AlertCircle className="text-amber-400 flex-shrink-0 mt-0.5" size={16} />
+                <span className="text-amber-300 text-xs">Los pagos asociados se conservaran y quedaran sin proforma asignada.</span>
+              </div>
             </div>
           )}
 

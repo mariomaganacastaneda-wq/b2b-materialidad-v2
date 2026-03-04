@@ -880,8 +880,8 @@ export function App() {
               )}
               <Routes>
                 <Route path="/" element={<DashboardPage userProfile={userProfile} />} />
-                <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
-                <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} />} />
+                <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} userProfile={userProfile} />} />
+                <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
