@@ -8,6 +8,7 @@ interface ProformaData {
     clientCP: string;
     clientRegime: string;
     economicActivity: string;
+    showActivityInPDF?: boolean;
     currency: string;
     items: any[];
     subtotal: number;
@@ -158,14 +159,18 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.text(`Forma: ${data.paymentForm || '03'}`, pageWidth - margin, nextY + 12, { align: 'right' });
 
         nextY += 20;
-        doc.setFont('helvetica', 'bold');
-        doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, nextY, { align: 'right' });
-        doc.setFont('helvetica', 'normal');
-        const activityWrap = doc.splitTextToSize(data.economicActivity, 80);
-        doc.text(activityWrap, pageWidth - margin, nextY + 6, { align: 'right' });
+        let activityWrapLength = 0;
+        if (data.showActivityInPDF !== false) {
+            doc.setFont('helvetica', 'bold');
+            doc.text('ACTIVIDAD VINCULADA:', pageWidth - margin, nextY, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            const activityWrap = doc.splitTextToSize(data.economicActivity, 80);
+            doc.text(activityWrap, pageWidth - margin, nextY + 6, { align: 'right' });
+            activityWrapLength = activityWrap.length;
+        }
 
         if (data.contract_reference) {
-            nextY = nextY + 6 + (activityWrap.length * 4) + 5;
+            nextY = nextY + (activityWrapLength > 0 ? 6 + (activityWrapLength * 4) + 5 : 0);
             doc.setFont('helvetica', 'bold');
             doc.text('REFERENCIA CONTRATO:', pageWidth - margin, nextY, { align: 'right' });
             doc.setFont('helvetica', 'normal');

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CompanyList } from './CompanyList';
 import { CompanyDetails } from './CompanyDetails';
 import { UserDirectory } from './UserDirectory';
@@ -38,9 +39,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     onSetDefaultOrg
 }) => {
     // --- STATE ---
+    const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'empresa' | 'usuarios' | 'roles' | 'mi_perfil'>('empresa');
-    const [subTab, setSubTab] = useState<'clientes' | 'emisoras' | 'lote'>('clientes');
-    const [isCreatingNew, setIsCreatingNew] = useState(false);
+    const [subTab, setSubTab] = useState<'clientes' | 'emisoras' | 'lote'>(
+        (searchParams.get('subtab') as 'clientes' | 'emisoras' | 'lote') || 'clientes'
+    );
+    const [isCreatingNew, setIsCreatingNew] = useState(searchParams.get('action') === 'new');
     const [users, setUsers] = useState<any[]>([]);
 
     // Filters State

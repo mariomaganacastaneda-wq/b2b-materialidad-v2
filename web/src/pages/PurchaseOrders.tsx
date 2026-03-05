@@ -16,6 +16,20 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
     const [searchTerm, setSearchTerm] = useState('');
     const [viewingOrder, setViewingOrder] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'TODOS' | 'PENDING_REVIEW' | 'APPROVED' | 'CONVERTED_TO_PROFORMA'>('TODOS');
+    const [missingOrgAlert, setMissingOrgAlert] = useState<{
+        rfc: string;
+        name: string;
+        documentType: string;
+        role: string;
+    } | null>(null);
+    const [issuerMismatchAlert, setIssuerMismatchAlert] = useState<{
+        docIssuerRfc: string;
+        docIssuerName: string;
+        selectedOrgName: string;
+        selectedOrgRfc: string;
+        documentType: string;
+        issuerExistsInDB: boolean;
+    } | null>(null);
 
     const navigate = useNavigate();
 
@@ -140,6 +154,33 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
             const normalizeRfc = (rfc: string) => (rfc || '').replace(/[-\s.]/g, '').toUpperCase();
             const isOC = (document_type || '').toUpperCase() === 'ORDEN_COMPRA';
 
+            // --- VALIDACION: Verificar que el documento involucra a la org seleccionada ---
+            const ourRfc = normalizeRfc(selectedOrg.rfc || '');
+            const docIssuerRfc = normalizeRfc(issuer_rfc);
+            const docClientRfc = normalizeRfc(quotation.client_rfc || '');
+            const documentInvolvesUs = ourRfc === docIssuerRfc || ourRfc === docClientRfc;
+
+            if (!documentInvolvesUs) {
+                let issuerExists = false;
+                if (issuer_rfc) {
+                    const { data: existingOrg } = await supabase
+                        .from('organizations')
+                        .select('id')
+                        .eq('rfc', issuer_rfc)
+                        .single();
+                    issuerExists = !!existingOrg;
+                }
+                setIssuerMismatchAlert({
+                    docIssuerRfc: issuer_rfc || '',
+                    docIssuerName: n8nData.issuer_name || n8nData.summary?.issuer || '',
+                    selectedOrgName: selectedOrg.name || '',
+                    selectedOrgRfc: selectedOrg.rfc || '',
+                    documentType: document_type || 'DOCUMENTO',
+                    issuerExistsInDB: issuerExists,
+                });
+                return;
+            }
+
             let issuerOrgId: string | null = null;
             let clientOrgId: string | null = null;
 
@@ -186,6 +227,20 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                         if (issuerOrg) issuerOrgId = issuerOrg.id;
                     }
                 }
+            }
+
+            // --- INTERCEPCION: Verificar que la contraparte esta registrada ---
+            const counterpartyNotFound = !issuerOrgId || !clientOrgId;
+
+            if (counterpartyNotFound) {
+                const weAreIssuerCheck = normalizeRfc(issuer_rfc) === normalizeRfc(selectedOrg.rfc || '');
+                setMissingOrgAlert({
+                    rfc: isOC ? (quotation.client_rfc || '') : (weAreIssuerCheck ? (quotation.client_rfc || '') : (issuer_rfc || '')),
+                    name: quotation.client_name || '',
+                    documentType: document_type || 'DOCUMENTO',
+                    role: isOC ? 'comprador' : (weAreIssuerCheck ? 'cliente' : 'proveedor'),
+                });
+                return;
             }
 
             const { data: urlData } = supabase.storage
@@ -787,6 +842,168 @@ export const PurchaseOrders: React.FC<PurchaseOrderProps> = ({ selectedOrg, curr
                             >
                                 <ArrowRight size={16} />
                                 {getLinkedQuotation(viewingOrder) ? 'Crear Nueva Proforma' : 'Convertir en Proforma'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL: ORGANIZACION NO REGISTRADA */}
+            {missingOrgAlert && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-lg shadow-2xl">
+                        <div className="p-6 border-b border-amber-500/20 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <AlertTriangle size={24} className="text-amber-400" />
+                            </div>
+                            <div>
+                                <h2 className="text-white font-black text-lg tracking-tight">
+                                    Organizaci&oacute;n No Registrada
+                                </h2>
+                                <p className="text-slate-400 text-xs mt-1">
+                                    No se puede procesar el documento
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <p className="text-slate-300 text-sm leading-relaxed">
+                                El documento fue procesado correctamente, pero la organizaci&oacute;n{' '}
+                                <strong className="text-amber-400">{missingOrgAlert.role}</strong>{' '}
+                                no est&aacute; dada de alta en el sistema.
+                            </p>
+
+                            <div className="bg-slate-800/60 border border-white/10 rounded-xl p-4 space-y-2">
+                                {missingOrgAlert.name && (
+                                    <div className="flex justify-between">
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nombre</span>
+                                        <span className="text-sm text-white">{missingOrgAlert.name}</span>
+                                    </div>
+                                )}
+                                {missingOrgAlert.rfc && (
+                                    <div className="flex justify-between">
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">RFC</span>
+                                        <span className="text-sm text-white font-mono font-bold">{missingOrgAlert.rfc}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo Doc.</span>
+                                    <span className="text-sm text-slate-300">{missingOrgAlert.documentType}</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4">
+                                <p className="text-cyan-300 text-xs font-bold uppercase tracking-widest mb-2">Pasos para registrar:</p>
+                                <ol className="text-cyan-300/80 text-xs space-y-1 list-decimal list-inside">
+                                    <li>Ve a <strong className="text-cyan-200">Configuraci&oacute;n</strong> en el men&uacute; lateral</li>
+                                    <li>Selecciona la pesta&ntilde;a <strong className="text-cyan-200">Empresas</strong></li>
+                                    <li>En &quot;Repositorio de Clientes&quot;, haz clic en <strong className="text-cyan-200">+ Registrar</strong></li>
+                                    <li>Sube la <strong className="text-cyan-200">Constancia de Situaci&oacute;n Fiscal (CSF)</strong> en PDF</li>
+                                    <li>Una vez registrado, vuelve a subir la orden de compra</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t border-white/10 flex gap-3">
+                            <button
+                                onClick={() => setMissingOrgAlert(null)}
+                                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors"
+                            >
+                                Cerrar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setMissingOrgAlert(null);
+                                    navigate('/settings?action=new');
+                                }}
+                                className="flex-1 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            >
+                                <ArrowRight size={16} />
+                                Ir a Registro
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL: EMISORA NO COINCIDE */}
+            {issuerMismatchAlert && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-slate-900 border border-red-500/30 rounded-2xl w-full max-w-lg shadow-2xl">
+                        <div className="p-6 border-b border-red-500/20 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <AlertTriangle size={24} className="text-red-400" />
+                            </div>
+                            <div>
+                                <h2 className="text-white font-black text-lg tracking-tight">
+                                    Emisora No Corresponde
+                                </h2>
+                                <p className="text-slate-400 text-xs mt-1">
+                                    El documento no pertenece a la organizaci&oacute;n seleccionada
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div className="bg-slate-800/60 border border-white/10 rounded-xl p-4 space-y-3">
+                                <div>
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Emisora del documento</span>
+                                    <div className="text-sm text-red-400 font-bold mt-0.5">
+                                        {issuerMismatchAlert.docIssuerName || 'Sin nombre'}{' '}
+                                        <span className="font-mono text-xs">({issuerMismatchAlert.docIssuerRfc || 'Sin RFC'})</span>
+                                    </div>
+                                </div>
+                                <div className="border-t border-white/5 pt-3">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tu organizaci&oacute;n actual</span>
+                                    <div className="text-sm text-emerald-400 font-bold mt-0.5">
+                                        {issuerMismatchAlert.selectedOrgName}{' '}
+                                        <span className="font-mono text-xs">({issuerMismatchAlert.selectedOrgRfc})</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {issuerMismatchAlert.issuerExistsInDB ? (
+                                <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4">
+                                    <p className="text-cyan-300 text-xs font-bold uppercase tracking-widest mb-2">La emisora ya est&aacute; registrada. Pasos:</p>
+                                    <ol className="text-cyan-300/80 text-xs space-y-1 list-decimal list-inside">
+                                        <li>Ve a <strong className="text-cyan-200">Configuraci&oacute;n</strong> en el men&uacute; lateral</li>
+                                        <li>Selecciona <strong className="text-cyan-200">Empresas &gt; Gesti&oacute;n de Emisoras</strong></li>
+                                        <li>Selecciona la emisora correcta</li>
+                                        <li>Vuelve a subir el documento</li>
+                                    </ol>
+                                </div>
+                            ) : (
+                                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
+                                    <p className="text-amber-300 text-xs font-bold uppercase tracking-widest mb-2">La emisora no est&aacute; registrada. Pasos:</p>
+                                    <ol className="text-amber-300/80 text-xs space-y-1 list-decimal list-inside">
+                                        <li>Ve a <strong className="text-amber-200">Configuraci&oacute;n &gt; Empresas &gt; + Registrar</strong> y sube la CSF</li>
+                                        <li>Solicita al <strong className="text-amber-200">administrador</strong> que te otorgue permisos para esta emisora</li>
+                                        <li>Selecciona la emisora en <strong className="text-amber-200">Gesti&oacute;n de Emisoras</strong></li>
+                                        <li>Vuelve a subir el documento</li>
+                                    </ol>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-4 border-t border-white/10 flex gap-3">
+                            <button
+                                onClick={() => setIssuerMismatchAlert(null)}
+                                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors"
+                            >
+                                Cerrar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIssuerMismatchAlert(null);
+                                    navigate(issuerMismatchAlert.issuerExistsInDB
+                                        ? '/settings?subtab=emisoras'
+                                        : '/settings?action=new'
+                                    );
+                                }}
+                                className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            >
+                                <ArrowRight size={16} />
+                                {issuerMismatchAlert.issuerExistsInDB ? 'Ir a Emisoras' : 'Ir a Registro'}
                             </button>
                         </div>
                     </div>

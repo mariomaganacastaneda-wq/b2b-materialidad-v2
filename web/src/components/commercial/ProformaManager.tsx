@@ -1030,6 +1030,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         clientCP: '',
         clientRegime: '601',
         economicActivity: '',
+        showActivityInPDF: true,
         currency: 'MXN',
         paymentMethod: 'PUE',
         paymentForm: '03',
@@ -2206,7 +2207,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 </div>
                                 <div className="h-6 w-px bg-slate-200 mx-2" />
                                 <div className="flex items-center gap-2">
-                                    <label className="text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">Actividad Económica:</label>
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">Actividad Econ&oacute;mica:</label>
                                     <select
                                         className="border-slate-200 rounded-lg text-[11px] h-8 py-0 focus:ring-cyan-500 focus:border-cyan-500 bg-white text-slate-700 min-w-[200px]"
                                         value={formData.economicActivity}
@@ -2219,6 +2220,16 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                             </option>
                                         ))}
                                     </select>
+                                    <div className="h-6 w-px bg-slate-200 mx-1" />
+                                    <label className="flex items-center gap-1.5 cursor-pointer select-none" title="Mostrar actividad vinculada en Vista Previa PDF">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.showActivityInPDF}
+                                            onChange={e => setFormData({ ...formData, showActivityInPDF: e.target.checked })}
+                                            className="w-3.5 h-3.5 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+                                        />
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">En PDF</span>
+                                    </label>
                                 </div>
                             </div>
                             <button
