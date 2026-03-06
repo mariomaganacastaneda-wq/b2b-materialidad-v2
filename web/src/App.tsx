@@ -480,7 +480,8 @@ export function App() {
             id: clerkUser.id,
             role: 'ADMIN',
             full_name: clerkUser.fullName || 'Administrador',
-            email: email
+            email: email,
+            default_org_id: localStorage.getItem('fiscerta_default_org_id') || null
           };
           activeProfile.role = 'ADMIN';
 
@@ -561,11 +562,16 @@ export function App() {
           if (filteredOrgs.length > 0) {
             const currentIsValid = selectedOrg && filteredOrgs.some((o: any) => o.id === selectedOrg.id);
             if (!currentIsValid) {
-              // Usar default_org_id del perfil si existe y pertenece al set filtrado
-              const defaultOrg = activeProfile?.default_org_id
-                ? filteredOrgs.find((o: any) => o.id === activeProfile.default_org_id)
+              // Buscar default: 1) profile.default_org_id, 2) localStorage, 3) primera org
+              const defaultOrgId = activeProfile?.default_org_id
+                || localStorage.getItem('fiscerta_default_org_id');
+              const defaultOrg = defaultOrgId
+                ? filteredOrgs.find((o: any) => o.id === defaultOrgId)
                 : null;
               setSelectedOrg(defaultOrg || filteredOrgs[0]);
+              // Sincronizar localStorage
+              const finalOrgId = (defaultOrg || filteredOrgs[0])?.id;
+              if (finalOrgId) localStorage.setItem('fiscerta_default_org_id', finalOrgId);
             }
           } else {
             setSelectedOrg(null);
@@ -594,6 +600,11 @@ export function App() {
       .eq('id', targetUserId);
     if (!error) {
       setUserProfile((prev: any) => ({ ...prev, default_org_id: orgId }));
+      // Cambiar la org activa inmediatamente
+      const fullOrg = orgs.find(o => o.id === orgId);
+      if (fullOrg) setSelectedOrg(fullOrg);
+      // Backup en localStorage para sobrevivir reloads y race conditions de auth
+      localStorage.setItem('fiscerta_default_org_id', orgId);
     }
   };
 

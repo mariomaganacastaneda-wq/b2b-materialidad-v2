@@ -1022,6 +1022,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
     const [bankAnchor, setBankAnchor] = useState<DOMRect | null>(null);
 
+    const [evidencePhotoCount, setEvidencePhotoCount] = useState(0);
+
     const [formData, setFormData] = useState({
         clientName: '',
         clientRFC: '',
@@ -1359,6 +1361,25 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     has_ieps: item.has_ieps ?? false
                 })) : prev.items
             }));
+            // Count evidence photos linked to this quotation's invoices
+            const invoiceIds = invoiceList.map((inv: any) => inv.id).filter(Boolean);
+            if (invoiceIds.length > 0) {
+                const { count } = await supabase
+                    .from('evidence')
+                    .select('id', { count: 'exact', head: true })
+                    .in('invoice_id', invoiceIds)
+                    .eq('type', 'FOTO')
+                    .not('file_url', 'is', null);
+                const photoCount = count || 0;
+                setEvidencePhotoCount(photoCount);
+                // If photos exist, override evidence_status to 'completada'
+                if (photoCount > 0) {
+                    setFormData(prev => ({ ...prev, evidence_status: 'completada' }));
+                }
+            } else {
+                setEvidencePhotoCount(0);
+            }
+
         } catch (err: any) {
             console.error('Error loading quotation:', err);
         }
@@ -1798,6 +1819,22 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     }, [selectedOrg]);
 
 
+    // Fallback: filtrar catálogo SAT por tipo de persona (moral/física según RFC)
+    const applyRegimeFallback = (rfc: string) => {
+        const isMoral = /^[A-Z&]{3}\d/.test(rfc || '');
+        const filtered = regimes.filter(r =>
+            isMoral ? r.applies_to_moral : r.applies_to_physical
+        );
+        if (filtered.length > 0) {
+            setClientRegimes(filtered);
+            const preferred = isMoral ? '601' : '612';
+            const defaultRegime = filtered.find(r => r.code === preferred) || filtered[0];
+            setFormData(prev => ({ ...prev, clientRegime: defaultRegime.code }));
+        } else {
+            setClientRegimes(null);
+        }
+    };
+
     const handleSelectClient = (client: any) => {
         const address = [
             client.vialidad_name,
@@ -1828,12 +1865,12 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                         clientRegime: specificRegimes[0].code
                     }));
                 } else {
-                    // Si hay registros pero ninguno tiene código válido (ej. nulls ya corregidos o desconocidos)
-                    // mantenemos el catálogo completo pero mostramos advertencia o dejamos fallback
-                    setClientRegimes([]);
+                    // Códigos no válidos → fallback por tipo de persona
+                    applyRegimeFallback(client.rfc);
                 }
             } else {
-                setClientRegimes([]);
+                // Sin registros en organization_regimes → fallback por tipo de persona
+                applyRegimeFallback(client.rfc);
             }
         };
         fetchRegimes();
@@ -2429,14 +2466,29 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         statusLabel={formData.is_contract_required ? (formData.contract_status || 'solicitado') : undefined}
                                         onChange={(val) => setFormData({ ...formData, is_contract_required: val, contract_status: val ? (formData.contract_status || 'solicitado') : null })}
                                     />
-                                    <ConfigToggle
-                                        label="Evidencia"
-                                        sub="Solicita fotos/docs de entrega"
-                                        checked={formData.req_evidence}
-                                        disabled={formData.evidence_status === 'completada' || formData.evidence_status === 'entregada'}
-                                        statusLabel={formData.req_evidence ? (formData.evidence_status || 'solicitada') : undefined}
-                                        onChange={(val) => setFormData({ ...formData, req_evidence: val, evidence_status: val ? (formData.evidence_status || 'solicitada') : null })}
-                                    />
+                                    <div>
+                                        <ConfigToggle
+                                            label="Evidencia"
+                                            sub="Solicita fotos/docs de entrega"
+                                            checked={formData.req_evidence}
+                                            disabled={formData.evidence_status === 'completada' || formData.evidence_status === 'entregada'}
+                                            statusLabel={formData.req_evidence && evidencePhotoCount === 0 ? (formData.evidence_status || 'solicitada') : undefined}
+                                            onChange={(val) => setFormData({ ...formData, req_evidence: val, evidence_status: val ? (formData.evidence_status || 'solicitada') : null })}
+                                        />
+                                        {formData.req_evidence && evidencePhotoCount > 0 && (
+                                            <div className="mt-1.5 flex flex-col gap-0.5">
+                                                <div className="flex items-center gap-1">
+                                                    <Icon name="photo_camera" className="text-emerald-500 !text-xs" />
+                                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">
+                                                        {evidencePhotoCount} {evidencePhotoCount === 1 ? 'FOTOGRAFIA' : 'FOTOGRAFIAS'}
+                                                    </span>
+                                                </div>
+                                                <span className="inline-flex px-2 py-0.5 text-[9px] font-black rounded uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200 w-fit">
+                                                    COMPLETADA
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
                                     <ConfigToggle
                                         label="Factura"
                                         sub="Habilitar facturación inmediata"

@@ -47,6 +47,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     const [isCreatingNew, setIsCreatingNew] = useState(searchParams.get('action') === 'new');
     const [users, setUsers] = useState<any[]>([]);
 
+    // Estado local para la empresa que se VISUALIZA en el panel de detalles.
+    // Separado del selectedOrg global (header/app) para no cambiar la emisora activa al navegar la lista.
+    const [viewingOrg, setViewingOrg] = useState<any>(selectedOrg);
+
     // Filters State
     const [profileData, setProfileData] = useState({
         phone_whatsapp: '',
@@ -127,12 +131,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     });
 
     useEffect(() => {
-        if (selectedOrg?.id) {
+        if (viewingOrg?.id) {
             const loadData = async () => {
-                const { data: act } = await supabase.from('organization_activities').select('*').eq('organization_id', selectedOrg.id).order('activity_order');
-                const { data: reg } = await supabase.from('organization_regimes').select('*').eq('organization_id', selectedOrg.id);
-                const { data: obl } = await supabase.from('organization_obligations').select('*').eq('organization_id', selectedOrg.id);
-                const { data: hist } = await supabase.from('organization_csf_history').select('*').eq('organization_id', selectedOrg.id).order('emission_date', { ascending: false });
+                const { data: act } = await supabase.from('organization_activities').select('*').eq('organization_id', viewingOrg.id).order('activity_order');
+                const { data: reg } = await supabase.from('organization_regimes').select('*').eq('organization_id', viewingOrg.id);
+                const { data: obl } = await supabase.from('organization_obligations').select('*').eq('organization_id', viewingOrg.id);
+                const { data: hist } = await supabase.from('organization_csf_history').select('*').eq('organization_id', viewingOrg.id).order('emission_date', { ascending: false });
 
                 // Fetch related products for the activities found
                 let products: any[] = [];
@@ -163,11 +167,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 related_products: []
             });
         }
-    }, [selectedOrg?.id, supabase]);
+    }, [viewingOrg?.id, supabase]);
 
     // Merge details into org for CompanyDetails component
-    const orgWithDetails = selectedOrg
-        ? { ...selectedOrg, ...detailsData }
+    const orgWithDetails = viewingOrg
+        ? { ...viewingOrg, ...detailsData }
         : (isCreatingNew ? { id: 'new', _is_placeholder: true } : null);
 
     // DEBUG: Ver qué datos reales tiene la empresa seleccionada
@@ -207,15 +211,15 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         }
     };
     useEffect(() => {
-        if (selectedOrg) {
-            console.log('--- SELECCIÓN DE EMPRESA ---', {
-                id: selectedOrg.id,
-                nombre: selectedOrg.name,
+        if (viewingOrg) {
+            console.log('--- SELECCIÓN DE EMPRESA (vista) ---', {
+                id: viewingOrg.id,
+                nombre: viewingOrg.name,
                 actividades: detailsData.economic_activities.length,
                 regimenes: detailsData.tax_regimes.length
             });
         }
-    }, [selectedOrg?.id, detailsData]);
+    }, [viewingOrg?.id, detailsData]);
 
 
     // Filter Logic
@@ -265,11 +269,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     const debounceTimer = useRef<any>(null);
 
     const handleUpdateDetail = (fieldOrObject: string | Record<string, any>, value?: any) => {
-        if (!selectedOrg) return;
+        if (!viewingOrg) return;
 
         // 1. Calcular el nuevo estado local (Optimistic Update)
         let localUpdate: any = {};
-        const finalThemeConfig = { ...(selectedOrg.theme_config || {}) };
+        const finalThemeConfig = { ...(viewingOrg.theme_config || {}) };
         let hasThemeUpdates = false;
 
         if (typeof fieldOrObject === 'string') {
@@ -300,12 +304,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
         // Actualizar UI inmediatamente para respuesta instantánea
         const updatedOrg = {
-            ...selectedOrg,
+            ...viewingOrg,
             ...localUpdate,
-            theme_config: hasThemeUpdates ? finalThemeConfig : selectedOrg.theme_config
+            theme_config: hasThemeUpdates ? finalThemeConfig : viewingOrg.theme_config
         };
 
-        setSelectedOrg(updatedOrg);
+        setViewingOrg(updatedOrg);
+        // Solo propagar al estado global si estamos editando la org activa (emisora actual)
+        if (viewingOrg.id === selectedOrg?.id) {
+            setSelectedOrg(updatedOrg);
+        }
         setOrgs(orgs.map(o => o.id === updatedOrg.id ? updatedOrg : o));
 
         // 2. Acumular cambios para el guardado persistente
@@ -324,7 +332,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 console.warn('SettingsPage: Intento de guardado sin sesión activa de Supabase.');
             }
 
-            const { error } = await supabase.from('organizations').update(payload).eq('id', selectedOrg.id);
+            const { error } = await supabase.from('organizations').update(payload).eq('id', viewingOrg.id);
 
             if (error) {
                 console.error('Error synchronizing organization:', error);
@@ -432,9 +440,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
                             <CompanyList
                                 orgs={filteredOrgs}
-                                selectedOrgId={selectedOrg?.id}
+                                selectedOrgId={viewingOrg?.id}
                                 onSelectOrg={(org) => {
-                                    setSelectedOrg(org);
+                                    setViewingOrg(org);
                                     setIsCreatingNew(!org);
                                 }}
                                 filters={{

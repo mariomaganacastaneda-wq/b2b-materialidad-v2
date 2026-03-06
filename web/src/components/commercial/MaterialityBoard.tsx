@@ -110,7 +110,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                     *,
                     organizations(name, rfc),
                     contracts(id, file_url),
-                    invoices(id, status, evidence(id)),
+                    invoices(id, status, evidence(id, type, file_url)),
                     quotation_payments(amount),
                     invoice_status,
                     contract_status,
@@ -163,12 +163,19 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         const finalContractStatus = realContractStatus || q.contract_status || (q.is_contract_required ? 'solicitado' : null);
         const hasContract = !!finalContractStatus;
 
-        // --- EVIDENCIA: Del campo en quotations (no hay join directo) ---
+        // --- EVIDENCIA: Del campo en quotations + conteo de fotos ---
         const hasEvidenceRecords = invoicesList.some((i: any) => {
             const evList = Array.isArray(i.evidence) ? i.evidence : (i.evidence ? [i.evidence] : []);
             return evList.length > 0;
         });
-        const finalEvidenceStatus = hasEvidenceRecords ? (q.evidence_status || 'entregada') : (q.evidence_status || (q.req_evidence ? 'solicitada' : null));
+        // Count FOTO evidence with file_url (actual uploaded photos)
+        const evidencePhotoCount = invoicesList.reduce((total: number, inv: any) => {
+            const evList = Array.isArray(inv.evidence) ? inv.evidence : (inv.evidence ? [inv.evidence] : []);
+            return total + evList.filter((e: any) => e.type === 'FOTO' && e.file_url).length;
+        }, 0);
+
+        // If photos exist, override status to 'completada'
+        const finalEvidenceStatus = evidencePhotoCount > 0 ? 'completada' : (hasEvidenceRecords ? (q.evidence_status || 'entregada') : (q.evidence_status || (q.req_evidence ? 'solicitada' : null)));
         const hasEvidence = !!finalEvidenceStatus;
 
         // --- COTIZACIÓN: Del campo en quotations ---
@@ -179,7 +186,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         const totalPaid = (q.quotation_payments || []).reduce((acc: number, p: any) => acc + (p.amount || 0), 0);
         const paymentPercentage = q.amount_total > 0 ? Math.min(Math.round((totalPaid / q.amount_total) * 100), 100) : 0;
 
-        return { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus };
+        return { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount };
     };
 
     return (
@@ -276,7 +283,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {filtered.map(q => {
-                                        const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus } = getMaterialityStatus(q);
+                                        const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount } = getMaterialityStatus(q);
 
                                         return (
                                             <tr key={q.id} className="hover:bg-cyan-500/5 transition-colors group border-b border-white/5">
@@ -395,12 +402,12 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                         <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="photo_camera"
-                                                            label="EVI"
+                                                            label={evidencePhotoCount > 0 ? `${evidencePhotoCount} FOTO${evidencePhotoCount !== 1 ? 'S' : ''}` : "EVI"}
                                                             active={hasEvidence}
-                                                            tooltip="Ver/Editar Evidencia"
+                                                            tooltip={evidencePhotoCount > 0 ? `${evidencePhotoCount} fotografía${evidencePhotoCount !== 1 ? 's' : ''} subida${evidencePhotoCount !== 1 ? 's' : ''}` : "Ver/Editar Evidencia"}
                                                             onClick={() => navigate(`/evidencia/${q.id}`)}
                                                             statusText={formatStatus(finalEvidenceStatus)}
-                                                            colorOverride={getEvidenceColor(finalEvidenceStatus)}
+                                                            colorOverride={evidencePhotoCount > 0 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : getEvidenceColor(finalEvidenceStatus)}
                                                         />
                                                     </div>
                                                 </td>
