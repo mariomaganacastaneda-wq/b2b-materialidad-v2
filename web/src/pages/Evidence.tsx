@@ -427,7 +427,6 @@ const Evidence = ({ userProfile, selectedOrg }: EvidenceProps) => {
     const downloadGroupPhotos = async (group: EvidenceGroup) => {
         if (group.items.length === 0) return;
         // Download only selected photos in this group; if none selected, download all
-        const groupIds = new Set(group.items.map((e: any) => e.id));
         const selectedInGroup = group.items.filter((e: any) => selectedIds.has(e.id));
         const itemsToDownload = selectedInGroup.length > 0 ? selectedInGroup : group.items;
 
