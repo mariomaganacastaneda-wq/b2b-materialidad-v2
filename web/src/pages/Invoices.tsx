@@ -377,6 +377,58 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
         }
     };
 
+    const fetchFileBlob = async (filePath: string): Promise<Blob> => {
+        const { data, error } = await supabase.storage
+            .from('invoices')
+            .createSignedUrl(filePath, 3600);
+        if (error || !data?.signedUrl) throw new Error(error?.message || 'No se pudo generar URL');
+        const resp = await fetch(data.signedUrl);
+        if (!resp.ok) throw new Error('Error descargando archivo');
+        return resp.blob();
+    };
+
+    const handleDownloadInvoice = async (inv: any) => {
+        const folio = inv.internal_number || inv.id.substring(0, 8);
+        const orgName = (inv.organization?.name || 'factura').replace(/\s+/g, '_');
+
+        try {
+            // Intentar File System Access API (selector de carpeta)
+            if ('showDirectoryPicker' in window) {
+                const dirHandle = await (window as any).showDirectoryPicker({ mode: 'readwrite' });
+
+                if (inv.pdf_url) {
+                    const blob = await fetchFileBlob(inv.pdf_url);
+                    const fileHandle = await dirHandle.getFileHandle(`${orgName}_${folio}_factura.pdf`, { create: true });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                }
+                if (inv.xml_url) {
+                    const blob = await fetchFileBlob(inv.xml_url);
+                    const fileHandle = await dirHandle.getFileHandle(`${orgName}_${folio}_factura.xml`, { create: true });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                }
+                alert('Archivos descargados correctamente.');
+            } else {
+                // Fallback: descarga clásica para navegadores sin soporte
+                if (inv.pdf_url) {
+                    const { data } = await supabase.storage.from('invoices').createSignedUrl(inv.pdf_url, 3600, { download: true });
+                    if (data?.signedUrl) { const a = document.createElement('a'); a.href = data.signedUrl; a.download = `${orgName}_${folio}_factura.pdf`; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+                }
+                if (inv.xml_url) {
+                    if (inv.pdf_url) await new Promise(r => setTimeout(r, 500));
+                    const { data } = await supabase.storage.from('invoices').createSignedUrl(inv.xml_url, 3600, { download: true });
+                    if (data?.signedUrl) { const a = document.createElement('a'); a.href = data.signedUrl; a.download = `${orgName}_${folio}_factura.xml`; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+                }
+            }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return; // Usuario canceló el selector
+            alert('Error al descargar: ' + err.message);
+        }
+    };
+
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'SOLICITUD': return <Clock className="w-4 h-4 text-amber-500" />;
@@ -638,16 +690,25 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                                                 )}
 
                                                 {(inv.pdf_url || inv.xml_url) && (
-                                                    <button
-                                                        onClick={() => {
-                                                            const url = inv.pdf_url || inv.xml_url;
-                                                            if (url) handleViewFile(url);
-                                                        }}
-                                                        className="p-1.5 bg-slate-500/10 text-slate-400 hover:text-white rounded-lg transition-colors"
-                                                        title="Ver Factura"
-                                                    >
-                                                        <Eye size={18} />
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                const url = inv.pdf_url || inv.xml_url;
+                                                                if (url) handleViewFile(url);
+                                                            }}
+                                                            className="p-1.5 bg-slate-500/10 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                                            title="Ver Factura"
+                                                        >
+                                                            <Eye size={18} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDownloadInvoice(inv)}
+                                                            className="p-1.5 bg-emerald-500/10 text-emerald-400 hover:text-emerald-300 rounded-lg transition-colors"
+                                                            title={`Descargar${inv.pdf_url ? ' PDF' : ''}${inv.pdf_url && inv.xml_url ? ' +' : ''}${inv.xml_url ? ' XML' : ''}`}
+                                                        >
+                                                            <Download size={18} />
+                                                        </button>
+                                                    </>
                                                 )}
 
                                                 {userProfile?.role === 'ADMIN' && !['VALIDADA', 'TIMBRADA', 'TIMBRADA_INCOMPLETA'].includes(inv.status) && (

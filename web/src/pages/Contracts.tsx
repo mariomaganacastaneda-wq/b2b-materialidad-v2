@@ -10,10 +10,16 @@ import {
     Upload,
     FileEdit,
     FileText,
-    ExternalLink
+    ExternalLink,
+    Trash2,
+    FileCheck,
+    Shield
 } from 'lucide-react';
 import { GlowCard } from '../components/ui/GlowCard';
 import { TextGlitch } from '../components/ui/TextGlitch';
+
+type LifecycleStatus = 'requerido' | 'autorizado' | 'rubricado' | 'legalizado';
+type TabFilter = 'TODOS' | 'REQUERIDO' | 'AUTORIZADO' | 'RUBRICADO' | 'LEGALIZADO';
 
 interface ContractsProps {
     selectedOrg: any;
@@ -25,13 +31,29 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
     const [contracts, setContracts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'TODOS' | 'SOLICITADO' | 'FIRMADO' | 'COMPLETADO'>('TODOS');
+    const [activeTab, setActiveTab] = useState<TabFilter>('TODOS');
 
     // Modal states
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [selectedContract, setSelectedContract] = useState<any>(null);
     const [uploading, setUploading] = useState(false);
-    const [files, setFiles] = useState<{ pdf: File | null }>({ pdf: null });
+
+    // File inputs for each stage
+    const [files, setFiles] = useState<{
+        requerido: File | null;
+        rubricado: File | null;
+        legalizado: File | null;
+    }>({ requerido: null, rubricado: null, legalizado: null });
+
+    // Comments for each stage
+    const [comments, setComments] = useState({
+        requerido: '',
+        rubricado: '',
+        legalizado: ''
+    });
+
+    // Authorization toggle for stage R
+    const [requeridoAuthorized, setRequeridoAuthorized] = useState(false);
 
     const fetchContracts = async () => {
         if (!selectedOrg?.id) return;
@@ -41,7 +63,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                 .from('quotations')
                 .select(`
                     id, proforma_number, contract_status, amount_total, created_at, is_contract_required,
-                    organizations!inner(name, rfc),
+                    organizations!inner(id, name, rfc),
                     contracts(*)
                 `)
                 .eq('organization_id', selectedOrg.id)
@@ -107,128 +129,267 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         }
     }, [quotationId, selectedOrg]);
 
+    const computeLifecycleStatus = (contract: any, authorized: boolean): LifecycleStatus => {
+        if (contract.legalizado_url || files.legalizado) return 'legalizado';
+        if (contract.rubricado_url || files.rubricado) return 'rubricado';
+        if (authorized) return 'autorizado';
+        return 'requerido';
+    };
+
+    const mapToQuotationStatus = (lifecycle: LifecycleStatus): string => {
+        switch (lifecycle) {
+            case 'requerido': return 'solicitado';
+            case 'autorizado':
+            case 'rubricado': return 'firmado';
+            case 'legalizado': return 'completado';
+        }
+    };
+
     const handleUpload = async () => {
-        if (!selectedContract || !files.pdf) return;
+        if (!selectedContract) return;
+
+        const noFileChanges = !files.requerido && !files.rubricado && !files.legalizado;
+        const noCommentChanges =
+            comments.requerido === (selectedContract.requerido_comments || '') &&
+            comments.rubricado === (selectedContract.rubricado_comments || '') &&
+            comments.legalizado === (selectedContract.legalizado_comments || '') &&
+            requeridoAuthorized === (selectedContract.requerido_authorized || false);
+
+        if (noFileChanges && noCommentChanges) return;
 
         try {
             setUploading(true);
-            const fileName = `${selectedContract.id}/contrato_firmado_${Date.now()}.pdf`;
-            const { data: pData, error: pError } = await supabase.storage
-                .from('contracts')
-                .upload(fileName, files.pdf);
+            const updates: any = {};
+            let currentContractId = selectedContract.id;
 
-            if (pError) throw pError;
-
+            // If pending, create contract record first
             if (selectedContract.isPending) {
-                // Calculate SHA-256 hash for the file as required by the schema
-                const hashBuffer = await crypto.subtle.digest('SHA-256', await files.pdf.arrayBuffer());
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const sha256_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-                const { error: iError } = await supabase
+                const { data: insertedData, error: insertError } = await supabase
                     .from('contracts')
                     .insert({
                         organization_id: selectedContract.organizations.id,
                         quotation_id: selectedContract.quotation_id,
-                        file_url: pData.path,
-                        sha256_hash: sha256_hash,
-                        is_signed_vendor: true
-                    });
+                        lifecycle_status: 'requerido'
+                    })
+                    .select()
+                    .single();
 
-                if (iError) throw iError;
-            } else {
-                // Update existing Contract record
+                if (insertError) throw insertError;
+                currentContractId = insertedData.id;
+            }
+
+            // Upload requerido file
+            if (files.requerido) {
+                const fileName = `${currentContractId}/requerido_${Date.now()}.pdf`;
+                const { data: pData, error: pError } = await supabase.storage
+                    .from('contracts')
+                    .upload(fileName, files.requerido);
+                if (pError) throw pError;
+                updates.requerido_url = pData.path;
+                updates.requerido_at = new Date().toISOString();
+                // Also store in legacy file_url for compatibility
+                updates.file_url = pData.path;
+                // Calculate SHA-256
+                const hashBuffer = await crypto.subtle.digest('SHA-256', await files.requerido.arrayBuffer());
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                updates.sha256_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            // Upload rubricado file
+            if (files.rubricado) {
+                const fileName = `${currentContractId}/rubricado_${Date.now()}.pdf`;
+                const { data: pData, error: pError } = await supabase.storage
+                    .from('contracts')
+                    .upload(fileName, files.rubricado);
+                if (pError) throw pError;
+                updates.rubricado_url = pData.path;
+                updates.rubricado_at = new Date().toISOString();
+            }
+
+            // Upload legalizado file
+            if (files.legalizado) {
+                const fileName = `${currentContractId}/legalizado_${Date.now()}.pdf`;
+                const { data: pData, error: pError } = await supabase.storage
+                    .from('contracts')
+                    .upload(fileName, files.legalizado);
+                if (pError) throw pError;
+                updates.legalizado_url = pData.path;
+                updates.legalizado_at = new Date().toISOString();
+            }
+
+            // Comments
+            if (comments.requerido !== (selectedContract.requerido_comments || ''))
+                updates.requerido_comments = comments.requerido;
+            if (comments.rubricado !== (selectedContract.rubricado_comments || ''))
+                updates.rubricado_comments = comments.rubricado;
+            if (comments.legalizado !== (selectedContract.legalizado_comments || ''))
+                updates.legalizado_comments = comments.legalizado;
+
+            // Authorization
+            if (requeridoAuthorized !== (selectedContract.requerido_authorized || false)) {
+                updates.requerido_authorized = requeridoAuthorized;
+                if (requeridoAuthorized) {
+                    updates.requerido_authorized_at = new Date().toISOString();
+                } else {
+                    updates.requerido_authorized_at = null;
+                }
+            }
+
+            // Compute lifecycle_status
+            const merged = { ...selectedContract, ...updates };
+            const newLifecycle = computeLifecycleStatus(merged, updates.requerido_authorized ?? selectedContract.requerido_authorized ?? false);
+            updates.lifecycle_status = newLifecycle;
+
+            if (Object.keys(updates).length > 0) {
                 const { error: uError } = await supabase
                     .from('contracts')
-                    .update({ file_url: pData.path, is_signed_vendor: true }) // Assuming vendor upload
-                    .eq('id', selectedContract.id);
-
+                    .update(updates)
+                    .eq('id', currentContractId);
                 if (uError) throw uError;
             }
 
-            // Update Quotation status
-            const { error: qError } = await supabase
+            // Sync quotation status
+            const qStatus = mapToQuotationStatus(updates.lifecycle_status || 'requerido');
+            await supabase
                 .from('quotations')
-                .update({ contract_status: 'firmado' })
+                .update({ contract_status: qStatus })
                 .eq('id', selectedContract.quotation_id);
 
-            if (qError) throw qError;
-
-            alert('Contrato subido con éxito.');
+            alert('Contrato actualizado con exito.');
             setShowUploadModal(false);
-            setFiles({ pdf: null });
+            resetModalState();
             fetchContracts();
         } catch (err: any) {
-            alert('Error al subir contrato: ' + err.message);
+            alert('Error al procesar contrato: ' + err.message);
         } finally {
             setUploading(false);
         }
     };
 
-    const handleValidate = async (contractId: string, quotationId: string) => {
-        if (!confirm('¿Desea marcar este contrato como completado/validado?')) return;
+    const handleDeleteFile = async (stage: 'requerido_url' | 'rubricado_url' | 'legalizado_url') => {
+        if (!confirm('¿Seguro que deseas eliminar este archivo? Tendras que subir uno nuevo.')) return;
 
         try {
-            const { error: cError } = await supabase
+            setUploading(true);
+            const updates: any = {};
+            updates[stage] = null;
+
+            // Clear the corresponding date
+            const dateField = stage.replace('_url', '_at');
+            updates[dateField] = null;
+
+            // If deleting requerido, also clear authorization
+            if (stage === 'requerido_url') {
+                updates.requerido_authorized = false;
+                updates.requerido_authorized_at = null;
+                updates.file_url = null;
+                updates.sha256_hash = null;
+            }
+
+            // Recalculate lifecycle status
+            const merged = { ...selectedContract, ...updates };
+            const newAuth = stage === 'requerido_url' ? false : (selectedContract.requerido_authorized || false);
+            const newLifecycle = computeLifecycleStatus(merged, newAuth);
+            updates.lifecycle_status = newLifecycle;
+
+            const { error } = await supabase
                 .from('contracts')
-                .update({ is_signed_representative: true })
-                .eq('id', contractId);
+                .update(updates)
+                .eq('id', selectedContract.id);
 
-            if (cError) throw cError;
+            if (error) throw error;
 
-            const { error: qError } = await supabase
+            // Sync quotation
+            const qStatus = mapToQuotationStatus(newLifecycle);
+            await supabase
                 .from('quotations')
-                .update({ contract_status: 'completado' })
-                .eq('id', quotationId);
+                .update({ contract_status: qStatus })
+                .eq('id', selectedContract.quotation_id);
 
-            if (qError) throw qError;
-
+            alert('Archivo eliminado correctamente.');
+            setSelectedContract({ ...selectedContract, ...updates });
             fetchContracts();
         } catch (err: any) {
-            alert('Error al validar: ' + err.message);
+            alert('Error al eliminar el archivo: ' + err.message);
+        } finally {
+            setUploading(false);
         }
     };
 
-    const handleViewContract = async (fileUrl: string) => {
+    const handleViewFile = async (filePath: string) => {
         try {
             const { data, error } = await supabase.storage
                 .from('contracts')
-                .createSignedUrl(fileUrl, 3600);
-
+                .createSignedUrl(filePath, 3600);
             if (error) throw error;
             if (data?.signedUrl) {
                 window.open(data.signedUrl, '_blank');
             }
         } catch (err: any) {
-            alert('Error al abrir el contrato: ' + err.message);
+            alert('Error al abrir archivo: ' + err.message);
         }
     };
 
-    const getStatusIcon = (status: string) => {
-        const s = status ? status.toLowerCase() : 'solicitado';
-        switch (s) {
-            case 'solicitado': return <Clock className="w-4 h-4 text-amber-500" />;
-            case 'firmado': return <FileSignature className="w-4 h-4 text-emerald-500" />;
-            case 'completado': return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
-            case 'rechazado': return <XCircle className="w-4 h-4 text-red-500" />;
-            default: return <FileText className="w-4 h-4 text-slate-400" />;
+    const openModal = (contract: any) => {
+        setSelectedContract(contract);
+        setComments({
+            requerido: contract.requerido_comments || '',
+            rubricado: contract.rubricado_comments || '',
+            legalizado: contract.legalizado_comments || ''
+        });
+        setRequeridoAuthorized(contract.requerido_authorized || false);
+        setFiles({ requerido: null, rubricado: null, legalizado: null });
+        setShowUploadModal(true);
+    };
+
+    const resetModalState = () => {
+        setFiles({ requerido: null, rubricado: null, legalizado: null });
+        setComments({ requerido: '', rubricado: '', legalizado: '' });
+        setRequeridoAuthorized(false);
+        setSelectedContract(null);
+    };
+
+    const getLifecycleStatus = (c: any): LifecycleStatus => {
+        return (c.lifecycle_status as LifecycleStatus) || 'requerido';
+    };
+
+    const getStatusIcon = (status: LifecycleStatus) => {
+        switch (status) {
+            case 'requerido': return <Clock className="w-4 h-4 text-amber-500" />;
+            case 'autorizado': return <Shield className="w-4 h-4 text-blue-500" />;
+            case 'rubricado': return <FileSignature className="w-4 h-4 text-emerald-500" />;
+            case 'legalizado': return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
         }
     };
 
-    const getStatusColor = (status: string) => {
-        const s = status ? status.toLowerCase() : 'solicitado';
-        switch (s) {
-            case 'solicitado': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-            case 'firmado': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-            case 'completado': return 'bg-emerald-600/10 text-emerald-400 border-emerald-500/20';
-            case 'rechazado': return 'bg-red-500/10 text-red-500 border-red-500/20';
-            default: return 'bg-slate-500/10 text-slate-400 border-white/5';
+    const getStatusColor = (status: LifecycleStatus) => {
+        switch (status) {
+            case 'requerido': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+            case 'autorizado': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+            case 'rubricado': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+            case 'legalizado': return 'bg-emerald-600/10 text-emerald-400 border-emerald-500/20';
         }
+    };
+
+    const getStatusLabel = (status: LifecycleStatus) => {
+        switch (status) {
+            case 'requerido': return 'REQUERIDO';
+            case 'autorizado': return 'AUTORIZADO';
+            case 'rubricado': return 'RUBRICADO';
+            case 'legalizado': return 'LEGALIZADO';
+        }
+    };
+
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return null;
+        return new Date(dateStr).toLocaleDateString('es-MX', {
+            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
     };
 
     const filteredContracts = contracts.filter(c => {
         if (activeTab === 'TODOS') return true;
-        const status = c.quotations?.contract_status ? c.quotations.contract_status.toUpperCase() : 'SOLICITADO';
+        const status = getLifecycleStatus(c).toUpperCase();
         return status === activeTab;
     });
 
@@ -240,22 +401,22 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                         <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
                             <FileSignature className="text-white text-xl" />
                         </div>
-                        <TextGlitch 
-                            text={quotationId ? 'Contratos de Proforma' : 'Gestión de Contratos'}
+                        <TextGlitch
+                            text={quotationId ? 'Contratos de Proforma' : 'Gestion de Contratos'}
                             className="text-2xl font-black text-white tracking-tight"
                         />
                     </div>
                     <p className="text-slate-400 text-sm mt-1">
-                        Control de firmas y documentación legal de las proformas.
+                        Ciclo de vida contractual: Requerido, Autorizado, Rubricado y Legalizado.
                     </p>
                 </div>
 
-                <div className="flex bg-slate-800/40 p-1 rounded-xl border border-white/5">
-                    {['TODOS', 'SOLICITADO', 'FIRMADO', 'COMPLETADO'].map((tab) => (
+                <div className="flex bg-slate-800/40 p-1 rounded-xl border border-white/5 flex-wrap">
+                    {(['TODOS', 'REQUERIDO', 'AUTORIZADO', 'RUBRICADO', 'LEGALIZADO'] as TabFilter[]).map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab as any)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab
+                            onClick={() => setActiveTab(tab)}
+                            className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${activeTab === tab
                                 ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
                                 : 'text-slate-400 hover:text-slate-200'
                                 }`}
@@ -264,6 +425,14 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                         </button>
                     ))}
                 </div>
+            </div>
+
+            {/* LEYENDA DE COLORES */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 bg-slate-800/30 p-3 rounded-xl border border-white/5">
+                <span className="font-bold text-slate-300">Estados de Archivo en Tabla:</span>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-yellow-500"></div> Sin documento</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500"></div> Archivo cargado</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500"></div> Autorizado</div>
             </div>
 
             {error && (
@@ -280,8 +449,9 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                             <tr className="border-b border-white/5 bg-white/5">
                                 <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider">Folio P. / Org</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider text-right">Monto</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider text-center">Semaforo</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider">Fecha Solicitud</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider">Fecha</th>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-wider text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -289,168 +459,341 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                             {loading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td colSpan={5} className="px-6 py-4 h-16 bg-white/5" />
+                                        <td colSpan={6} className="px-6 py-4 h-16 bg-white/5" />
                                     </tr>
                                 ))
                             ) : filteredContracts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500 italic">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500 italic">
                                         No se encontraron contratos registrados.
                                     </td>
                                 </tr>
-                            ) : filteredContracts.map((c: any) => (
-                                <tr key={c.quotations.id} className="hover:bg-white/5 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            {c.isPending ? (
+                            ) : filteredContracts.map((c: any) => {
+                                const lifecycle = getLifecycleStatus(c);
+                                return (
+                                    <tr key={c.quotations.id} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
                                                 <button
                                                     onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0 opacity-50 cursor-pointer"
-                                                    title="Ir a Configurar Proforma"
-                                                >
-                                                    <FileEdit className="w-4 h-4" /> {/* Assuming FileEdit is the intended icon */}
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                    title="Abrir Proforma Original"
+                                                    className={`p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0 ${c.isPending ? 'opacity-50' : ''}`}
+                                                    title={c.isPending ? 'Ir a Configurar Proforma' : 'Abrir Proforma Original'}
                                                 >
                                                     <FileEdit className="w-4 h-4" />
                                                 </button>
-                                            )}
-                                            <div>
-                                                <div className="font-bold text-white leading-tight font-mono text-sm max-w-[150px] truncate">
-                                                    {(() => {
-                                                        const orgPrefix = c.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                        const dateStr = c.quotations?.created_at ? new Date(c.quotations.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '') : '000000';
-                                                        const folNum = (c.quotations?.proforma_number || 1).toString().padStart(2, '0');
-                                                        return `${orgPrefix}-${dateStr}-${folNum}`;
-                                                    })()}
-                                                </div>
-                                                <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[150px]">
-                                                    {c.organizations?.name || 'Org Desconocida'}
+                                                <div>
+                                                    <div className="font-bold text-white leading-tight font-mono text-sm max-w-[150px] truncate">
+                                                        {(() => {
+                                                            const orgPrefix = c.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                            const dateStr = c.quotations?.created_at ? new Date(c.quotations.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '') : '000000';
+                                                            const folNum = (c.quotations?.proforma_number || 1).toString().padStart(2, '0');
+                                                            return `${orgPrefix}-${dateStr}-${folNum}`;
+                                                        })()}
+                                                    </div>
+                                                    <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[150px]">
+                                                        {c.organizations?.name || 'Org Desconocida'}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="font-bold text-slate-300">
-                                            {c.quotations?.amount_total?.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) || '$0.00'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${getStatusColor(c.quotations?.contract_status)}`}>
-                                            {getStatusIcon(c.quotations?.contract_status)}
-                                            {c.quotations?.contract_status || 'SOLICITADO'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-xs text-slate-400">
-                                            {new Date(c.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <button
-                                                onClick={() => navigate(`/proformas/${c.quotation_id}`)}
-                                                className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
-                                                title="Ir a Proforma Maestra"
-                                            >
-                                                <ExternalLink className="w-4 h-4" />
-                                            </button>
-
-                                            {c.file_url && (
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="font-bold text-slate-300">
+                                                {c.quotations?.amount_total?.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) || '$0.00'}
+                                            </div>
+                                        </td>
+                                        {/* SEMAFORO: 3 circulos R, F, L */}
+                                        <td className="px-6 py-4">
+                                            <div className="flex gap-1.5 justify-center">
+                                                <div
+                                                    title={c.requerido_authorized ? 'Autorizado' : (c.requerido_url ? 'Documento Cargado' : 'Sin Documento')}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.requerido_authorized
+                                                        ? 'bg-blue-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                        : c.requerido_url
+                                                            ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                            : 'bg-yellow-500 cursor-help'
+                                                        }`}
+                                                    onClick={() => c.requerido_url && handleViewFile(c.requerido_url)}
+                                                >R</div>
+                                                <div
+                                                    title={c.rubricado_url ? 'Rubricado — Click para ver' : 'Sin Rubricar'}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.rubricado_url
+                                                        ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                        : 'bg-yellow-500 cursor-help'
+                                                        }`}
+                                                    onClick={() => c.rubricado_url && handleViewFile(c.rubricado_url)}
+                                                >F</div>
+                                                <div
+                                                    title={c.legalizado_url ? 'Legalizado — Click para ver' : 'Sin Legalizar'}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.legalizado_url
+                                                        ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                        : 'bg-yellow-500 cursor-help'
+                                                        }`}
+                                                    onClick={() => c.legalizado_url && handleViewFile(c.legalizado_url)}
+                                                >L</div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${getStatusColor(lifecycle)}`}>
+                                                {getStatusIcon(lifecycle)}
+                                                {getStatusLabel(lifecycle)}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-xs text-slate-400">
+                                                {new Date(c.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => handleViewContract(c.file_url)}
+                                                    onClick={() => navigate(`/proformas/${c.quotation_id}`)}
                                                     className="p-2 text-slate-400 hover:text-cyan-500 hover:bg-cyan-500/10 rounded-lg transition-all"
-                                                    title="Ver Contrato PDF"
+                                                    title="Ir a Proforma Maestra"
                                                 >
-                                                    <Eye className="w-4 h-4" />
+                                                    <ExternalLink className="w-4 h-4" />
                                                 </button>
-                                            )}
-
-                                            {(!c.quotations?.contract_status || c.quotations.contract_status === 'solicitado') && (
                                                 <button
-                                                    onClick={() => { setSelectedContract(c); setShowUploadModal(true); }}
+                                                    onClick={() => openModal(c)}
                                                     className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all"
-                                                    title="Subir Contrato Firmado"
+                                                    title="Gestionar Contrato"
                                                 >
                                                     <Upload className="w-4 h-4" />
                                                 </button>
-                                            )}
-
-                                            {(c.quotations?.contract_status === 'firmado') && (
-                                                <button
-                                                    onClick={() => handleValidate(c.id, c.quotation_id)}
-                                                    className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all"
-                                                    title="Marcar como Completado"
-                                                >
-                                                    <CheckCircle2 className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </GlowCard>
 
-            {/* MODAL DE CARGA */}
-            {showUploadModal && (
+            {/* MODAL DE GESTION DE CONTRATO */}
+            {showUploadModal && selectedContract && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <GlowCard className="w-full max-w-md p-0 overflow-hidden bg-slate-900 border-white/10 shadow-2xl shadow-cyan-500/10">
+                    <GlowCard className="w-full max-w-2xl p-0 overflow-hidden bg-slate-900 border-white/10 shadow-2xl shadow-cyan-500/10">
                         <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-cyan-600/10 to-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Upload className="text-cyan-500 w-5 h-5" />
-                                    Subir Contrato
+                                    <FileSignature className="text-cyan-500 w-5 h-5" />
+                                    Gestionar Contrato
                                 </h3>
-                                <p className="text-xs text-slate-400 mt-1">Sube el documento PDF o Word del contrato.</p>
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Sube documentos y gestiona el ciclo de vida del contrato.
+                                </p>
                             </div>
-                            <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-white transition-colors">&times;</button>
+                            <button
+                                onClick={() => { setShowUploadModal(false); resetModalState(); }}
+                                className="text-slate-500 hover:text-white transition-colors text-2xl"
+                            >&times;</button>
                         </div>
 
-                        <div className="p-6 space-y-6">
-                            <div className="space-y-4">
+                        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                            {/* SECCION 1: Requerido / Revision / Autorizado (R) */}
+                            <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-amber-500" />
+                                    1. Requerido / Revision / Autorizado
+                                </h4>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Word</label>
-                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.pdf ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
-                                        <input
-                                            type="file"
-                                            accept=".pdf,.doc,.docx"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            onChange={(e) => setFiles(prev => ({ ...prev, pdf: e.target.files?.[0] || null }))}
-                                        />
-                                        <div className="text-center">
-                                            {files.pdf ? (
-                                                <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
-                                                    <FileSignature size={16} /> {files.pdf.name}
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Word (Contrato)</label>
+                                    {selectedContract?.requerido_url && !files.requerido ? (
+                                        <div className="space-y-1">
+                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+                                                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                                    <FileCheck size={16} /> Archivo Cargado
                                                 </div>
-                                            ) : (
-                                                <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
-                                                    <Upload size={20} className="text-slate-600" />
-                                                    Arrastra o selecciona el documento
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => handleViewFile(selectedContract.requerido_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Documento"><Eye size={16} /></button>
+                                                    <button onClick={() => handleDeleteFile('requerido_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
+                                            </div>
+                                            {selectedContract.requerido_at && (
+                                                <p className="text-[10px] text-slate-500">Subido: {formatDate(selectedContract.requerido_at)}</p>
                                             )}
                                         </div>
+                                    ) : (
+                                        <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.requerido ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
+                                            <input
+                                                type="file"
+                                                accept=".pdf,.doc,.docx"
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                onChange={(e) => setFiles(prev => ({ ...prev, requerido: e.target.files?.[0] || null }))}
+                                            />
+                                            <div className="text-center">
+                                                {files.requerido ? (
+                                                    <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> {files.requerido.name}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                        <Upload size={20} className="text-slate-600" />
+                                                        Sube el contrato en PDF o Word
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Comentarios Requerido */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios</label>
+                                    <textarea
+                                        value={comments.requerido}
+                                        onChange={(e) => setComments(prev => ({ ...prev, requerido: e.target.value }))}
+                                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors custom-scrollbar"
+                                        placeholder="Observaciones sobre el contrato..."
+                                        rows={2}
+                                    />
+                                </div>
+
+                                {/* Boton Autorizar */}
+                                <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors ${requeridoAuthorized ? 'bg-blue-500/10 border-blue-500/30' : 'bg-slate-900 border-white/5 hover:bg-slate-800'}`}
+                                    onClick={() => setRequeridoAuthorized(!requeridoAuthorized)}>
+                                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${requeridoAuthorized ? 'bg-blue-500 border-blue-500 text-white' : 'border-white/20 text-transparent'}`}>
+                                        <Shield className="w-3.5 h-3.5" />
                                     </div>
+                                    <span className={`text-sm font-medium ${requeridoAuthorized ? 'text-blue-400' : 'text-slate-300'}`}>Autorizado para Firmas</span>
+                                </div>
+                                {selectedContract.requerido_authorized_at && requeridoAuthorized && (
+                                    <p className="text-[10px] text-blue-400/70">Autorizado: {formatDate(selectedContract.requerido_authorized_at)}</p>
+                                )}
+                            </div>
+
+                            {/* SECCION 2: Rubricado / Firmado (F) */}
+                            <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    <FileSignature className="w-4 h-4 text-emerald-500" />
+                                    2. Rubricado / Firmado
+                                </h4>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Contrato Rubricado)</label>
+                                    {selectedContract?.rubricado_url && !files.rubricado ? (
+                                        <div className="space-y-1">
+                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+                                                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                                    <FileCheck size={16} /> Archivo Cargado
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => handleViewFile(selectedContract.rubricado_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Documento"><Eye size={16} /></button>
+                                                    <button onClick={() => handleDeleteFile('rubricado_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                </div>
+                                            </div>
+                                            {selectedContract.rubricado_at && (
+                                                <p className="text-[10px] text-slate-500">Subido: {formatDate(selectedContract.rubricado_at)}</p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.rubricado ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
+                                            <input
+                                                type="file"
+                                                accept=".pdf,.doc,.docx"
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                onChange={(e) => setFiles(prev => ({ ...prev, rubricado: e.target.files?.[0] || null }))}
+                                            />
+                                            <div className="text-center">
+                                                {files.rubricado ? (
+                                                    <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> {files.rubricado.name}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                        <Upload size={20} className="text-slate-600" />
+                                                        Sube el contrato rubricado/firmado
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Comentarios Rubricado */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios</label>
+                                    <textarea
+                                        value={comments.rubricado}
+                                        onChange={(e) => setComments(prev => ({ ...prev, rubricado: e.target.value }))}
+                                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors custom-scrollbar"
+                                        placeholder="Observaciones sobre el rubricado..."
+                                        rows={2}
+                                    />
                                 </div>
                             </div>
 
+                            {/* SECCION 3: Legalizado (L) */}
+                            <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                    3. Legalizado
+                                </h4>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF (Contrato Legalizado)</label>
+                                    {selectedContract?.legalizado_url && !files.legalizado ? (
+                                        <div className="space-y-1">
+                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl">
+                                                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                                    <FileCheck size={16} /> Archivo Cargado
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => handleViewFile(selectedContract.legalizado_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Documento"><Eye size={16} /></button>
+                                                    <button onClick={() => handleDeleteFile('legalizado_url')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
+                                                </div>
+                                            </div>
+                                            {selectedContract.legalizado_at && (
+                                                <p className="text-[10px] text-slate-500">Subido: {formatDate(selectedContract.legalizado_at)}</p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${files.legalizado ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-cyan-500/30'}`}>
+                                            <input
+                                                type="file"
+                                                accept=".pdf,.doc,.docx"
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                onChange={(e) => setFiles(prev => ({ ...prev, legalizado: e.target.files?.[0] || null }))}
+                                            />
+                                            <div className="text-center">
+                                                {files.legalizado ? (
+                                                    <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-sm">
+                                                        <FileCheck size={16} /> {files.legalizado.name}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-slate-500 text-sm flex flex-col items-center gap-2">
+                                                        <Upload size={20} className="text-slate-600" />
+                                                        Sube el contrato legalizado/final
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Comentarios Legalizado */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comentarios</label>
+                                    <textarea
+                                        value={comments.legalizado}
+                                        onChange={(e) => setComments(prev => ({ ...prev, legalizado: e.target.value }))}
+                                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors custom-scrollbar"
+                                        placeholder="Observaciones sobre la legalizacion..."
+                                        rows={2}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* BOTONES DE ACCION */}
                             <div className="flex gap-3 pt-4 border-t border-white/5">
                                 <button
-                                    onClick={() => setShowUploadModal(false)}
+                                    onClick={() => { setShowUploadModal(false); resetModalState(); }}
                                     className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 font-bold rounded-xl transition-all"
                                 >
                                     Cancelar
                                 </button>
                                 <button
-                                    disabled={uploading || !files.pdf}
+                                    disabled={uploading}
                                     onClick={handleUpload}
-                                    className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading || !files.pdf
+                                    className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg ${uploading
                                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                                         : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-cyan-500/20'
                                         }`}
@@ -458,12 +801,12 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                     {uploading ? (
                                         <>
                                             <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                                            Subiendo...
+                                            Guardando...
                                         </>
                                     ) : (
                                         <>
                                             <Upload size={16} />
-                                            Subir Contrato
+                                            Guardar Cambios
                                         </>
                                     )}
                                 </button>

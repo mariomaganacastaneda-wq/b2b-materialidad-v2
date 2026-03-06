@@ -1288,7 +1288,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 .select(`
                     *,
                     organizations(*),
-                    invoices(id, status)
+                    invoices(id, status),
+                    contracts(id, lifecycle_status)
                 `)
                 .eq('id', quotationId)
                 .single();
@@ -1344,9 +1345,13 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 request_direct_invoice: q.request_direct_invoice || false,
                 economicActivity: q.economic_activity_code || prev.economicActivity,
                 invoice_status: trueInvoiceStatus || null,
-                contract_status: q.contract_status || null,
+                contract_status: (() => {
+                    const contractList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
+                    if (contractList.length > 0 && contractList[0].lifecycle_status) return contractList[0].lifecycle_status;
+                    return q.contract_status || null;
+                })(),
                 evidence_status: q.evidence_status || null,
-                related_quotation_status: q.related_quotation_status || null,
+                related_quotation_status: q.quotation_lifecycle || q.related_quotation_status || null,
                 created_at: q.created_at || null,
 
                 items: items && items.length > 0 ? items.map((item: any) => ({
@@ -1725,7 +1730,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             organization_id: selectedOrg.id,
                             quotation_id: quotationId,
                             is_signed_representative: false,
-                            is_signed_vendor: false
+                            is_signed_vendor: false,
+                            lifecycle_status: 'requerido'
                         };
                         const { data: newContract, error: contractError } = await supabase
                             .from('contracts')
@@ -2451,20 +2457,20 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                 {/* Toggles Column */}
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-6">
                                     <ConfigToggle
-                                        label="Cotización"
+                                        label="Cotizacion"
                                         sub="Requiere carga de PDF firmado"
                                         checked={formData.req_quotation}
-                                        disabled={formData.related_quotation_status === 'aceptada' || formData.related_quotation_status === 'completada'}
-                                        statusLabel={formData.req_quotation ? (formData.related_quotation_status || 'solicitada') : undefined}
-                                        onChange={(val) => setFormData({ ...formData, req_quotation: val, related_quotation_status: val ? (formData.related_quotation_status || 'solicitada') : null })}
+                                        disabled={['aceptada', 'completada'].includes(formData.related_quotation_status || '')}
+                                        statusLabel={formData.req_quotation ? (formData.related_quotation_status || 'solicitud') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, req_quotation: val, related_quotation_status: val ? (formData.related_quotation_status || 'solicitud') : null })}
                                     />
                                     <ConfigToggle
                                         label="Contrato"
                                         sub="Valida existencia de contrato"
                                         checked={formData.is_contract_required}
-                                        disabled={formData.contract_status === 'firmado' || formData.contract_status === 'completado'}
-                                        statusLabel={formData.is_contract_required ? (formData.contract_status || 'solicitado') : undefined}
-                                        onChange={(val) => setFormData({ ...formData, is_contract_required: val, contract_status: val ? (formData.contract_status || 'solicitado') : null })}
+                                        disabled={['rubricado', 'legalizado', 'firmado', 'completado'].includes(formData.contract_status || '')}
+                                        statusLabel={formData.is_contract_required ? (formData.contract_status || 'requerido') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, is_contract_required: val, contract_status: val ? (formData.contract_status || 'requerido') : null })}
                                     />
                                     <div>
                                         <ConfigToggle

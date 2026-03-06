@@ -46,11 +46,15 @@ const getContractColor = (status: string | null | undefined): string | null => {
     const s = status.toLowerCase();
     switch (s) {
         case 'solicitado':
-        case 'solicitada': return 'bg-amber-500/20 border-amber-500/40 text-amber-400';
+        case 'solicitada':
+        case 'requerido': return 'bg-amber-500/20 border-amber-500/40 text-amber-400';
         case 'en_revision':
         case 'negociando': return 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400';
+        case 'autorizado': return 'bg-blue-500/20 border-blue-500/40 text-blue-400';
         case 'firmado':
-        case 'completado': return 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400';
+        case 'rubricado': return 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400';
+        case 'completado':
+        case 'legalizado': return 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400';
         case 'rechazado':
         case 'cancelado': return 'bg-red-500/20 border-red-500/40 text-red-400';
         default: return null;
@@ -61,9 +65,10 @@ const getQuotationColor = (status: string | null | undefined): string | null => 
     if (!status) return null;
     const s = status.toLowerCase();
     switch (s) {
-        case 'solicitada': return 'bg-amber-500/20 border-amber-500/40 text-amber-400';
+        case 'solicitada':
+        case 'solicitud': return 'bg-amber-500/20 border-amber-500/40 text-amber-400';
         case 'enviada': return 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400';
-        case 'aceptada':
+        case 'aceptada': return 'bg-blue-500/20 border-blue-500/40 text-blue-400';
         case 'completada': return 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400';
         case 'rechazada': return 'bg-red-500/20 border-red-500/40 text-red-400';
         default: return null;
@@ -109,7 +114,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                 .select(`
                     *,
                     organizations(name, rfc),
-                    contracts(id, file_url),
+                    contracts(id, file_url, lifecycle_status, requerido_url, requerido_authorized, rubricado_url, legalizado_url),
                     invoices(id, status, evidence(id, type, file_url)),
                     quotation_payments(amount),
                     invoice_status,
@@ -158,9 +163,9 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         const finalInvoiceStatus = realInvoiceStatus || q.invoice_status || (q.request_direct_invoice ? 'SOLICITUD' : null);
         const hasInvoice = !!finalInvoiceStatus;
 
-        // --- CONTRATO: Inferir status del join (no tiene columna status) ---
-        const realContractStatus = contractsList.length > 0 ? (contractsList[0].file_url ? 'firmado' : 'solicitado') : null;
-        const finalContractStatus = realContractStatus || q.contract_status || (q.is_contract_required ? 'solicitado' : null);
+        // --- CONTRATO: Usar lifecycle_status del join ---
+        const contractLifecycle = contractsList.length > 0 ? (contractsList[0].lifecycle_status || (contractsList[0].file_url ? 'requerido' : null)) : null;
+        const finalContractStatus = contractLifecycle || q.contract_status || (q.is_contract_required ? 'requerido' : null);
         const hasContract = !!finalContractStatus;
 
         // --- EVIDENCIA: Del campo en quotations + conteo de fotos ---
@@ -178,8 +183,8 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         const finalEvidenceStatus = evidencePhotoCount > 0 ? 'completada' : (hasEvidenceRecords ? (q.evidence_status || 'entregada') : (q.evidence_status || (q.req_evidence ? 'solicitada' : null)));
         const hasEvidence = !!finalEvidenceStatus;
 
-        // --- COTIZACIÓN: Del campo en quotations ---
-        const finalQuotationStatus = q.related_quotation_status || (q.req_quotation ? 'solicitada' : null);
+        // --- COTIZACIÓN: Usar quotation_lifecycle si existe ---
+        const finalQuotationStatus = q.quotation_lifecycle || q.related_quotation_status || (q.req_quotation ? 'solicitud' : null);
         const hasQuotation = !!finalQuotationStatus;
 
         // --- PAGO: Porcentaje real de quotation_payments ---
