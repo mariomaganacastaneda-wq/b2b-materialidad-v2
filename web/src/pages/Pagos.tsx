@@ -11,7 +11,8 @@ import {
     CheckCircle2,
     Clock,
     XCircle,
-    SearchX
+    SearchX,
+    Trash2
 } from 'lucide-react';
 import { TextGlitch } from '../components/ui/TextGlitch';
 import paymentFormsData from '../lib/payment_forms.json';
@@ -184,6 +185,22 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
             .from('payment-evidence')
             .createSignedUrl(evidenceUrl, 300);
         if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+    };
+
+    const handleDeletePayment = async (paymentId: string) => {
+        if (!confirm('¿Estás seguro de que deseas eliminar este pago? Esta acción no se puede deshacer.')) return;
+        try {
+            const { error: deleteError } = await supabase
+                .from('quotation_payments')
+                .delete()
+                .eq('id', paymentId);
+            
+            if (deleteError) throw deleteError;
+            
+            fetchPayments();
+        } catch (err: any) {
+            alert('Error al eliminar el pago: ' + err.message);
+        }
     };
 
     // Filtrado
@@ -381,6 +398,13 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
                                                         <FileEdit size={16} />
                                                     </button>
                                                 )}
+                                                <button
+                                                    onClick={() => handleDeletePayment(p.id)}
+                                                    className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                    title="Eliminar pago"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
