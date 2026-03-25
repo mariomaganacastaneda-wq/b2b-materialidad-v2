@@ -51,31 +51,30 @@ const DropdownPortal = ({ children, anchor, width }: { children: React.ReactNode
 
 const ConfigToggle = ({ label, sub, checked, onChange, disabled, statusLabel, statusColorClass }: { label: string, sub: string, checked: boolean, onChange: (v: boolean) => void, disabled?: boolean, statusLabel?: string, statusColorClass?: string }) => (
     <div className={`flex flex-col gap-1.5 group ${disabled ? 'opacity-70' : ''}`}>
-        <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-                <p className={`text-sm font-bold leading-tight transition-colors ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#0891b2]'}`}>{label}</p>
-                <div className="mt-0.5">
-                    <p className="text-[10px] text-slate-400 font-medium leading-snug">{sub}</p>
-                </div>
-            </div>
-            <label className={`relative inline-flex items-center shrink-0 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-                <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={checked}
-                    onChange={e => { if (!disabled) onChange(e.target.checked) }}
-                    disabled={disabled}
-                />
-                <div className={`w-10 h-5 bg-slate-200 rounded-full peer ${disabled ? 'peer-checked:bg-slate-400' : 'peer-checked:bg-cyan-600'} after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner`} />
-                <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? (disabled ? 'text-slate-500' : 'text-cyan-600') : 'text-slate-400'}`}>
-                    {checked ? 'ON' : 'OFF'}
-                </span>
-            </label>
+        {/* Toggle en la parte superior */}
+        <label className={`relative inline-flex items-center shrink-0 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+            <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={checked}
+                onChange={e => { if (!disabled) onChange(e.target.checked) }}
+                disabled={disabled}
+            />
+            <div className={`w-10 h-5 bg-slate-200 rounded-full peer ${disabled && checked ? 'peer-checked:bg-emerald-500' : disabled ? 'peer-checked:bg-slate-400' : 'peer-checked:bg-cyan-600'} after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 transition-all shadow-inner`} />
+            <span className={`ml-2 text-[10px] font-black uppercase transition-all ${checked ? (disabled ? 'text-emerald-600' : 'text-cyan-600') : 'text-slate-400'}`}>
+                {checked ? (disabled ? 'OK' : 'ON') : 'OFF'}
+            </span>
+        </label>
+        {/* Texto debajo del toggle */}
+        <div className="min-w-0">
+            <p className={`text-sm font-bold leading-tight transition-colors ${disabled ? 'text-slate-500' : 'text-slate-700 group-hover:text-[#0891b2]'}`}>{label}</p>
+            <p className="text-[10px] text-slate-400 font-medium leading-snug mt-0.5">{sub}</p>
         </div>
         {statusLabel && checked && (
             <div className="mt-1">
-                <span className={`inline-flex px-2 py-0.5 text-[9px] font-black rounded uppercase tracking-widest ${statusColorClass ? statusColorClass : (disabled ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200')}`}>
-                    ESTATUS: {statusLabel}
+                <span className={`inline-flex flex-col px-2 py-1 text-[9px] font-black rounded uppercase leading-tight w-fit max-w-full ${statusColorClass ? statusColorClass : (disabled ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200')}`}>
+                    <span className="opacity-60 tracking-wider text-[8px]">ESTATUS</span>
+                    <span className="tracking-tight break-words">{statusLabel?.replace(/_/g, ' ')}</span>
                 </span>
             </div>
         )}
@@ -430,11 +429,11 @@ const ProductSelector: React.FC<{ value: string, activityDescription?: string, a
                     {activeTag ? (
                         <div
                             onMouseDown={handleEditTag}
-                            className="flex items-center gap-1 bg-cyan-600 text-white px-2 py-0.5 rounded-md text-[9px] font-black animate-in zoom-in-95 duration-200 cursor-edit group/tag shrink-0"
-                            title="Clic para editar concepto"
+                            className="flex items-center gap-1 bg-cyan-600 text-white px-2 py-0.5 rounded-md text-[9px] font-black animate-in zoom-in-95 duration-200 cursor-edit group/tag min-w-0 max-w-[220px]"
+                            title={activeTag}
                         >
-                            <Icon name="edit" className="text-[8px] opacity-0 group-hover/tag:opacity-100 transition-opacity" />
-                            <span className="uppercase tracking-tighter">{activeTag}</span>
+                            <Icon name="edit" className="text-[8px] shrink-0 opacity-0 group-hover/tag:opacity-100 transition-opacity" />
+                            <span className="uppercase tracking-tighter truncate">{activeTag}</span>
                             <button
                                 onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTag(null); }}
                                 className="hover:bg-cyan-700 rounded-full p-0.5 transition-colors ml-1"
@@ -1059,6 +1058,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         created_at: null as string | null,
         req_quotation: false,
         req_evidence: false,
+        req_purchase_order: false,
+        purchase_order_status: null as string | null,
         invoice_status: null as string | null,
         contract_status: null as string | null,
         evidence_status: null as string | null,
@@ -1341,6 +1342,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 from_po_id: q.from_po_id || null,
                 req_quotation: q.req_quotation ?? true,
                 req_evidence: q.req_evidence ?? true,
+                req_purchase_order: q.req_purchase_order ?? false,
+                purchase_order_status: q.purchase_order_status || null,
                 is_contract_required: q.is_contract_required || false,
                 request_direct_invoice: q.request_direct_invoice || false,
                 economicActivity: q.economic_activity_code || prev.economicActivity,
@@ -1377,9 +1380,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                     .not('file_url', 'is', null);
                 const photoCount = count || 0;
                 setEvidencePhotoCount(photoCount);
-                // If photos exist, override evidence_status to 'completada'
+                // If photos exist, activate toggle + set status 'completada'
                 if (photoCount > 0) {
-                    setFormData(prev => ({ ...prev, evidence_status: 'completada' }));
+                    setFormData(prev => ({ ...prev, req_evidence: true, evidence_status: 'completada' }));
                 }
             } else {
                 setEvidencePhotoCount(0);
@@ -1465,6 +1468,51 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         if (s.includes('PREFACTURA')) return 'bg-teal-50 text-teal-600 border border-teal-200';
 
         return 'bg-slate-50 text-slate-500 border border-slate-200';
+    };
+
+    const getPurchaseOrderStatusColor = (status: string | null): string => {
+        if (status === 'autorizada') return 'bg-emerald-50 text-emerald-600 border border-emerald-200';
+        if (status === 'rechazada') return 'bg-red-50 text-red-600 border border-red-200';
+        if (status === 'emitida') return 'bg-cyan-50 text-cyan-600 border border-cyan-200';
+        return 'bg-amber-50 text-amber-600 border border-amber-200'; // solicitada
+    };
+
+    const handlePurchaseOrderToggle = async (val: boolean) => {
+        if (val) {
+            // Actualizar UI inmediatamente para que el badge "solicitada" aparezca al instante
+            setFormData(prev => ({ ...prev, req_purchase_order: true, purchase_order_status: 'solicitada' }));
+
+            if (id && id !== 'nueva') {
+                await supabase
+                    .from('purchase_order_requests')
+                    .insert({
+                        organization_id: selectedOrg.id,
+                        quotation_id: id,
+                        status: 'solicitada'
+                    });
+
+                await supabase
+                    .from('quotations')
+                    .update({ req_purchase_order: true, purchase_order_status: 'solicitada' })
+                    .eq('id', id);
+            }
+        } else {
+            const confirmDelete = window.confirm('¿Eliminar la solicitud de Orden de Compra? Esta acción no se puede deshacer.');
+            if (!confirmDelete) return;
+
+            if (id && id !== 'nueva') {
+                await supabase
+                    .from('purchase_order_requests')
+                    .delete()
+                    .eq('quotation_id', id);
+
+                await supabase
+                    .from('quotations')
+                    .update({ req_purchase_order: false, purchase_order_status: null })
+                    .eq('id', id);
+            }
+            setFormData(prev => ({ ...prev, req_purchase_order: false, purchase_order_status: null }));
+        }
     };
 
     const handleInvoiceToggle = async (val: boolean) => {
@@ -1576,7 +1624,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 description: formData.description || `Proforma para ${formData.clientName}`,
                 created_by: user?.id || null,
                 is_licitation: formData.is_licitation || false,
-                is_contract_required: formData.is_contract_required || formData.hasContract,
+                is_contract_required: formData.is_contract_required,
                 request_direct_invoice: formData.request_direct_invoice || false,
                 object_of_contract: formData.object_of_contract,
                 special_clauses: formData.special_clauses,
@@ -1596,11 +1644,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 from_po_id: (typeof formData.from_po_id === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(formData.from_po_id)) ? formData.from_po_id : null,
                 req_quotation: formData.req_quotation,
                 req_evidence: formData.req_evidence,
+                req_purchase_order: formData.req_purchase_order,
+                purchase_order_status: formData.purchase_order_status,
                 economic_activity_code: formData.economicActivity && formData.economicActivity.trim() !== '' ? formData.economicActivity : null,
                 invoice_status: formData.invoice_status,
                 contract_status: formData.contract_status,
                 evidence_status: formData.evidence_status,
-                related_quotation_status: formData.related_quotation_status
+                related_quotation_status: formData.req_quotation ? formData.related_quotation_status : null,
+                quotation_lifecycle: formData.req_quotation ? (formData.related_quotation_status || null) : null
             };
 
             if (id && id !== 'nueva') {
@@ -2455,7 +2506,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             </div>
                             <div className="p-8 space-y-8">
                                 {/* Toggles Column */}
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-6">
+                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-12 gap-y-6">
                                     <ConfigToggle
                                         label="Cotizacion"
                                         sub="Requiere carga de PDF firmado"
@@ -2463,6 +2514,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         disabled={['aceptada', 'completada'].includes(formData.related_quotation_status || '')}
                                         statusLabel={formData.req_quotation ? (formData.related_quotation_status || 'solicitud') : undefined}
                                         onChange={(val) => setFormData({ ...formData, req_quotation: val, related_quotation_status: val ? (formData.related_quotation_status || 'solicitud') : null })}
+                                    />
+                                    <ConfigToggle
+                                        label="O.C."
+                                        sub="Solicitar orden de compra"
+                                        checked={formData.req_purchase_order}
+                                        disabled={formData.purchase_order_status === 'autorizada'}
+                                        statusLabel={formData.req_purchase_order ? (formData.purchase_order_status || 'solicitada') : undefined}
+                                        statusColorClass={formData.req_purchase_order ? getPurchaseOrderStatusColor(formData.purchase_order_status) : undefined}
+                                        onChange={handlePurchaseOrderToggle}
                                     />
                                     <ConfigToggle
                                         label="Contrato"

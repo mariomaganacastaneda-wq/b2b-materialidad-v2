@@ -14,7 +14,8 @@ import {
   FileSignature,
   ChevronDown,
   Wallet,
-  ShoppingCart
+  ShoppingCart,
+  UploadCloud
 } from 'lucide-react';
 import { supabase, hasSupabaseConfig, updateSupabaseAuth, setClerkTokenProvider } from './lib/supabase';
 import {
@@ -44,6 +45,8 @@ import BankAccountsPage from './pages/BankAccounts';
 import Invoices from './pages/Invoices';
 import { SecurityCenter } from './pages/SecurityCenter';
 import { PurchaseOrders } from './pages/PurchaseOrders';
+import FileImport from './pages/FileImport';
+import PurchaseOrderRequests from './pages/PurchaseOrderRequests';
 import Pagos from './pages/Pagos';
 
 // Branding and Diagnostics
@@ -612,7 +615,8 @@ export function App() {
   const materialityChildren = [
     { label: 'Cotizaciones', path: '/cotizaciones', icon: FileText, screenId: 'cotizaciones', roles: ['ADMIN', 'VENDEDOR', 'REPRESENTANTE'] },
     { label: 'Contratos', path: '/contratos', icon: FileSignature, screenId: 'contratos', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
-    { label: 'Órdenes Compra', path: '/ordenes-compra', icon: ShoppingCart, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
+    { label: 'Importación Archivos', path: '/importacion', icon: UploadCloud, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
+    { label: 'Órdenes de Compra', path: '/ordenes-compra', icon: ShoppingCart, screenId: 'ordenes_compra_req', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
     { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
     { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
     { label: 'Pagos', path: '/pagos', icon: Wallet, screenId: 'pagos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE'] },
@@ -936,7 +940,8 @@ export function App() {
                 <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} />} />
                 <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
-                <Route path="/ordenes-compra" element={<PurchaseOrders currentUser={userProfile} selectedOrg={selectedOrg} />} />
+                <Route path="/importacion" element={<FileImport currentUser={userProfile} selectedOrg={selectedOrg} />} />
+                <Route path="/ordenes-compra" element={<PurchaseOrderRequests selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/facturas" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />

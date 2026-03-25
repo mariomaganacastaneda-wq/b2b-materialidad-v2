@@ -15,6 +15,66 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 
 ### Última sesión
 
+- **Fecha**: 2026-03-25
+- **Agente**: Claude Code (directo + agentes especializados)
+- **Resumen**: Módulo completo de Órdenes de Compra + mejoras de Materialidad + parser CFDI 4.0 extendido con trazabilidad fiscal completa.
+- **Cambios realizados**:
+
+  **Módulo OC (Órdenes de Compra):**
+  - Nueva pantalla `PurchaseOrderRequests.tsx` — gestión del ciclo de vida OC (solicitada→emitida→autorizada/rechazada)
+  - Nueva pantalla `FileImport.tsx` — renombrada desde "Ordenes de Compra", acepta PDF/Excel/XML CFDI
+  - 5to toggle "O.C." en ProformaManager → genera solicitud en pantalla OC
+  - Migración `20260325_purchase_order_requests.sql` — tabla `purchase_order_requests` + columnas `req_purchase_order`, `purchase_order_status` en `quotations`
+  - Migración `2026030401_purchase_orders_rls_dual_role.sql` — RLS dual rol
+
+  **Parser CFDI 4.0 extendido:**
+  - Validación de `TipoDeComprobante` — solo Ingreso (I) crea proforma, rechaza E/T/N/P con mensaje
+  - Extracción de 14+ campos nuevos: `DomicilioFiscalReceptor`→`client_postal_code`, `FechaTimbrado`, `LugarExpedicion`, `RegimenFiscal` emisor, `TipoCambio`, `Exportacion`, `Descuento` (global y por línea), retenciones ISR, `NoIdentificacion` por concepto
+  - Deduplicación por UUID fiscal — rechaza importar el mismo CFDI dos veces
+  - Migración `20260325_cfdi_metadata_purchase_orders.sql` — 9 columnas nuevas en `purchase_orders` + índice único en `cfdi_uuid`
+
+  **MaterialityBoard — Fix B+C aplicado a todos los indicadores:**
+  - Indicador EVI: ahora gobernado por toggle `req_evidence` (inactivo si toggle OFF)
+  - Indicador COT: gobernado por `req_quotation` con fallback 'solicitud'
+  - Indicador CONT: gobernado por `is_contract_required` con fallback 'requerido'
+  - Indicador O.C.: gobernado por `req_purchase_order` con fallback 'solicitada'
+  - Eliminado indicador IMP (importación) — simplificado a 6 indicadores
+  - Eliminados separadores visuales entre indicadores
+  - Eliminados botones FileEdit y ArrowRight de cada fila
+
+  **ProformaManager — UX mejorada:**
+  - ConfigToggle rediseñado: toggle arriba, texto/descripción abajo
+  - Nuevo orden de toggles: Cotización → O.C. → Contrato → Evidencia → Factura
+  - Badge de estatus en dos líneas — evita desborde en textos largos como `PREFACTURA_PENDIENTE`
+  - Fix: cuando `evidencePhotoCount > 0` se activa automáticamente `req_evidence=true` al cargar
+  - Fix `is_contract_required` y `quotation_lifecycle` ahora se limpian correctamente al apagar sus toggles
+
+- **Archivos creados**:
+  - `web/src/pages/FileImport.tsx`
+  - `web/src/pages/PurchaseOrderRequests.tsx`
+  - `supabase/migrations/20260325_purchase_order_requests.sql`
+  - `supabase/migrations/20260325_cfdi_metadata_purchase_orders.sql`
+  - `supabase/migrations/2026030401_purchase_orders_rls_dual_role.sql`
+  - `docs/guias/plan-ordenes-compra-importacion.md`
+
+- **Archivos modificados**:
+  - `web/src/App.tsx` — rutas `/importacion` y `/ordenes-compra`
+  - `web/src/components/commercial/MaterialityBoard.tsx` — Fix B+C todos los indicadores
+  - `web/src/components/commercial/ProformaManager.tsx` — 5to toggle OC + UX mejorada
+
+- **Migraciones aplicadas en Supabase**: ✅ Todas aplicadas y verificadas
+- **TypeScript**: ✅ Sin errores
+- **Estado**: Listo para commit y deploy
+
+- **Pendientes / Próximas mejoras sugeridas**:
+  - Mostrar `client_postal_code` y `cfdi_uuid` en el modal de detalle de FileImport
+  - Filtro por tipo de comprobante en FileImport
+  - Validar `RegimenFiscal` del emisor contra RFC de la organización seleccionada
+
+---
+
+### Historial Reciente (Previas a hoy)
+
 - **Fecha**: 2026-03-04
 - **Agente**: Antigravity Kit (frontend-specialist, orchestrator)
 - **Resumen**: Overhaul radical de UI/UX a estética Neo-Dark Futurista, rebranding global de pantallas a "FISCERTA Materialidad Fiscal B2B" y homologación visual a través de la autenticación y vistas internas.

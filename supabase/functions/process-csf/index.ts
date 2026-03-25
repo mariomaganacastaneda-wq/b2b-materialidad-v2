@@ -194,6 +194,20 @@ serve(async (req: Request) => {
 
         // 3. Resolve Organization and Check for Updates/Versions
         let finalOrgId = organizationId;
+
+        // --- PREVENT OVERWRITE WITH DIFFERENT RFC ---
+        if (organizationId && !isCreatingNew) {
+            const { data: targetOrg } = await supabaseClient
+                .from('organizations')
+                .select('rfc')
+                .eq('id', organizationId)
+                .single();
+                
+            if (targetOrg && targetOrg.rfc && targetOrg.rfc !== rfc) {
+                throw new Error(`Protección de Integridad: El RFC extraído del documento (${rfc}) no coincide con el RFC de la empresa seleccionada (${targetOrg.rfc}). No se puede sobreescribir una empresa distinta.`);
+            }
+        }
+        // --------------------------------------------
         const { data: existingOrg } = await supabaseClient
             .from('organizations')
             .select('id, name, rfc, csf_emission_date, csf_file_url')

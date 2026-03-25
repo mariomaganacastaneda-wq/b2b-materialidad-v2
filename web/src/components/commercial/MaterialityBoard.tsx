@@ -4,9 +4,7 @@ import { supabase } from '../../lib/supabase';
 import {
     Plus,
     Search,
-    ArrowRight,
     SearchX,
-    FileEdit,
     Trash2,
     Shield
 } from 'lucide-react';
@@ -89,6 +87,14 @@ const getEvidenceColor = (status: string | null | undefined): string | null => {
     }
 };
 
+const getPurchaseOrderColor = (status: string | null): string | null => {
+    if (status === 'solicitada') return 'bg-amber-500/20 border-amber-500/40 text-amber-400';
+    if (status === 'emitida')    return 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400';
+    if (status === 'autorizada') return 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400';
+    if (status === 'rechazada')  return 'bg-red-500/20 border-red-500/40 text-red-400';
+    return null;
+};
+
 const formatStatus = (s: string | null | undefined): string | null => {
     if (!s) return null;
     return s.replace(/_/g, ' ');
@@ -116,6 +122,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                     organizations(name, rfc),
                     contracts(id, file_url, lifecycle_status, requerido_url, requerido_authorized, rubricado_url, legalizado_url),
                     invoices(id, status, evidence(id, type, file_url)),
+                    purchase_order_requests(id, status),
                     quotation_payments(amount),
                     invoice_status,
                     contract_status,
@@ -124,7 +131,9 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                     is_contract_required,
                     request_direct_invoice,
                     req_quotation,
-                    req_evidence
+                    req_evidence,
+                    req_purchase_order,
+                    purchase_order_status
                 `)
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
@@ -153,7 +162,14 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
     });
 
     const getMaterialityStatus = (q: any) => {
-        const hasPO = !!q.from_po_id;
+        // --- OC IMPORTADA: vino de la pantalla de Importación de Archivos ---
+        const hasImportedPO = !!q.from_po_id;
+
+        // --- OC SOLICITADA: Fix B+C — activo solo cuando toggle req_purchase_order está ON ---
+        const hasOCRequest = q.req_purchase_order === true;
+        const finalOCStatus = q.req_purchase_order === true
+            ? (q.purchase_order_status || 'solicitada')   // Fix C: fallback al estado inicial
+            : null;
 
         const contractsList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
         const invoicesList = Array.isArray(q.invoices) ? q.invoices : (q.invoices ? [q.invoices] : []);
@@ -165,10 +181,13 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
 
         // --- CONTRATO: Usar lifecycle_status del join ---
         const contractLifecycle = contractsList.length > 0 ? (contractsList[0].lifecycle_status || (contractsList[0].file_url ? 'requerido' : null)) : null;
-        const finalContractStatus = contractLifecycle || q.contract_status || (q.is_contract_required ? 'requerido' : null);
+        // Activo solo si el toggle is_contract_required está ON
+        const finalContractStatus = q.is_contract_required
+            ? (contractLifecycle || q.contract_status || 'requerido')
+            : null;
         const hasContract = !!finalContractStatus;
 
-        // --- EVIDENCIA: Del campo en quotations + conteo de fotos ---
+        // --- EVIDENCIA: Fix B+C — activo solo cuando toggle req_evidence está ON ---
         const hasEvidenceRecords = invoicesList.some((i: any) => {
             const evList = Array.isArray(i.evidence) ? i.evidence : (i.evidence ? [i.evidence] : []);
             return evList.length > 0;
@@ -179,19 +198,25 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
             return total + evList.filter((e: any) => e.type === 'FOTO' && e.file_url).length;
         }, 0);
 
-        // If photos exist, override status to 'completada'
-        const finalEvidenceStatus = evidencePhotoCount > 0 ? 'completada' : (hasEvidenceRecords ? (q.evidence_status || 'entregada') : (q.evidence_status || (q.req_evidence ? 'solicitada' : null)));
+        // Fix B: activo solo cuando toggle req_evidence está ON
+        // Fix C: si hay fotos → 'completada', si hay registros → status real, si no → 'solicitada'
+        const finalEvidenceStatus = q.req_evidence
+            ? (evidencePhotoCount > 0 ? 'completada' : (hasEvidenceRecords ? (q.evidence_status || 'entregada') : (q.evidence_status || 'solicitada')))
+            : null;
         const hasEvidence = !!finalEvidenceStatus;
 
         // --- COTIZACIÓN: Usar quotation_lifecycle si existe ---
-        const finalQuotationStatus = q.quotation_lifecycle || q.related_quotation_status || (q.req_quotation ? 'solicitud' : null);
+        // Activo solo si el toggle req_quotation está ON
+        const finalQuotationStatus = q.req_quotation
+            ? (q.quotation_lifecycle || q.related_quotation_status || 'solicitud')
+            : null;
         const hasQuotation = !!finalQuotationStatus;
 
         // --- PAGO: Porcentaje real de quotation_payments ---
         const totalPaid = (q.quotation_payments || []).reduce((acc: number, p: any) => acc + (p.amount || 0), 0);
         const paymentPercentage = q.amount_total > 0 ? Math.min(Math.round((totalPaid / q.amount_total) * 100), 100) : 0;
 
-        return { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount };
+        return { hasImportedPO, hasOCRequest, finalOCStatus, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount };
     };
 
     return (
@@ -276,31 +301,23 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                 ) : (
                     <GlowCard className="p-0 overflow-hidden bg-slate-950/80 backdrop-blur-xl">
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
+                            <table className="w-full text-left border-collapse table-fixed min-w-[1100px]">
                                 <thead>
                                     <tr className="bg-white/5 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-white/5">
                                         <th className="p-5 w-[240px]">Folio / Cliente</th>
                                         <th className="p-5 w-[100px]">Total</th>
                                         <th className="p-5 w-[120px] text-center">Estatus Fiscal</th>
                                         <th className="p-5 text-center">Gatillos de Materialidad</th>
-                                        <th className="p-5 w-[50px]"></th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {filtered.map(q => {
-                                        const { hasPO, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount } = getMaterialityStatus(q);
+                                        const { hasImportedPO, hasOCRequest, finalOCStatus, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount } = getMaterialityStatus(q);
 
                                         return (
                                             <tr key={q.id} className="hover:bg-cyan-500/5 transition-colors group border-b border-white/5">
                                                 <td className="p-5 overflow-hidden">
                                                     <div className="flex items-center gap-3 min-w-0">
-                                                        <button
-                                                            onClick={() => navigate(`/proformas/${q.id}`)}
-                                                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                            title="Abrir Proforma"
-                                                        >
-                                                            <FileEdit className="w-4 h-4" />
-                                                        </button>
                                                         {isAdmin && (
                                                             <button
                                                                 onClick={(e) => {
@@ -353,15 +370,16 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                     </span>
                                                 </td>
                                                 <td className="p-5">
-                                                    <div className="flex items-start justify-between w-full pt-1">
+                                                    <div className="flex items-start justify-between w-full pt-1 gap-2">
                                                         <MaterialityIndicator
-                                                            icon="shopping_cart"
+                                                            icon="shopping_bag"
                                                             label="O.C."
-                                                            active={hasPO}
-                                                            tooltip="Ver Orden de Compra de origen"
-                                                            onClick={() => q.from_po_id && navigate(`/ordenes-compra/${q.from_po_id}`)}
+                                                            active={hasOCRequest}
+                                                            tooltip={finalOCStatus ? `O.C. ${finalOCStatus}` : 'Orden de Compra'}
+                                                            statusText={finalOCStatus ? formatStatus(finalOCStatus) : undefined}
+                                                            colorOverride={finalOCStatus ? getPurchaseOrderColor(finalOCStatus) : undefined}
+                                                            onClick={() => navigate('/ordenes-compra')}
                                                         />
-                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="receipt_long"
                                                             label="COT"
@@ -371,7 +389,6 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                             statusText={formatStatus(finalQuotationStatus)}
                                                             colorOverride={getQuotationColor(finalQuotationStatus)}
                                                         />
-                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="description"
                                                             label="CONT"
@@ -381,7 +398,6 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                             statusText={formatStatus(finalContractStatus)}
                                                             colorOverride={getContractColor(finalContractStatus)}
                                                         />
-                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="payments"
                                                             label="FACT"
@@ -391,7 +407,6 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                             statusText={formatStatus(finalInvoiceStatus)}
                                                             colorOverride={getInvoiceColor(finalInvoiceStatus)}
                                                         />
-                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="account_balance_wallet"
                                                             label={paymentPercentage > 0 ? `${paymentPercentage}%` : "PAGO"}
@@ -404,7 +419,6 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                             tooltip={`Pagado: ${paymentPercentage}%`}
                                                             onClick={() => navigate(`/pagos/${q.id}`)}
                                                         />
-                                                        <div className="h-[2px] w-4 bg-white/10 mt-4 rounded-full" />
                                                         <MaterialityIndicator
                                                             icon="photo_camera"
                                                             label={evidencePhotoCount > 0 ? `${evidencePhotoCount} FOTO${evidencePhotoCount !== 1 ? 'S' : ''}` : "EVI"}
@@ -415,14 +429,6 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                                             colorOverride={evidencePhotoCount > 0 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : getEvidenceColor(finalEvidenceStatus)}
                                                         />
                                                     </div>
-                                                </td>
-                                                <td className="p-5 text-right">
-                                                    <button
-                                                        className="p-2 text-slate-600 hover:text-cyan-400 transition-colors"
-                                                        onClick={() => navigate(`/proformas/${q.id}`)}
-                                                    >
-                                                        <ArrowRight size={18} />
-                                                    </button>
                                                 </td>
                                             </tr>
                                         );
@@ -491,7 +497,7 @@ const MaterialityIndicator = ({ icon, label, active, tooltip, onClick, colorOver
             {label}
         </span>
         {statusText && (
-            <span className={`text-[6px] font-bold uppercase tracking-wider px-1 py-0.5 rounded -mt-0.5 whitespace-nowrap ${colorOverride ? colorOverride : (active ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500')}`}>
+            <span className={`text-[6px] font-bold uppercase tracking-wider px-1 py-0.5 rounded -mt-0.5 text-center leading-tight break-words max-w-full w-full ${colorOverride ? colorOverride : (active ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-500')}`}>
                 {statusText}
             </span>
         )}
