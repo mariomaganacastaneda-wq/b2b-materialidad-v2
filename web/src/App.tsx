@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -44,7 +44,6 @@ import SATCatalogsPage from './pages/SATCatalogs';
 import BankAccountsPage from './pages/BankAccounts';
 import Invoices from './pages/Invoices';
 import { SecurityCenter } from './pages/SecurityCenter';
-import { PurchaseOrders } from './pages/PurchaseOrders';
 import FileImport from './pages/FileImport';
 import PurchaseOrderRequests from './pages/PurchaseOrderRequests';
 import Pagos from './pages/Pagos';

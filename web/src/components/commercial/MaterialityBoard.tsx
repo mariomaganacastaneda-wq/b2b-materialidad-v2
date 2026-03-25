@@ -312,7 +312,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {filtered.map(q => {
-                                        const { hasImportedPO, hasOCRequest, finalOCStatus, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount } = getMaterialityStatus(q);
+                                        const { hasOCRequest, finalOCStatus, hasContract, hasInvoice, hasEvidence, hasQuotation, paymentPercentage, finalContractStatus, finalInvoiceStatus, finalEvidenceStatus, finalQuotationStatus, evidencePhotoCount } = getMaterialityStatus(q);
 
                                         return (
                                             <tr key={q.id} className="hover:bg-cyan-500/5 transition-colors group border-b border-white/5">

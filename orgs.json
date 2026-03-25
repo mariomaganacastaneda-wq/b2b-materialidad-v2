@@ -1,0 +1,312 @@
+[
+    {
+        "id":  "02c7c373-e916-4316-ba6a-a7fc13126f49",
+        "name":  "DEMO EMISORA ALPHA S.A. DE C.V.",
+        "rfc":  "DEMO000101XXX"
+    },
+    {
+        "id":  "47af6095-516e-47da-a831-5baf64ffffb2",
+        "name":  "DEMO EMISORA BETA S.A. DE C.V.",
+        "rfc":  "DEMO000102XXX"
+    },
+    {
+        "id":  "2d4a6fbf-bb5e-46f9-a37a-325ba477fa10",
+        "name":  "DEMO CLIENTE UNO S.A. DE C.V.",
+        "rfc":  "CLIE000101XXX"
+    },
+    {
+        "id":  "8d538d26-9591-44b4-aa11-9f7f5f34bd73",
+        "name":  "DEMO CLIENTE DOS S.A. DE C.V.",
+        "rfc":  "CLIE000102XXX"
+    },
+    {
+        "id":  "20e6b4db-145b-4bc9-b794-116864fc176d",
+        "name":  "DEMO CLIENTE TRES S.A. DE C.V.",
+        "rfc":  "CLIE000103XXX"
+    },
+    {
+        "id":  "5d853b36-fffe-45d0-8c50-a42588b08690",
+        "name":  "DEMO CLIENTE CUATRO S.A. DE C.V.",
+        "rfc":  "CLIE000104XXX"
+    },
+    {
+        "id":  "0407f3a2-6a5f-4049-b54f-4365ca279993",
+        "name":  "SERGIO MAGAÑA CASTAÑEDA",
+        "rfc":  "MACS640310BF1"
+    },
+    {
+        "id":  "59b07c5c-c7b2-4397-baf2-a45eebc03908",
+        "name":  "EPIC CMC",
+        "rfc":  "ECM2402081M2"
+    },
+    {
+        "id":  "468a0d60-e52d-4fb4-986f-bf1760dd1e7c",
+        "name":  "GPO SEDAUTOS",
+        "rfc":  "GSE240425U61"
+    },
+    {
+        "id":  "60943822-976f-49c7-893a-ee4dc3d97909",
+        "name":  "DEMO CLIENTE CINCO S.A. DE C.V.",
+        "rfc":  "CLIE000105XXX"
+    },
+    {
+        "id":  "cb7a9533-85ef-42d9-bac0-9b6933d1c485",
+        "name":  "MARIA GRACIELA GRANCIANO LUNA",
+        "rfc":  "GALG7607057G1"
+    },
+    {
+        "id":  "b20bf63b-5fe3-4400-9660-28c04a8efbd4",
+        "name":  "MEX EPIC",
+        "rfc":  "MEP980213UG5"
+    },
+    {
+        "id":  "9607b0d5-8ab5-4026-a820-22e492feefbb",
+        "name":  "SUSANA DEL MORAL ROSALES",
+        "rfc":  "MORS5804129L9"
+    },
+    {
+        "id":  "c830dda0-fd85-449e-b21e-51100942e092",
+        "name":  "ADRIANA VANESSA NAVA GRANCIANO",
+        "rfc":  "NAGA000719U33"
+    },
+    {
+        "id":  "c92367e4-fa1b-46f1-88a5-81f19f0c15a9",
+        "name":  "DEMO CLIENTE SEIS S.A. DE C.V.",
+        "rfc":  "CLIE000106XXX"
+    },
+    {
+        "id":  "7a30ce23-09b5-477e-bbb4-7e7bd80cfb9a",
+        "name":  "DEMO CLIENTE SIETE S.A. DE C.V.",
+        "rfc":  "CLIE000107XXX"
+    },
+    {
+        "id":  "409f53b7-3673-48bc-8752-69a8cf9573ac",
+        "name":  "DEMO CLIENTE OCHO S.A. DE C.V.",
+        "rfc":  "CLIE000108XXX"
+    },
+    {
+        "id":  "a28a2839-14d2-4277-96e9-c7323b3540e5",
+        "name":  "DEMO CLIENTE NUEVE S.A. DE C.V.",
+        "rfc":  "CLIE000109XXX"
+    },
+    {
+        "id":  "18062dc7-b691-4de3-a4c4-05b23891b392",
+        "name":  "DEMO CLIENTE DIEZ S.A. DE C.V.",
+        "rfc":  "CLIE000110XXX"
+    },
+    {
+        "id":  "580ba646-1f42-4593-93e3-65f110854556",
+        "name":  "SOLUTIONS MIMI",
+        "rfc":  "SMI230426MZ7"
+    },
+    {
+        "id":  "919cdd7d-88cb-4fba-ac1f-79d3e124959e",
+        "name":  "MAGAÑA, VIEYRA, CUEVA Y ASOCIADOS",
+        "rfc":  "MVC151216BZ0"
+    },
+    {
+        "id":  "5a2173d5-9213-4acb-971c-455c13276f72",
+        "name":  "INMOBILIARIA GARZA MERCADO",
+        "rfc":  "IGM950723947"
+    },
+    {
+        "id":  "a244890b-f7d6-4d7e-9dbe-a58b67ae2ace",
+        "name":  "RED STRIPES",
+        "rfc":  "RST141127478"
+    },
+    {
+        "id":  "0e70f4d7-598c-43fe-9150-642a4b0580ad",
+        "name":  "CORPORATIVO HOSPITAL SATELITE",
+        "rfc":  "CHS980605BR5"
+    },
+    {
+        "id":  "03eb7b50-3a00-4ab6-a75e-30c05f33954e",
+        "name":  "SERVICIO CENTRAL",
+        "rfc":  "SCE410901899"
+    },
+    {
+        "id":  "d4890a01-f97b-4668-9e17-f4473510534e",
+        "name":  "PLANETS SOLUTIONS",
+        "rfc":  "PSO210705KZ2"
+    },
+    {
+        "id":  "8e30cd76-feb2-4ec7-9537-42cab8a9ef2a",
+        "name":  "CEILI SOLUTIONS",
+        "rfc":  "CSO230227NJ4"
+    },
+    {
+        "id":  "1afbb0e1-8acb-40b5-be59-37fe09497051",
+        "name":  "TRASLADATOR CLIME",
+        "rfc":  "TCL240820DJ7"
+    },
+    {
+        "id":  "7d0626f4-b5e7-4db9-a9b3-5398cf6d43aa",
+        "name":  "CRETEC DISTRIBUTION",
+        "rfc":  "CDI230227LC6"
+    },
+    {
+        "id":  "82bad883-7793-4310-a28c-82ab2f8a871a",
+        "name":  "CEAP CETIS NO. 51",
+        "rfc":  "CCN220128P40"
+    },
+    {
+        "id":  "02a5e593-59b8-457e-b4e5-1dc64e7ea9fa",
+        "name":  "GOODYEAR SERVICIOS COMERCIALES",
+        "rfc":  "GSC010102U56"
+    },
+    {
+        "id":  "b8c7da4c-9ea3-4192-b76d-f3e6e93cee39",
+        "name":  "CYRSA DISTRIBUCIONES",
+        "rfc":  "CDI2110275F3"
+    },
+    {
+        "id":  "b29ea4aa-c5f3-4883-b382-4a538d03d376",
+        "name":  "HC ROHP SERVICIOS Y CALIDAD",
+        "rfc":  "HRS230623GA1"
+    },
+    {
+        "id":  "da6a319f-5fc3-4fb8-afc6-2e92068f4dc7",
+        "name":  "SERVICIOS PROFESIONALES INFOCAS",
+        "rfc":  "SPI230906187"
+    },
+    {
+        "id":  "966edc0c-7a42-41ca-a207-e23761ca0cc0",
+        "name":  "COMERCIALIZADORA INSTAX",
+        "rfc":  "CIN211022DL3"
+    },
+    {
+        "id":  "17a27ad1-93b5-45b5-9b4e-f3f5687867ee",
+        "name":  "CONSTRUWEREPA",
+        "rfc":  "CON2310311T4"
+    },
+    {
+        "id":  "b6e3c62e-d737-49d1-8650-7d766450a439",
+        "name":  "INFRAGOLEM CONSTRUCTO",
+        "rfc":  "ICO2408206D1"
+    },
+    {
+        "id":  "caa8c034-31a5-4996-bed1-f476f5f5ef6d",
+        "name":  "DAMO SOLUCIONES EN EMPAQUE Y EMBALAJE",
+        "rfc":  "DSE2010201T5"
+    },
+    {
+        "id":  "434b90b0-015e-4161-b37a-dbed698c5dbe",
+        "name":  "INMOBILIARIA EYMSA",
+        "rfc":  "IEY0605301L3"
+    },
+    {
+        "id":  "56df1444-1527-4eb9-8763-8e588466ecd5",
+        "name":  "MUJICAM",
+        "rfc":  "MUJ121106TSA"
+    },
+    {
+        "id":  "5e083b98-7cd4-49bb-a893-5171c34ddc31",
+        "name":  "LT FASHION",
+        "rfc":  "LFA140313H67"
+    },
+    {
+        "id":  "38a48ab9-5fc9-43cb-9e27-6b730ceb5613",
+        "name":  "CESMA SEGURIDAD PRIVADA",
+        "rfc":  "CSP230721JC3"
+    },
+    {
+        "id":  "3b2301a1-2663-4780-84e2-1f7db66765a6",
+        "name":  "INTECHMOMO",
+        "rfc":  "INT240223334"
+    },
+    {
+        "id":  "330aa09b-4352-4ddf-9fab-97e5534fae3b",
+        "name":  "LARSON SERVICES",
+        "rfc":  "LSE211104RC9"
+    },
+    {
+        "id":  "50486623-aeca-4f7d-a757-77f0e5baeea6",
+        "name":  "LOZA CREATIVE INDUSTRIES",
+        "rfc":  "LCI230404JS1"
+    },
+    {
+        "id":  "4e9743d2-1169-4c3d-8df6-f9cf1a39e659",
+        "name":  "MPAQ CASTRO",
+        "rfc":  "MCA231121M85"
+    },
+    {
+        "id":  "100fb725-8d8f-4331-902b-5442ca537c4e",
+        "name":  "INHOUSE INSPIRING WORKPLACES",
+        "rfc":  "IIW220502U90"
+    },
+    {
+        "id":  "72dabc88-4c50-4df2-b0ed-86568d7f7669",
+        "name":  "OSWALDO HUERTA TREJO",
+        "rfc":  "HUTO761226GG2"
+    },
+    {
+        "id":  "865e5775-684b-4a46-a9de-4e6e3d792a80",
+        "name":  "SEIZA MOTORS DE MEXICO",
+        "rfc":  "SMM1809173W3"
+    },
+    {
+        "id":  "8c1f217b-da34-444d-8208-5a57bef60e73",
+        "name":  "RRFD ABOGADOS",
+        "rfc":  "RAB2208263G5"
+    },
+    {
+        "id":  "ae817f60-8982-4837-b584-7533e8c14633",
+        "name":  "EMBOTELLADORA AGA DEL CENTRO",
+        "rfc":  "EAC941216GT7"
+    },
+    {
+        "id":  "3dd72901-f2c9-4a09-bffe-9cd265cf55a5",
+        "name":  "MARKETOON MX",
+        "rfc":  "MMX0808018J2"
+    },
+    {
+        "id":  "573a0822-5845-4eac-8894-ab4251b07cac",
+        "name":  "UMAMI INGENIERIA ESPECIALIZADA",
+        "rfc":  "UIE240416330"
+    },
+    {
+        "id":  "4479270f-baf4-489b-801b-e1406575bb35",
+        "name":  "CROMAPRINT MEXICANA",
+        "rfc":  "CME131211L45"
+    },
+    {
+        "id":  "e582667a-9eb3-4bf3-9045-e9512878ba8b",
+        "name":  "GRUPO CONSTRUCTOR SEIDCO-ALUBAC",
+        "rfc":  "GCS231006DE8"
+    },
+    {
+        "id":  "e7413f01-9fb3-4113-955b-e992e50515c4",
+        "name":  "EMPRESA EMISORA DE MUESTRA S.A. DE C.V.",
+        "rfc":  "ABC010101XYZ"
+    },
+    {
+        "id":  "6d64a7e9-a0b3-460f-8728-f96deb421dda",
+        "name":  "SEIDCO SERVICIOS DE INGENIERIA Y ADMINISTRACION INTEGRAL",
+        "rfc":  "SSI101213VD1"
+    },
+    {
+        "id":  "7b55e8c1-00c9-459a-bf6e-3c12a4f71718",
+        "name":  "T M AUTOPARTES",
+        "rfc":  "TMA880912Q74"
+    },
+    {
+        "id":  "0c38af93-7f1e-480f-9d3c-cbd8b7903e64",
+        "name":  "DISTRIBUIDORA CEELX",
+        "rfc":  "DCE240223HY8"
+    },
+    {
+        "id":  "aaa53c3b-6156-4087-a03e-8043de044f1b",
+        "name":  "EMPRESA CLIENTE DE MUESTRA S.A. DE C.V.",
+        "rfc":  "GOMJ880326XXX"
+    },
+    {
+        "id":  "33b471e9-2304-43de-a3f3-cc595ae25a05",
+        "name":  "DISTRIBUCIONES LIMONTA",
+        "rfc":  "DLI0802258E4"
+    },
+    {
+        "id":  "1e6ac97e-2e55-4d68-a7a2-05154467c4da",
+        "name":  "M.M.C. ELECTRONICA",
+        "rfc":  "MMC930113KT9"
+    }
+]

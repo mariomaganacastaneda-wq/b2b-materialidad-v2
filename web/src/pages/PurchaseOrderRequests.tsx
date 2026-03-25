@@ -381,10 +381,6 @@ const PurchaseOrderRequests = ({ selectedOrg }: PurchaseOrderRequestsProps) => {
         rechazadas: requests.filter((r) => r.status === 'rechazada').length,
     };
 
-    // ─── Render ───────────────────────────────────────────────────────────────
-
-    const tabs: TabFilter[] = ['TODAS', 'SOLICITADA', 'EMITIDA', 'AUTORIZADA', 'RECHAZADA'];
-
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
 
