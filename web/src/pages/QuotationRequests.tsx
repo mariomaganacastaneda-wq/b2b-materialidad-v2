@@ -39,6 +39,13 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
     const [selectedQuote, setSelectedQuote] = useState<any>(null);
     const [uploading, setUploading] = useState(false);
 
+    // Non-blocking notification (replaces alert() to avoid React DOM errors)
+    const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const notify = (type: 'success' | 'error', message: string) => {
+        setNotification({ type, message });
+        setTimeout(() => setNotification(null), type === 'error' ? 6000 : 3000);
+    };
+
     // File inputs for each stage
     const [files, setFiles] = useState<{
         solicitud: File | null;
@@ -216,12 +223,12 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                 if (uError) throw uError;
             }
 
-            alert('Cotizacion actualizada con exito.');
             setShowUploadModal(false);
             resetModalState();
             fetchQuotes();
+            notify('success', 'Cotizacion actualizada con exito.');
         } catch (err: any) {
-            alert('Error al procesar cotizacion: ' + err.message);
+            notify('error', 'Error al procesar cotizacion: ' + err.message);
         } finally {
             setUploading(false);
         }
@@ -267,13 +274,13 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
 
             if (error) throw error;
 
-            alert('Archivo eliminado correctamente.');
+            notify('success', 'Archivo eliminado correctamente.');
             setSelectedQuote({ ...selectedQuote, ...updates });
             // Update local authorized state
             setAuthorized(prev => ({ ...prev, [stage]: false }));
             fetchQuotes();
         } catch (err: any) {
-            alert('Error al eliminar el archivo: ' + err.message);
+            notify('error', 'Error al eliminar el archivo: ' + err.message);
         } finally {
             setUploading(false);
         }
@@ -289,7 +296,7 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                 window.open(data.signedUrl, '_blank');
             }
         } catch (err: any) {
-            alert('Error al abrir archivo: ' + err.message);
+            notify('error', 'Error al abrir archivo: ' + err.message);
         }
     };
 
@@ -368,6 +375,14 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
 
     return (
         <div className="fade-in space-y-6">
+            {/* Non-blocking notification banner */}
+            {notification && (
+                <div className={`fixed top-4 right-4 z-[9999] px-4 py-3 rounded-xl shadow-2xl border font-bold text-sm flex items-center gap-2 animate-in slide-in-from-top-2 duration-300 ${notification.type === 'success' ? 'bg-emerald-900/90 border-emerald-500/40 text-emerald-300' : 'bg-red-900/90 border-red-500/40 text-red-300'}`}>
+                    {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                    {notification.message}
+                    <button onClick={() => setNotification(null)} className="ml-2 opacity-60 hover:opacity-100">&times;</button>
+                </div>
+            )}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <div className="flex items-center gap-3 mb-2">

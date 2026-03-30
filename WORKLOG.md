@@ -58,7 +58,11 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
   - `docs/guias/plan-ordenes-compra-importacion.md`
 
 - **Archivos modificados**:
-  - `web/src/App.tsx` — rutas `/importacion` y `/ordenes-compra`
+  - `web/src/App.tsx` (removido import no utilizado para Vercel build)
+  - `web/src/components/commercial/MaterialityBoard.tsx` (removido obj. destructurado vacío)
+  - `web/src/pages/PurchaseOrderRequests.tsx` (removida variable no utilizada)
+  - `web/package.json`
+  - `WORKLOG.md` (este archivo) — rutas `/importacion` y `/ordenes-compra`
   - `web/src/components/commercial/MaterialityBoard.tsx` — Fix B+C todos los indicadores
   - `web/src/components/commercial/ProformaManager.tsx` — 5to toggle OC + UX mejorada
 
