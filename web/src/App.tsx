@@ -593,6 +593,25 @@ export function App() {
 
   useTheme(selectedOrg);
 
+  // Persistir la org seleccionada en BD + localStorage cada vez que cambie
+  useEffect(() => {
+    if (!selectedOrg?.id) return;
+    const userId = impersonatedUser?.id || clerkUser?.id;
+    if (!userId) return;
+
+    // localStorage para persistir entre reloads
+    localStorage.setItem('fiscerta_default_org_id', selectedOrg.id);
+
+    // BD para persistir entre sesiones/dispositivos (fire-and-forget)
+    supabase
+      .from('profiles')
+      .update({ default_org_id: selectedOrg.id })
+      .eq('id', userId)
+      .then(({ error }) => {
+        if (error) console.warn('No se pudo persistir default_org_id:', error.message);
+      });
+  }, [selectedOrg?.id]);
+
   const handleSetDefaultOrg = async (orgId: string) => {
     const targetUserId = impersonatedUser?.id || clerkUser?.id;
     if (!targetUserId) return;
