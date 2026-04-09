@@ -263,8 +263,30 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
-        alert("Integración con Supabase Storage detectada. El archivo se procesará para actualizar el logotipo.");
+        if (!file || !org?.id) return;
+
+        try {
+            setIsUploading(true);
+            const ext = file.name.split('.').pop() || 'png';
+            const filePath = `${org.id}/logo_${Date.now()}.${ext}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('logos')
+                .upload(filePath, file, { upsert: true, contentType: file.type });
+
+            if (uploadError) throw new Error(uploadError.message);
+
+            const { data: urlData } = supabase.storage.from('logos').getPublicUrl(filePath);
+            const publicUrl = urlData?.publicUrl;
+
+            if (publicUrl) {
+                onUpdateDetail('logo_url', publicUrl);
+            }
+        } catch (err: any) {
+            alert('Error al subir logo: ' + err.message);
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const openEyeDropper = async (field: 'primary' | 'secondary' | 'accent') => {
@@ -557,7 +579,7 @@ export const CompanyDetails: React.FC<CompanyDetailsProps> = ({ org, isCreatingN
                 </div>
 
                 {/* Identidad Visual Avanzada (Regla 60-30-10) */}
-                {org.is_issuer && (
+                {(org.is_issuer || org.is_client) && (
                     <div className="glass-card" style={{ padding: '0', overflow: 'hidden', border: visualMgmtExpanded ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)' }}>
                         <div
                             onClick={() => setVisualMgmtExpanded(!visualMgmtExpanded)}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import {
@@ -13,7 +13,9 @@ import {
     ExternalLink,
     Trash2,
     FileCheck,
-    Shield
+    Shield,
+    Sparkles,
+    Loader2
 } from 'lucide-react';
 import { GlowCard } from '../components/ui/GlowCard';
 import { TextGlitch } from '../components/ui/TextGlitch';
@@ -44,6 +46,311 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
     const notify = (type: 'success' | 'error', message: string) => {
         setNotification({ type, message });
         setTimeout(() => setNotification(null), type === 'error' ? 6000 : 3000);
+    };
+
+    // IA Generation modal
+    const [showGenerateModal, setShowGenerateModal] = useState<'solicitud' | 'emision' | null>(null);
+    const [generating, setGenerating] = useState(false);
+    const [generateForm, setGenerateForm] = useState({
+        fechaEmision: new Date().toISOString().split('T')[0],
+        vigencia: '30' as string,
+        incluyeIVA: true,
+        lugarEntrega: '',
+        formaPago: 'transferencia' as string,
+        condicionesCredito: 'sin_credito' as string,
+        observaciones: '',
+        firmanteComercial: '',
+        firmanteVentas: '',
+        firmanteCliente: '',
+        formato: 'ambos' as 'ambos' | 'word' | 'html',
+    });
+
+    // Ref para evitar stale closure del formato en handleGenerateIA
+    const formatoRef = useRef(generateForm.formato);
+    formatoRef.current = generateForm.formato;
+
+    const N8N_WEBHOOK_SOLICITUD = 'https://n8n-n8n.5gad6x.easypanel.host/webhook/generar-cotizacion';
+    const N8N_WEBHOOK_EMISION = 'https://n8n-n8n.5gad6x.easypanel.host/webhook/generar-emision-cotizacion';
+
+    // Precargar datos de la solicitud previa para el modal de emisión
+    const openGenerateModal = async (tipo: 'solicitud' | 'emision') => {
+        if (tipo === 'emision' && selectedQuote?.solicitud_url) {
+            try {
+                const filePath = selectedQuote.solicitud_url;
+                if (filePath.endsWith('.html') || filePath.endsWith('.doc')) {
+                    const { data: fileData } = await supabase.storage
+                        .from('quotations')
+                        .download(filePath);
+                    if (fileData) {
+                        const text = await fileData.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(text, 'text/html');
+                        const bodyText = doc.body?.textContent || '';
+
+                        // Extraer datos del documento de solicitud
+                        const vigenciaMatch = bodyText.match(/Vigencia:\s*(\d+)/i);
+                        const lugarMatch = bodyText.match(/Lugar de entrega:\s*([^\n]+)/i);
+                        const pagoMatch = bodyText.match(/Forma de pago:\s*([^\n]+)/i);
+                        const creditoMatch = bodyText.match(/Condiciones de cr[eé]dito:\s*([^\n]+)/i);
+
+                        // Extraer nombre del firmante del HTML de la solicitud
+                        let firmanteSolicitud = '';
+                        // Método 1: buscar en elementos con clase .firma
+                        const firmaElements = doc.querySelectorAll('.firma');
+                        for (const firma of firmaElements) {
+                            const rolText = firma.textContent || '';
+                            if (rolText.includes('Comercial') || rolText.includes('comercial')) {
+                                const strong = firma.querySelector('strong');
+                                if (strong) firmanteSolicitud = strong.textContent?.trim() || '';
+                                break;
+                            }
+                        }
+                        // Método 2: fallback con regex si no encontró por DOM
+                        if (!firmanteSolicitud) {
+                            const allStrongs = doc.querySelectorAll('strong');
+                            for (let i = 0; i < allStrongs.length; i++) {
+                                const next = allStrongs[i].parentElement?.nextElementSibling;
+                                if (next?.textContent?.includes('Comercial') || next?.textContent?.includes('comercial')) {
+                                    firmanteSolicitud = allStrongs[i].textContent?.trim() || '';
+                                    break;
+                                }
+                            }
+                        }
+                        // Método 3: regex sobre texto plano
+                        if (!firmanteSolicitud) {
+                            const match = bodyText.match(/([A-Za-záéíóúñÁÉÍÓÚÑ\s]+?)\s*[AÁa]rea\s*Comercial/i);
+                            if (match?.[1]) firmanteSolicitud = match[1].trim();
+                        }
+
+                        setGenerateForm(prev => ({
+                            ...prev,
+                            fechaEmision: new Date().toISOString().split('T')[0],
+                            vigencia: vigenciaMatch?.[1] || prev.vigencia,
+                            lugarEntrega: lugarMatch?.[1]?.trim() || prev.lugarEntrega,
+                            formaPago: pagoMatch?.[1]?.trim().toLowerCase().includes('transfer') ? 'transferencia'
+                                : pagoMatch?.[1]?.trim().toLowerCase().includes('cheque') ? 'cheque'
+                                : pagoMatch?.[1]?.trim().toLowerCase().includes('efect') ? 'efectivo'
+                                : prev.formaPago,
+                            condicionesCredito: creditoMatch?.[1]?.trim().toLowerCase().includes('sin') ? 'sin_credito'
+                                : creditoMatch?.[1]?.match(/(\d+)/)?.[1] || prev.condicionesCredito,
+                            firmanteComercial: firmanteSolicitud || prev.firmanteComercial,
+                            firmanteCliente: firmanteSolicitud || '',
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.warn('[IA-GEN] No se pudieron precargar datos de solicitud:', err);
+            }
+        } else {
+            // Reset para nueva generación
+            setGenerateForm({
+                fechaEmision: new Date().toISOString().split('T')[0],
+                vigencia: '30',
+                incluyeIVA: true,
+                lugarEntrega: '',
+                formaPago: 'transferencia',
+                condicionesCredito: 'sin_credito',
+                observaciones: '',
+                firmanteComercial: '',
+                firmanteVentas: '',
+                firmanteCliente: '',
+                formato: 'ambos',
+            });
+        }
+        setShowGenerateModal(tipo);
+    };
+
+    const handleGenerateIA = async () => {
+        if (!selectedQuote || !showGenerateModal) return;
+        setGenerating(true);
+        try {
+            // Cargar items de la proforma
+            const { data: items } = await supabase
+                .from('quotation_items')
+                .select('*')
+                .eq('quotation_id', selectedQuote.id)
+                .order('created_at');
+
+            // Cargar datos de la proforma
+            const { data: proforma } = await supabase
+                .from('quotations')
+                .select('client_name, client_rfc, amount_subtotal, amount_iva, amount_total, currency, description, organization_id')
+                .eq('id', selectedQuote.id)
+                .single();
+
+            if (!proforma) throw new Error('No se encontró la proforma');
+
+            // Escanear solicitud previa si estamos generando emisión
+            let contextoSolicitud = '';
+            if (showGenerateModal === 'emision' && selectedQuote.solicitud_url) {
+                try {
+                    const filePath = selectedQuote.solicitud_url;
+                    if (filePath.endsWith('.html') || filePath.endsWith('.doc')) {
+                        const { data: fileData } = await supabase.storage
+                            .from('quotations')
+                            .download(filePath);
+                        if (fileData) {
+                            const text = await fileData.text();
+                            // Extraer texto limpio del HTML
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(text, 'text/html');
+                            contextoSolicitud = doc.body?.textContent?.trim() || '';
+                        }
+                    } else if (filePath.endsWith('.pdf') || filePath.endsWith('.jpg') || filePath.endsWith('.jpeg') || filePath.endsWith('.png')) {
+                        // Para PDFs/imágenes: descargar y convertir a base64 para enviar a OpenAI Vision
+                        const { data: fileData } = await supabase.storage
+                            .from('quotations')
+                            .download(filePath);
+                        if (fileData) {
+                            const buffer = await fileData.arrayBuffer();
+                            const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+                            const mime = filePath.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
+                            contextoSolicitud = `[ARCHIVO_BASE64:${mime}]${base64}`;
+                        }
+                    }
+                    console.log('[IA-GEN] Contexto de solicitud extraído:', contextoSolicitud.substring(0, 200) + '...');
+                } catch (err) {
+                    console.warn('[IA-GEN] No se pudo leer solicitud previa:', err);
+                }
+            }
+
+            // Obtener branding del cliente por RFC
+            const { data: clientOrg } = await supabase
+                .from('organizations')
+                .select('name, rfc, logo_url, primary_color, brand_name, theme_config')
+                .eq('rfc', proforma.client_rfc)
+                .maybeSingle();
+
+            // Obtener branding de la emisora
+            const { data: emisoraOrg } = await supabase
+                .from('organizations')
+                .select('name, rfc, logo_url, primary_color, brand_name, theme_config')
+                .eq('id', proforma.organization_id)
+                .single();
+
+            const brandingPrincipal = showGenerateModal === 'solicitud'
+                ? {
+                    nombre: clientOrg?.brand_name || clientOrg?.name || proforma.client_name,
+                    rfc: clientOrg?.rfc || proforma.client_rfc,
+                    logo_url: clientOrg?.logo_url || '',
+                    primary_color: clientOrg?.primary_color || '#1e40af',
+                    secondary_color: clientOrg?.theme_config?.secondary_color || '#64748b',
+                    accent_color: clientOrg?.theme_config?.accent_color || '#f59e0b',
+                    slogan: clientOrg?.theme_config?.slogan || '',
+                }
+                : {
+                    nombre: emisoraOrg?.brand_name || emisoraOrg?.name || '',
+                    rfc: emisoraOrg?.rfc || '',
+                    logo_url: emisoraOrg?.logo_url || '',
+                    primary_color: emisoraOrg?.primary_color || '#1e40af',
+                    secondary_color: emisoraOrg?.theme_config?.secondary_color || '#64748b',
+                    accent_color: emisoraOrg?.theme_config?.accent_color || '#f59e0b',
+                    slogan: emisoraOrg?.theme_config?.slogan || '',
+                };
+
+            const payload = {
+                tipo: showGenerateModal,
+                quotation_id: selectedQuote.id,
+                proforma: {
+                    folio: selectedQuote.folio || selectedQuote.id.substring(0, 8),
+                    items: (items || []).map((i: any) => ({
+                        code: i.sat_product_key || '',
+                        description: i.description,
+                        quantity: parseFloat(i.quantity),
+                        unit: i.unit_id || 'E48',
+                        unitPrice: parseFloat(i.unit_price),
+                        has_iva: i.has_iva ?? true,
+                    })),
+                    subtotal: parseFloat(proforma.amount_subtotal),
+                    iva: parseFloat(proforma.amount_iva),
+                    total: parseFloat(proforma.amount_total),
+                    currency: proforma.currency || 'MXN',
+                    client_name: proforma.client_name,
+                    client_rfc: proforma.client_rfc,
+                },
+                campos_usuario: {
+                    fecha_emision: generateForm.fechaEmision,
+                    vigencia: generateForm.vigencia,
+                    incluye_iva: generateForm.incluyeIVA,
+                    lugar_entrega: generateForm.lugarEntrega,
+                    forma_pago: generateForm.formaPago,
+                    condiciones_credito: generateForm.condicionesCredito,
+                    observaciones: generateForm.observaciones,
+                    firmante_comercial: generateForm.firmanteComercial,
+                    firmante_ventas: generateForm.firmanteVentas,
+                    firmante_cliente: '',
+                },
+                branding_principal: brandingPrincipal,
+                branding_contraparte: showGenerateModal === 'solicitud'
+                    ? { nombre: emisoraOrg?.name || '', rfc: emisoraOrg?.rfc || '' }
+                    : { nombre: proforma.client_name, rfc: proforma.client_rfc },
+                contexto_solicitud: contextoSolicitud || '',
+            };
+
+            const webhookUrl = showGenerateModal === 'solicitud' ? N8N_WEBHOOK_SOLICITUD : N8N_WEBHOOK_EMISION;
+            console.log('[IA-GEN] Enviando al webhook:', webhookUrl, '| tipo:', showGenerateModal);
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            console.log('[IA-GEN] Response status:', response.status, response.statusText);
+            const rawText = await response.text();
+            console.log('[IA-GEN] Response body (primeros 500 chars):', rawText.substring(0, 500));
+
+            let result: any;
+            try {
+                result = JSON.parse(rawText);
+            } catch {
+                throw new Error('Respuesta no válida del servidor (status ' + response.status + '): ' + rawText.substring(0, 200));
+            }
+
+            if (!result.success && !result.html_content) {
+                throw new Error(result.error || 'Error al generar documento');
+            }
+
+            // Guardar solo HTML en Supabase Storage
+            if (result.html_content && selectedQuote) {
+                const encoder = new TextEncoder();
+                const ts = Date.now();
+                const htmlBlob = new Blob([encoder.encode(result.html_content)], { type: 'text/html; charset=utf-8' });
+                const htmlFileName = `${selectedQuote.id}/${showGenerateModal}_ia_${ts}.html`;
+
+                const { error: uploadErr } = await supabase.storage
+                    .from('quotations')
+                    .upload(htmlFileName, htmlBlob, { upsert: true, contentType: 'text/html; charset=utf-8' });
+                if (uploadErr) console.warn('Error subiendo HTML:', uploadErr.message);
+
+                // Guardar referencia en la cotización
+                const urlField = showGenerateModal === 'solicitud' ? 'solicitud_url' : 'revision_emisor_url';
+                const atField = showGenerateModal === 'solicitud' ? 'solicitud_at' : 'revision_emisor_at';
+                const updates: any = { [urlField]: htmlFileName, [atField]: new Date().toISOString() };
+
+                const merged = { ...selectedQuote, ...updates };
+                const newAuth = {
+                    solicitud: merged.solicitud_authorized || false,
+                    revision_emisor: merged.revision_emisor_authorized || false,
+                    revision_cliente: merged.revision_cliente_authorized || false,
+                };
+                updates.quotation_lifecycle = computeLifecycle(merged, newAuth);
+                updates.related_quotation_status = mapToLegacyStatus(updates.quotation_lifecycle);
+
+                await supabase.from('quotations').update(updates).eq('id', selectedQuote.id);
+            } else if (result.pdf_url) {
+                window.open(result.pdf_url, '_blank');
+            }
+
+            setShowGenerateModal(null);
+            setShowUploadModal(false);
+            resetModalState();
+            notify('success', `Documento de ${showGenerateModal === 'solicitud' ? 'Solicitud' : 'Emisión'} generado y guardado con IA.`);
+            fetchQuotes();
+        } catch (err: any) {
+            notify('error', 'Error al generar con IA: ' + err.message);
+        } finally {
+            setGenerating(false);
+        }
     };
 
     // File inputs for each stage
@@ -288,6 +595,19 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
 
     const handleViewFile = async (filePath: string) => {
         try {
+            // Archivos HTML generados por IA: abrir en nueva pestaña
+            if (filePath.endsWith('.html') || filePath.endsWith('.doc')) {
+                const { data: fileData, error: dlErr } = await supabase.storage
+                    .from('quotations')
+                    .download(filePath);
+                if (dlErr) throw dlErr;
+                if (fileData) {
+                    const url = URL.createObjectURL(new Blob([fileData], { type: 'text/html; charset=utf-8' }));
+                    window.open(url, '_blank');
+                    return;
+                }
+            }
+            // PDFs y otros archivos: usar URL firmada
             const { data, error } = await supabase.storage
                 .from('quotations')
                 .createSignedUrl(filePath, 3600);
@@ -297,6 +617,35 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
             }
         } catch (err: any) {
             notify('error', 'Error al abrir archivo: ' + err.message);
+        }
+    };
+
+    const handleOpenAsWord = async (filePath: string) => {
+        try {
+            const { data: fileData, error } = await supabase.storage
+                .from('quotations')
+                .download(filePath);
+            if (error) throw error;
+            if (!fileData) throw new Error('Archivo vacío');
+
+            const htmlText = await fileData.text();
+            const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+${htmlText.match(/<style[\s\S]*?<\/style>/)?.[0] || ''}
+</head><body>${htmlText.match(/<body[\s\S]*?>([\s\S]*)<\/body>/)?.[1] || htmlText}</body></html>`;
+
+            const blob = new Blob([new TextEncoder().encode(wordHtml)], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filePath.split('/').pop()?.replace('.html', '.doc') || 'cotizacion.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err: any) {
+            notify('error', 'Error al convertir a Word: ' + err.message);
         }
     };
 
@@ -421,6 +770,11 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-yellow-500"></div> Sin documento</div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500"></div> Archivo cargado</div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500"></div> Autorizado</div>
+                <div className="border-l border-white/10 h-4 mx-1"></div>
+                <span className="font-bold text-slate-300">Tipos de documentos:</span>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black flex items-center justify-center border border-emerald-500/40">S</span> Solicitud</div>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center border border-cyan-500/40">E</span> Emitida</div>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-black flex items-center justify-center border border-blue-500/40">C</span> Confirmada</div>
             </div>
 
             {error && (
@@ -590,10 +944,18 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
                             {/* SECCION 1: Solicitud Cliente (S) */}
                             <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-amber-500" />
-                                    1. Solicitud Cliente
-                                </h4>
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                        <FileText className="w-4 h-4 text-amber-500" />
+                                        1. Solicitud Cliente
+                                    </h4>
+                                    <button
+                                        onClick={() => openGenerateModal('solicitud')}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-violet-500/10 border border-violet-500/30 text-violet-400 hover:bg-violet-500/20 rounded-lg transition-all"
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5" /> Generar con IA
+                                    </button>
+                                </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Imagen</label>
                                     {selectedQuote?.solicitud_url && !files.solicitud ? (
@@ -604,6 +966,9 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <button onClick={() => handleViewFile(selectedQuote.solicitud_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Documento"><Eye size={16} /></button>
+                                                    {selectedQuote.solicitud_url?.endsWith('.html') && (
+                                                        <button onClick={() => handleOpenAsWord(selectedQuote.solicitud_url)} className="text-blue-400 hover:text-blue-300 p-1.5 hover:bg-blue-500/10 rounded-lg transition-colors" title="Abrir en Word"><FileEdit size={16} /></button>
+                                                    )}
                                                     <button onClick={() => handleDeleteFile('solicitud')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
                                             </div>
@@ -658,10 +1023,18 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
 
                             {/* SECCION 2: Revision Emisor (E) */}
                             <div className="space-y-4 bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                    <Send className="w-4 h-4 text-cyan-500" />
-                                    2. Revision Emisor
-                                </h4>
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                        <Send className="w-4 h-4 text-cyan-500" />
+                                        2. Revision Emisor
+                                    </h4>
+                                    <button
+                                        onClick={() => openGenerateModal('emision')}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-violet-500/10 border border-violet-500/30 text-violet-400 hover:bg-violet-500/20 rounded-lg transition-all"
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5" /> Generar con IA
+                                    </button>
+                                </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Archivo PDF/Imagen</label>
                                     {selectedQuote?.revision_emisor_url && !files.revision_emisor ? (
@@ -672,6 +1045,9 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <button onClick={() => handleViewFile(selectedQuote.revision_emisor_url)} className="text-cyan-400 hover:text-cyan-300 p-1.5 hover:bg-cyan-500/10 rounded-lg transition-colors" title="Ver Documento"><Eye size={16} /></button>
+                                                    {selectedQuote.revision_emisor_url?.endsWith('.html') && (
+                                                        <button onClick={() => handleOpenAsWord(selectedQuote.revision_emisor_url)} className="text-blue-400 hover:text-blue-300 p-1.5 hover:bg-blue-500/10 rounded-lg transition-colors" title="Abrir en Word"><FileEdit size={16} /></button>
+                                                    )}
                                                     <button onClick={() => handleDeleteFile('revision_emisor')} className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar Archivo"><Trash2 size={16} /></button>
                                                 </div>
                                             </div>
@@ -823,6 +1199,138 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
                             </div>
                         </div>
                     </GlowCard>
+                </div>
+            )}
+            {/* MODAL DE GENERACIÓN CON IA */}
+            {showGenerateModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-lg bg-slate-900 border border-violet-500/20 rounded-2xl shadow-2xl shadow-violet-500/10 overflow-hidden">
+                        <div className="p-5 border-b border-white/5 bg-gradient-to-r from-violet-600/10 to-transparent flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <Sparkles className="text-violet-400 w-5 h-5" />
+                                    Generar {showGenerateModal === 'solicitud' ? 'Solicitud' : 'Emisión'} con IA
+                                </h3>
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    {showGenerateModal === 'solicitud'
+                                        ? 'Documento del cliente solicitando cotización (sin precios)'
+                                        : 'Respuesta de la emisora con precios y condiciones'}
+                                </p>
+                            </div>
+                            <button onClick={() => setShowGenerateModal(null)} className="text-slate-500 hover:text-white text-2xl">&times;</button>
+                        </div>
+                        <div className="p-5 space-y-4 max-h-[65vh] overflow-y-auto custom-scrollbar">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Fecha de Emisión</label>
+                                    <input type="date" value={generateForm.fechaEmision}
+                                        onChange={e => setGenerateForm(p => ({ ...p, fechaEmision: e.target.value }))}
+                                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Vigencia</label>
+                                    <select value={generateForm.vigencia}
+                                        onChange={e => setGenerateForm(p => ({ ...p, vigencia: e.target.value }))}
+                                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+                                        <option value="5_habiles">5 días hábiles</option>
+                                        <option value="30">30 días</option>
+                                        <option value="60">60 días</option>
+                                        <option value="90">90 días</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Forma de Pago</label>
+                                    <select value={generateForm.formaPago}
+                                        onChange={e => setGenerateForm(p => ({ ...p, formaPago: e.target.value }))}
+                                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+                                        <option value="transferencia">Transferencia</option>
+                                        <option value="cheque">Cheque</option>
+                                        <option value="efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Condiciones de Crédito</label>
+                                    <select value={generateForm.condicionesCredito}
+                                        onChange={e => setGenerateForm(p => ({ ...p, condicionesCredito: e.target.value }))}
+                                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+                                        <option value="sin_credito">Sin crédito</option>
+                                        <option value="30">30 días</option>
+                                        <option value="60">60 días</option>
+                                        <option value="90">90 días</option>
+                                        <option value="120">120 días</option>
+                                        <option value="180">180 días</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-colors ${generateForm.incluyeIVA ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-800 border-white/10'}`}
+                                onClick={() => setGenerateForm(p => ({ ...p, incluyeIVA: !p.incluyeIVA }))}>
+                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${generateForm.incluyeIVA ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/20'}`}>
+                                    {generateForm.incluyeIVA && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                </div>
+                                <span className={`text-sm font-medium ${generateForm.incluyeIVA ? 'text-emerald-400' : 'text-slate-400'}`}>Incluye IVA (16%)</span>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Lugar de Entrega / Servicio</label>
+                                <input type="text" value={generateForm.lugarEntrega}
+                                    onChange={e => setGenerateForm(p => ({ ...p, lugarEntrega: e.target.value }))}
+                                    placeholder="Ej: Oficinas del cliente, Planta Guadalajara..."
+                                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Observaciones</label>
+                                <textarea value={generateForm.observaciones}
+                                    onChange={e => setGenerateForm(p => ({ ...p, observaciones: e.target.value }))}
+                                    placeholder="Notas adicionales para el documento..."
+                                    rows={2}
+                                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm" />
+                            </div>
+                            <div className="border-t border-white/5 pt-4">
+                                <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest mb-3">Firmas del Documento</p>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">
+                                            {showGenerateModal === 'solicitud' ? 'Firmante — Área Comercial' : 'Firmante — Área Ventas'}
+                                        </label>
+                                        <input type="text"
+                                            value={showGenerateModal === 'solicitud' ? generateForm.firmanteComercial : generateForm.firmanteVentas}
+                                            onChange={e => setGenerateForm(p => ({
+                                                ...p,
+                                                ...(showGenerateModal === 'solicitud'
+                                                    ? { firmanteComercial: e.target.value }
+                                                    : { firmanteVentas: e.target.value })
+                                            }))}
+                                            placeholder="Nombre completo del firmante"
+                                            className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm" />
+                                    </div>
+                                    {showGenerateModal === 'emision' && (
+                                        <div>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Responsable Comercial Emisor (Autoriza)</label>
+                                            <input type="text" value={generateForm.firmanteComercial}
+                                                onChange={e => setGenerateForm(p => ({ ...p, firmanteComercial: e.target.value }))}
+                                                placeholder="Nombre del responsable comercial que autoriza"
+                                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-5 border-t border-white/5 flex gap-3">
+                            <button onClick={() => setShowGenerateModal(null)}
+                                className="flex-1 px-4 py-2.5 font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">
+                                Cancelar
+                            </button>
+                            <button onClick={handleGenerateIA} disabled={generating}
+                                className="flex-1 px-4 py-2.5 font-bold rounded-xl bg-violet-600 text-white hover:bg-violet-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-violet-500/20">
+                                {generating ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Generando...</>
+                                ) : (
+                                    <><Sparkles className="w-4 h-4" /> Generar PDF con IA</>
+                                )}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
