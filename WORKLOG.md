@@ -15,9 +15,9 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 
 ### Última sesión
 
-- **Fecha**: 2026-03-25
-- **Agente**: Claude Code (directo + agentes especializados)
-- **Resumen**: Módulo completo de Órdenes de Compra + mejoras de Materialidad + parser CFDI 4.0 extendido con trazabilidad fiscal completa.
+- **Fecha**: 2026-04-09
+- **Agente**: Claude Code (directo + n8n-builder + agentes especializados)
+- **Resumen**: Generación de cotizaciones con IA + módulo OC + mejoras Materialidad + parser CFDI 4.0.
 - **Cambios realizados**:
 
   **Módulo OC (Órdenes de Compra):**
@@ -69,6 +69,19 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 - **Migraciones aplicadas en Supabase**: ✅ Todas aplicadas y verificadas
 - **TypeScript**: ✅ Sin errores
 - **Estado**: Listo para commit y deploy
+
+  **Generación de Cotizaciones con IA:**
+  - Botón "Generar con IA" en secciones Solicitud y Emisión de QuotationRequests
+  - 2 workflows n8n independientes: solicitud (Hr3V5fGlWzB8DZOC) y emisión (nzPdvXH1r8QW836g)
+  - Agente OpenAI gpt-4o genera texto profesional con branding corporativo
+  - Solicitud: branding cliente, sin precios, firmante comercial
+  - Emisión: branding emisora, con precios, escanea solicitud previa como contexto
+  - Archivos guardados como HTML con botones Ver/Word/Eliminar
+  - Conversión HTML→Word al vuelo sin servidor
+  - Notificaciones no-bloqueantes (fix error insertBefore)
+  - Identidad visual habilitada para clientes + upload de logo funcional
+  - Persistencia de org seleccionada en BD (fix default org)
+  - Documentación: `docs/sistema/16-GENERACION-COTIZACIONES-IA.md`
 
 - **Pendientes / Próximas mejoras sugeridas**:
   - Mostrar `client_postal_code` y `cfdi_uuid` en el modal de detalle de FileImport
