@@ -607,7 +607,8 @@ export function App() {
       .from('profiles')
       .update({ default_org_id: selectedOrg.id })
       .eq('id', userId)
-      .then(({ error }) => {
+      .then((res: any) => {
+        const error = res?.error;
         if (error) console.warn('No se pudo persistir default_org_id:', error.message);
       });
   }, [selectedOrg?.id]);
