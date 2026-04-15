@@ -20,17 +20,20 @@ const AVAILABLE_SCREENS = [
 
     // Nivel Medio (Manejo de Dinero/Fiscal)
     { id: 'facturas', label: 'Facturación CFDI', category: 'Gestión Financiera (Sensibilidad Media)' },
+    { id: 'pagos', label: 'Pagos y Cobranza', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'bancos', label: 'Cuentas Bancarias', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'materialidad', label: 'Materialidad Fiscal', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'catalogos-sat', label: 'Catálogos SAT', category: 'Gestión Financiera (Sensibilidad Media)' },
     { id: 'expediente_materialidad', label: 'Expediente de Materialidad', category: 'Gestión Financiera (Sensibilidad Media)' },
 
     // Nivel Bajo (Comercialización/Ventas)
-    { id: 'cotizaciones', label: 'Solicitudes Cotización', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'cotizaciones', label: 'Cotizaciones (Solicitud/Emisión)', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'proformas', label: 'Proformas Maestras', category: 'Gestión Comercial (Sensibilidad Baja)' },
-    { id: 'ordenes_compra', label: 'Órdenes de Compra', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'ordenes_compra', label: 'Importación de Archivos', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'ordenes_compra_req', label: 'Órdenes de Compra', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'contratos', label: 'Contratos', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'evidencia', label: 'Evidencia Fotográfica', category: 'Gestión Comercial (Sensibilidad Baja)' },
+    { id: 'estimaciones', label: 'Estimaciones de Obra', category: 'Gestión Comercial (Sensibilidad Baja)' },
     { id: 'reportes', label: 'Centro de Reportes', category: 'Gestión Comercial (Sensibilidad Baja)' },
 ];
 

@@ -502,30 +502,30 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                         <div className="grid grid-cols-1 gap-6">
                             {/* Locked Fields Section */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-50/50 rounded-2xl border border-slate-100 shadow-sm mb-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-800/50 rounded-2xl border border-white/5 mb-2">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nombre Completo</label>
                                     <div className="relative group">
                                         <input
                                             type="text"
                                             value={currentUser?.full_name || ''}
                                             disabled
-                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed shadow-sm transition-all"
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed"
                                         />
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black text-slate-300">SISTEMA</div>
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] bg-slate-700 px-2 py-0.5 rounded font-black text-slate-400">SISTEMA</div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">E-mail Corporativo</label>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">E-mail Corporativo</label>
                                     <div className="relative group">
                                         <input
                                             type="email"
                                             value={currentUser?.email || ''}
                                             disabled
-                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed shadow-sm transition-all"
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 cursor-not-allowed"
                                         />
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black text-slate-300">SSO</div>
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] bg-slate-700 px-2 py-0.5 rounded font-black text-slate-400">SSO</div>
                                     </div>
                                 </div>
                             </div>
@@ -534,9 +534,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-black text-slate-700 uppercase tracking-widest ml-1">Teléfono / WhatsApp</label>
+                                        <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Teléfono / WhatsApp</label>
                                         <div className="relative">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                                                 <Smartphone size={16} />
                                             </div>
                                             <input
@@ -544,23 +544,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                                 value={profileData.phone_whatsapp}
                                                 onChange={(e) => setProfileData(prev => ({ ...prev, phone_whatsapp: e.target.value }))}
                                                 placeholder="+52 000 000 0000"
-                                                className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-slate-900 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all shadow-sm placeholder:text-slate-300"
+                                                className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all placeholder:text-slate-600"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-black text-slate-700 uppercase tracking-widest ml-1">Telegram (Vía Bot)</label>
+                                        <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Telegram (Vía Bot)</label>
                                         <div className="relative">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                                                 <Send size={16} />
                                             </div>
                                             <input
                                                 type="text"
                                                 value={profileData.telegram_chat_id}
                                                 onChange={(e) => setProfileData(prev => ({ ...prev, telegram_chat_id: e.target.value }))}
-                                                placeholder="Telegram ID Numerico"
-                                                className="w-full bg-white border-2 border-emerald-100 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm placeholder:text-slate-200"
+                                                placeholder="ID de chat para notificaciones"
+                                                className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder:text-slate-600"
                                             />
                                         </div>
                                     </div>
@@ -569,7 +569,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                 <div className="flex justify-between items-center gap-4">
                                     <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 ml-1">
                                         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                        Para Telegram: Envía <code className="bg-emerald-50 text-emerald-600 px-1 py-0.5 rounded">/id</code> al bot institucional
+                                        Para Telegram: Envía <code className="bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded">/id</code> al bot institucional
                                     </p>
 
                                     <button
@@ -597,9 +597,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                         {['EMAIL', 'TELEGRAM', 'WHATSAPP'].map(channel => {
                                             const isSelected = currentUser?.notification_prefered_channels?.includes(channel);
                                             const colors = {
-                                                'EMAIL': 'peer-checked:bg-cyan-500 peer-checked:border-cyan-500 hover:border-cyan-200',
-                                                'TELEGRAM': 'peer-checked:bg-emerald-500 peer-checked:border-emerald-500 hover:border-emerald-200',
-                                                'WHATSAPP': 'peer-checked:bg-green-500 peer-checked:border-green-500 hover:border-green-200'
+                                                'EMAIL': 'peer-checked:bg-cyan-600 peer-checked:border-cyan-600 hover:border-cyan-500/50',
+                                                'TELEGRAM': 'peer-checked:bg-emerald-600 peer-checked:border-emerald-600 hover:border-emerald-500/50',
+                                                'WHATSAPP': 'peer-checked:bg-green-600 peer-checked:border-green-600 hover:border-green-500/50'
                                             } as any;
 
                                             return (
@@ -618,13 +618,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                                             else window.location.reload();
                                                         }}
                                                     />
-                                                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 peer-checked:text-white ${colors[channel]}`}>
+                                                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-full border border-white/10 bg-slate-800 transition-all duration-300 peer-checked:text-white ${colors[channel]}`}>
                                                         {isSelected ? (
                                                             <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
                                                                 <Check size={10} strokeWidth={4} />
                                                             </div>
                                                         ) : (
-                                                            <div className="w-4 h-4 rounded-full bg-slate-50 border border-slate-200 group-hover:bg-slate-100 transition-colors"></div>
+                                                            <div className="w-4 h-4 rounded-full bg-slate-700 border border-slate-600 group-hover:bg-slate-600 transition-colors"></div>
                                                         )}
                                                         <span className="text-xs font-black tracking-tight">{channel}</span>
                                                     </div>
