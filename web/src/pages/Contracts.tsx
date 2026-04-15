@@ -38,6 +38,11 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
     const [selectedContract, setSelectedContract] = useState<any>(null);
     const [uploading, setUploading] = useState(false);
 
+    // Proformas vinculadas al contrato
+    const [linkedQuotations, setLinkedQuotations] = useState<any[]>([]);
+    const [availableQuotations, setAvailableQuotations] = useState<any[]>([]);
+    const [showLinkModal, setShowLinkModal] = useState(false);
+
     // File inputs for each stage
     const [files, setFiles] = useState<{
         requerido: File | null;
@@ -121,6 +126,74 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Cargar proformas vinculadas a un contrato
+    const loadLinkedQuotations = async (contractId: string) => {
+        const { data } = await supabase
+            .from('contract_quotations')
+            .select('*, quotation:quotations(id, proforma_number, description, amount_total, client_name, created_at, organizations(rfc))')
+            .eq('contract_id', contractId);
+        setLinkedQuotations(data || []);
+    };
+
+    // Cargar proformas disponibles para vincular
+    const loadAvailableQuotations = async (contractId: string) => {
+        const { data: allQuotations } = await supabase
+            .from('quotations')
+            .select('id, proforma_number, description, amount_total, client_name, created_at, organizations(rfc)')
+            .eq('organization_id', selectedOrg.id)
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        const { data: alreadyLinked } = await supabase
+            .from('contract_quotations')
+            .select('quotation_id')
+            .eq('contract_id', contractId);
+
+        const linkedIds = new Set((alreadyLinked || []).map((l: any) => l.quotation_id));
+        setAvailableQuotations((allQuotations || []).filter((q: any) => !linkedIds.has(q.id)));
+    };
+
+    const linkQuotation = async (contractId: string, quotationId: string) => {
+        try {
+            const { error } = await supabase.from('contract_quotations').insert({ contract_id: contractId, quotation_id: quotationId });
+            if (error) throw error;
+            // Sincronizar contract_status en la proforma vinculada
+            const contract = contracts.find(c => c.id === contractId);
+            if (contract?.lifecycle_status) {
+                const statusMap: any = { requerido: 'solicitado', autorizado: 'firmado', rubricado: 'firmado', legalizado: 'completado' };
+                await supabase.from('quotations').update({
+                    is_contract_required: true,
+                    contract_status: statusMap[contract.lifecycle_status] || 'solicitado'
+                }).eq('id', quotationId);
+            }
+            await loadLinkedQuotations(contractId);
+            await loadAvailableQuotations(contractId);
+            fetchContracts();
+        } catch (err: any) {
+            alert('Error vinculando: ' + err.message);
+        }
+    };
+
+    const unlinkQuotation = async (contractId: string, quotationId: string, linkId: string) => {
+        if (!confirm('¿Desvincular esta proforma del contrato?')) return;
+        try {
+            await supabase.from('contract_quotations').delete().eq('id', linkId);
+            await supabase.from('quotations').update({ contract_status: null }).eq('id', quotationId);
+            await loadLinkedQuotations(contractId);
+            fetchContracts();
+        } catch (err: any) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    // Folio helper
+    const buildFolio = (q: any) => {
+        if (!q) return '';
+        const rfc = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+        const d = q.created_at ? new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '') : '';
+        return `${rfc}-${d}-${(q.proforma_number || 1).toString().padStart(2, '0')}`;
     };
 
     useEffect(() => {
@@ -340,6 +413,11 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         setRequeridoAuthorized(contract.requerido_authorized || false);
         setFiles({ requerido: null, rubricado: null, legalizado: null });
         setShowUploadModal(true);
+        // Cargar proformas vinculadas si es un contrato real (no pending)
+        if (!contract.isPending && contract.id) {
+            loadLinkedQuotations(contract.id);
+            loadAvailableQuotations(contract.id);
+        }
     };
 
     const resetModalState = () => {
@@ -781,6 +859,95 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                     />
                                 </div>
                             </div>
+
+                            {/* PROFORMAS VINCULADAS */}
+                            {!selectedContract?.isPending && (
+                                <div className="bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <FileText className="w-4 h-4 text-amber-500" />
+                                            Proformas Vinculadas ({linkedQuotations.length})
+                                        </h4>
+                                        <button
+                                            onClick={() => { loadAvailableQuotations(selectedContract.id); setShowLinkModal(true); }}
+                                            className="px-2 py-1 text-[10px] font-bold uppercase bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 rounded-lg flex items-center gap-1"
+                                        >
+                                            <FileEdit size={10} /> Vincular
+                                        </button>
+                                    </div>
+
+                                    {/* Proforma principal */}
+                                    {selectedContract?.quotations?.id && (
+                                        <div className="flex items-center justify-between py-2 px-3 bg-cyan-500/5 border border-cyan-500/20 rounded-lg mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] font-bold text-cyan-400 bg-cyan-500/20 px-1.5 py-0.5 rounded">PRINCIPAL</span>
+                                                <a href={`/proformas/${selectedContract.quotations.id}`} target="_blank" rel="noreferrer"
+                                                    className="text-xs font-mono text-cyan-400 hover:underline">
+                                                    {buildFolio(selectedContract.quotations)}
+                                                </a>
+                                                <span className="text-xs text-slate-400 truncate max-w-[150px]">{selectedContract.quotations.client_name || ''}</span>
+                                            </div>
+                                            <span className="text-xs font-bold text-white">
+                                                ${new Intl.NumberFormat('es-MX').format(selectedContract.quotations.amount_total || 0)}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Proformas vinculadas */}
+                                    {linkedQuotations.map((lq: any) => (
+                                        <div key={lq.id} className="flex items-center justify-between py-2 px-3 bg-slate-700/30 rounded-lg mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <a href={`/proformas/${lq.quotation?.id}`} target="_blank" rel="noreferrer"
+                                                    className="text-xs font-mono text-amber-400 hover:underline">
+                                                    {buildFolio(lq.quotation)}
+                                                </a>
+                                                <span className="text-xs text-slate-400 truncate max-w-[150px]">{lq.quotation?.client_name || ''}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-white">
+                                                    ${new Intl.NumberFormat('es-MX').format(lq.quotation?.amount_total || 0)}
+                                                </span>
+                                                <button onClick={() => unlinkQuotation(selectedContract.id, lq.quotation?.id, lq.id)}
+                                                    className="p-1 text-slate-500 hover:text-red-400 transition-colors" title="Desvincular">
+                                                    <XCircle size={12} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {linkedQuotations.length === 0 && (
+                                        <p className="text-xs text-slate-500 text-center py-2">Sin proformas adicionales vinculadas</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* MODAL VINCULAR PROFORMA */}
+                            {showLinkModal && (
+                                <div className="bg-slate-800 border border-amber-500/20 rounded-xl p-4 mt-2">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="text-sm font-bold text-amber-400">Vincular Proforma</h4>
+                                        <button onClick={() => setShowLinkModal(false)} className="text-slate-400 hover:text-white"><XCircle size={16} /></button>
+                                    </div>
+                                    <div className="max-h-[200px] overflow-y-auto space-y-1">
+                                        {availableQuotations.length === 0 && <p className="text-xs text-slate-500 text-center py-2">No hay proformas disponibles</p>}
+                                        {availableQuotations.map((q: any) => (
+                                            <div key={q.id} className="flex items-center justify-between py-2 px-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-mono text-cyan-400">{buildFolio(q)}</span>
+                                                    <span className="text-xs text-slate-400 truncate max-w-[120px]">{q.client_name || q.description || ''}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-white">${new Intl.NumberFormat('es-MX').format(q.amount_total || 0)}</span>
+                                                    <button onClick={() => { linkQuotation(selectedContract.id, q.id); }}
+                                                        className="px-2 py-0.5 text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded hover:bg-amber-500/30">
+                                                        Vincular
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* BOTONES DE ACCION */}
                             <div className="flex gap-3 pt-4 border-t border-white/5">

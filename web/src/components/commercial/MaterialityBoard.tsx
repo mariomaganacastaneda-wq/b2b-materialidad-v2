@@ -121,6 +121,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                     *,
                     organizations(name, rfc),
                     contracts(id, file_url, lifecycle_status, requerido_url, requerido_authorized, rubricado_url, legalizado_url),
+                    contract_quotations(contract:contracts(id, lifecycle_status)),
                     invoices(id, status, evidence(id, type, file_url)),
                     purchase_order_requests(id, status),
                     quotation_payments(amount),
@@ -179,11 +180,15 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         const finalInvoiceStatus = realInvoiceStatus || q.invoice_status || (q.request_direct_invoice ? 'SOLICITUD' : null);
         const hasInvoice = !!finalInvoiceStatus;
 
-        // --- CONTRATO: Usar lifecycle_status del join ---
+        // --- CONTRATO: Verificar directo + vinculado ---
         const contractLifecycle = contractsList.length > 0 ? (contractsList[0].lifecycle_status || (contractsList[0].file_url ? 'requerido' : null)) : null;
-        // Activo solo si el toggle is_contract_required está ON
-        const finalContractStatus = q.is_contract_required
-            ? (contractLifecycle || q.contract_status || 'requerido')
+        // Verificar contratos vinculados via contract_quotations
+        const linkedContracts = Array.isArray(q.contract_quotations) ? q.contract_quotations : [];
+        const linkedContractLifecycle = linkedContracts.length > 0 ? (linkedContracts[0]?.contract?.lifecycle_status || null) : null;
+        const bestContractStatus = contractLifecycle || linkedContractLifecycle;
+        // Activo si toggle ON o si tiene contrato vinculado
+        const finalContractStatus = (q.is_contract_required || linkedContracts.length > 0)
+            ? (bestContractStatus || q.contract_status || 'requerido')
             : null;
         const hasContract = !!finalContractStatus;
 
