@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Wallet,
   ShoppingCart,
+  HardHat,
   UploadCloud
 } from 'lucide-react';
 import { supabase, hasSupabaseConfig, updateSupabaseAuth, setClerkTokenProvider } from './lib/supabase';
@@ -46,6 +47,7 @@ import Invoices from './pages/Invoices';
 import { SecurityCenter } from './pages/SecurityCenter';
 import FileImport from './pages/FileImport';
 import PurchaseOrderRequests from './pages/PurchaseOrderRequests';
+import WorkEstimations from './pages/WorkEstimations';
 import Pagos from './pages/Pagos';
 
 // Branding and Diagnostics
@@ -636,6 +638,7 @@ export function App() {
     { label: 'Contratos', path: '/contratos', icon: FileSignature, screenId: 'contratos', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
     { label: 'Importación Archivos', path: '/importacion', icon: UploadCloud, screenId: 'ordenes_compra', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
     { label: 'Órdenes de Compra', path: '/ordenes-compra', icon: ShoppingCart, screenId: 'ordenes_compra_req', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION', 'CXC'] },
+    { label: 'Estimaciones', path: '/estimaciones', icon: HardHat, screenId: 'estimaciones', roles: ['ADMIN', 'VENDEDOR'] },
     { label: 'Facturación', path: '/facturas', icon: FileCheck, screenId: 'facturas', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE', 'CLIENTE'] },
     { label: 'Evidencia', path: '/evidencia', icon: ImageIcon, screenId: 'evidencia', roles: ['ADMIN', 'VENDEDOR', 'FACTURACION'] },
     { label: 'Pagos', path: '/pagos', icon: Wallet, screenId: 'pagos', roles: ['ADMIN', 'FACTURACION', 'CXC', 'CONTABLE'] },
@@ -961,6 +964,8 @@ export function App() {
                 <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
                 <Route path="/importacion" element={<FileImport currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrderRequests selectedOrg={selectedOrg} />} />
+                <Route path="/estimaciones" element={<WorkEstimations selectedOrg={selectedOrg} />} />
+                <Route path="/estimaciones/:budgetId" element={<WorkEstimations selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/facturas" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />

@@ -1059,7 +1059,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
         req_quotation: false,
         req_evidence: false,
         req_purchase_order: false,
+        req_estimaciones: false,
         purchase_order_status: null as string | null,
+        estimacion_status: null as string | null,
         invoice_status: null as string | null,
         contract_status: null as string | null,
         evidence_status: null as string | null,
@@ -2506,7 +2508,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                             </div>
                             <div className="p-8 space-y-8">
                                 {/* Toggles Column */}
-                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-12 gap-y-6">
+                                <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-10 gap-y-6">
                                     <ConfigToggle
                                         label="Cotizacion"
                                         sub="Requiere carga de PDF firmado"
@@ -2563,6 +2565,14 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         statusLabel={formData.request_direct_invoice ? (formData.invoice_status || 'SOLICITUD') : undefined}
                                         statusColorClass={formData.request_direct_invoice ? getInvoiceStatusColor(formData.invoice_status || 'SOLICITUD') : undefined}
                                         onChange={handleInvoiceToggle}
+                                    />
+                                    <ConfigToggle
+                                        label="Estimaciones"
+                                        sub="Avance de obra civil"
+                                        checked={formData.req_estimaciones}
+                                        disabled={formData.estimacion_status === 'completado'}
+                                        statusLabel={formData.req_estimaciones ? (formData.estimacion_status || 'borrador') : undefined}
+                                        onChange={(val) => setFormData({ ...formData, req_estimaciones: val, estimacion_status: val ? (formData.estimacion_status || 'borrador') : null })}
                                     />
                                 </div>
 
