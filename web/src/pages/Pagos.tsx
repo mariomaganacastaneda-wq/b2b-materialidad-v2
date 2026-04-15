@@ -12,7 +12,10 @@ import {
     Clock,
     XCircle,
     SearchX,
-    Trash2
+    Trash2,
+    Upload,
+    FileText,
+    Code
 } from 'lucide-react';
 import { TextGlitch } from '../components/ui/TextGlitch';
 import paymentFormsData from '../lib/payment_forms.json';
@@ -185,6 +188,32 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
             .from('payment-evidence')
             .createSignedUrl(evidenceUrl, 300);
         if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+    };
+
+    const handleUploadPaymentDoc = async (paymentId: string, field: 'evidence_url' | 'completo_pago_url' | 'xml_pago_url', file: File) => {
+        try {
+            const ext = file.name.split('.').pop();
+            const prefix = field === 'evidence_url' ? 'recibo' : field === 'completo_pago_url' ? 'complemento' : 'pago_xml';
+            const fileName = `${paymentId}/${Date.now()}_${prefix}.${ext}`;
+            const { error: upErr } = await supabase.storage.from('payment-evidence').upload(fileName, file, { upsert: true });
+            if (upErr) throw upErr;
+            const { error: dbErr } = await supabase.from('quotation_payments').update({ [field]: fileName }).eq('id', paymentId);
+            if (dbErr) throw dbErr;
+            fetchPayments();
+        } catch (err: any) {
+            alert('Error subiendo archivo: ' + err.message);
+        }
+    };
+
+    const handleDeletePaymentDoc = async (paymentId: string, field: 'evidence_url' | 'completo_pago_url' | 'xml_pago_url', filePath: string) => {
+        if (!confirm('¿Eliminar este documento?')) return;
+        try {
+            await supabase.storage.from('payment-evidence').remove([filePath]);
+            await supabase.from('quotation_payments').update({ [field]: null }).eq('id', paymentId);
+            fetchPayments();
+        } catch (err: any) {
+            alert('Error eliminando archivo: ' + err.message);
+        }
     };
 
     const handleDeletePayment = async (paymentId: string) => {
@@ -380,15 +409,61 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
                                         </td>
                                         <td className="p-4 text-center">
                                             <div className="flex items-center justify-center gap-1">
-                                                {p.evidence_url && (
-                                                    <button
-                                                        onClick={() => handleViewEvidence(p.evidence_url)}
-                                                        className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
-                                                        title="Ver comprobante"
-                                                    >
-                                                        <Eye size={16} />
-                                                    </button>
+                                                {/* Recibo */}
+                                                {p.evidence_url ? (
+                                                    <div className="relative group">
+                                                        <button onClick={() => handleViewEvidence(p.evidence_url)}
+                                                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Ver recibo">
+                                                            <Eye size={14} />
+                                                        </button>
+                                                        <button onClick={() => handleDeletePaymentDoc(p.id, 'evidence_url', p.evidence_url)}
+                                                            className="absolute -top-1 -right-1 hidden group-hover:block p-0.5 bg-red-500 text-white rounded-full" title="Eliminar recibo">
+                                                            <XCircle size={10} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer" title="Subir recibo">
+                                                        <Upload size={14} />
+                                                        <input type="file" className="hidden" accept="image/*,.pdf" onChange={e => e.target.files?.[0] && handleUploadPaymentDoc(p.id, 'evidence_url', e.target.files[0])} />
+                                                    </label>
                                                 )}
+                                                {/* Complemento PDF */}
+                                                {p.completo_pago_url ? (
+                                                    <div className="relative group">
+                                                        <button onClick={() => handleViewEvidence(p.completo_pago_url)}
+                                                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Ver complemento de pago">
+                                                            <FileText size={14} />
+                                                        </button>
+                                                        <button onClick={() => handleDeletePaymentDoc(p.id, 'completo_pago_url', p.completo_pago_url)}
+                                                            className="absolute -top-1 -right-1 hidden group-hover:block p-0.5 bg-red-500 text-white rounded-full" title="Eliminar complemento">
+                                                            <XCircle size={10} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer" title="Subir complemento de pago (PDF)">
+                                                        <FileText size={14} />
+                                                        <input type="file" className="hidden" accept=".pdf" onChange={e => e.target.files?.[0] && handleUploadPaymentDoc(p.id, 'completo_pago_url', e.target.files[0])} />
+                                                    </label>
+                                                )}
+                                                {/* XML */}
+                                                {p.xml_pago_url ? (
+                                                    <div className="relative group">
+                                                        <button onClick={() => handleViewEvidence(p.xml_pago_url)}
+                                                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Ver XML del pago">
+                                                            <Code size={14} />
+                                                        </button>
+                                                        <button onClick={() => handleDeletePaymentDoc(p.id, 'xml_pago_url', p.xml_pago_url)}
+                                                            className="absolute -top-1 -right-1 hidden group-hover:block p-0.5 bg-red-500 text-white rounded-full" title="Eliminar XML">
+                                                            <XCircle size={10} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer" title="Subir XML del pago">
+                                                        <Code size={14} />
+                                                        <input type="file" className="hidden" accept=".xml" onChange={e => e.target.files?.[0] && handleUploadPaymentDoc(p.id, 'xml_pago_url', e.target.files[0])} />
+                                                    </label>
+                                                )}
+                                                <div className="w-px h-4 bg-white/10 mx-1"></div>
                                                 {p.quotation_id && (
                                                     <button
                                                         onClick={() => navigate(`/proformas/${p.quotation_id}`)}

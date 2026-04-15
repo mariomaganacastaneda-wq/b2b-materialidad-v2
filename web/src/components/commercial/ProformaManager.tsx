@@ -1166,6 +1166,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
     const [paymentFile, setPaymentFile] = useState<File | null>(null);
+    const [paymentCompletoPDF, setPaymentCompletoPDF] = useState<File | null>(null);
+    const [paymentXML, setPaymentXML] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
 
     const [user, setUser] = useState<any>(null);
@@ -2780,15 +2782,37 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     setIsUploading(true);
                                     let evidence_url = null;
 
+                                    // Subir recibo/comprobante
                                     if (paymentFile) {
                                         const fileExt = paymentFile.name.split('.').pop();
-                                        const fileName = `${id}/${Date.now()}.${fileExt}`;
+                                        const fileName = `${id}/${Date.now()}_recibo.${fileExt}`;
                                         const { error: uploadError } = await supabase.storage
                                             .from('payment-evidence')
                                             .upload(fileName, paymentFile);
-
                                         if (uploadError) throw uploadError;
                                         evidence_url = fileName;
+                                    }
+
+                                    // Subir complemento de pago PDF
+                                    let completo_pago_url: string | null = null;
+                                    if (paymentCompletoPDF) {
+                                        const fileName = `${id}/${Date.now()}_complemento.pdf`;
+                                        const { error: uploadError } = await supabase.storage
+                                            .from('payment-evidence')
+                                            .upload(fileName, paymentCompletoPDF);
+                                        if (uploadError) throw uploadError;
+                                        completo_pago_url = fileName;
+                                    }
+
+                                    // Subir XML del pago
+                                    let xml_pago_url: string | null = null;
+                                    if (paymentXML) {
+                                        const fileName = `${id}/${Date.now()}_pago.xml`;
+                                        const { error: uploadError } = await supabase.storage
+                                            .from('payment-evidence')
+                                            .upload(fileName, paymentXML);
+                                        if (uploadError) throw uploadError;
+                                        xml_pago_url = fileName;
                                     }
 
                                     const paymentData = {
@@ -2801,6 +2825,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                         reference: formDataObj.get('reference'),
                                         notes: formDataObj.get('notes'),
                                         evidence_url: evidence_url,
+                                        completo_pago_url: completo_pago_url,
+                                        xml_pago_url: xml_pago_url,
                                         status: 'VERIFICADO'
                                     };
 
@@ -2808,6 +2834,8 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     if (error) throw error;
                                     setIsPaymentModalOpen(false);
                                     setPaymentFile(null);
+                                    setPaymentCompletoPDF(null);
+                                    setPaymentXML(null);
                                     loadPayments(id!);
                                 } catch (err: any) {
                                     console.error('Error saving payment:', err);
@@ -2886,32 +2914,50 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Comprobante (PDF/Imagen)</label>
+                                {/* 3 documentos de pago */}
+                                <div className="space-y-3">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Documentos del Pago</p>
+
+                                    {/* 1. Recibo / Comprobante */}
                                     <div className="flex items-center gap-2">
                                         <label className="flex-1 cursor-pointer">
-                                            <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-cyan-300 hover:bg-cyan-50/50 transition-all group">
-                                                <Icon name={paymentFile ? 'check_circle' : 'upload_file'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-cyan-500'} />
-                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">
-                                                    {paymentFile ? paymentFile.name : 'Subir Comprobante'}
+                                            <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-cyan-300 transition-all group">
+                                                <Icon name={paymentFile ? 'check_circle' : 'receipt_long'} className={paymentFile ? 'text-emerald-500' : 'text-slate-400 group-hover:text-cyan-500'} />
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter flex-1">
+                                                    {paymentFile ? paymentFile.name : 'Recibo de pago'}
                                                 </span>
-                                                <input
-                                                    type="file"
-                                                    className="hidden"
-                                                    accept="image/*,.pdf"
-                                                    onChange={(e) => setPaymentFile(e.target.files?.[0] || null)}
-                                                />
+                                                <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => setPaymentFile(e.target.files?.[0] || null)} />
                                             </div>
                                         </label>
-                                        {paymentFile && (
-                                            <button
-                                                type="button"
-                                                onClick={() => setPaymentFile(null)}
-                                                className="p-3 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200 transition-all"
-                                            >
-                                                <Icon name="delete" className="text-sm" />
-                                            </button>
-                                        )}
+                                        {paymentFile && <button type="button" onClick={() => setPaymentFile(null)} className="p-2 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200"><Icon name="close" className="text-sm" /></button>}
+                                    </div>
+
+                                    {/* 2. Complemento de Pago PDF */}
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex-1 cursor-pointer">
+                                            <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-amber-300 transition-all group">
+                                                <Icon name={paymentCompletoPDF ? 'check_circle' : 'description'} className={paymentCompletoPDF ? 'text-emerald-500' : 'text-slate-400 group-hover:text-amber-500'} />
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter flex-1">
+                                                    {paymentCompletoPDF ? paymentCompletoPDF.name : 'Complemento de pago (PDF)'}
+                                                </span>
+                                                <input type="file" className="hidden" accept=".pdf" onChange={(e) => setPaymentCompletoPDF(e.target.files?.[0] || null)} />
+                                            </div>
+                                        </label>
+                                        {paymentCompletoPDF && <button type="button" onClick={() => setPaymentCompletoPDF(null)} className="p-2 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200"><Icon name="close" className="text-sm" /></button>}
+                                    </div>
+
+                                    {/* 3. XML del Pago */}
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex-1 cursor-pointer">
+                                            <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl hover:border-violet-300 transition-all group">
+                                                <Icon name={paymentXML ? 'check_circle' : 'code'} className={paymentXML ? 'text-emerald-500' : 'text-slate-400 group-hover:text-violet-500'} />
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter flex-1">
+                                                    {paymentXML ? paymentXML.name : 'XML del pago'}
+                                                </span>
+                                                <input type="file" className="hidden" accept=".xml" onChange={(e) => setPaymentXML(e.target.files?.[0] || null)} />
+                                            </div>
+                                        </label>
+                                        {paymentXML && <button type="button" onClick={() => setPaymentXML(null)} className="p-2 text-slate-300 hover:text-red-500 bg-slate-50 rounded-xl border border-slate-200"><Icon name="close" className="text-sm" /></button>}
                                     </div>
                                 </div>
 

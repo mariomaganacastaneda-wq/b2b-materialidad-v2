@@ -4,7 +4,7 @@ import { GlowCard } from '../components/ui/GlowCard';
 import { TextGlitch } from '../components/ui/TextGlitch';
 import {
     Plus, Search, Eye, Trash2, CheckCircle2, XCircle,
-    Upload, FileText, Loader2, Sparkles
+    Upload, FileText, Loader2, Sparkles, Printer
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -107,7 +107,7 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
         try {
             const { data, error } = await supabase
                 .from('work_budgets')
-                .select('*, work_estimations(amount_total, status), client:organizations!client_org_id(name, rfc)')
+                .select('*, work_estimations(amount_total, status), client:organizations!client_org_id(name, rfc), anticipo_proforma:quotations!anticipo_quotation_id(id, proforma_number, created_at, amount_total, organizations(rfc))')
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
             if (error) throw error;
@@ -231,7 +231,7 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
                     .order('item_number', { ascending: true }),
                 supabase
                     .from('work_estimations')
-                    .select('*')
+                    .select('*, proforma:quotations!quotation_id(id, status, proforma_number, amount_total, created_at, organizations(rfc))')
                     .eq('work_budget_id', budget.id)
                     .order('estimation_number', { ascending: true }),
             ]);
@@ -671,6 +671,524 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
     });
 
     /* ================================================================ */
+    /*  GENERACIÓN DE DOCUMENTOS HTML                                   */
+    /* ================================================================ */
+
+    // Construir folio real de proforma: SSI-150426-04
+    const buildFolio = (proforma: any) => {
+        if (!proforma) return '';
+        const rfcPrefix = proforma.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+        const dateStr = proforma.created_at
+            ? new Date(proforma.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '')
+            : '';
+        const num = (proforma.proforma_number || 1).toString().padStart(2, '0');
+        return `${rfcPrefix}-${dateStr}-${num}`;
+    };
+
+    const fmtN = (n: number) => {
+        const parts = (n || 0).toFixed(2).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return '$' + parts.join('.');
+    };
+
+    const fmtDate = (d: string) => {
+        if (!d) return '';
+        const p = d.split('-');
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d;
+    };
+
+    const generateBudgetHTML = (budget: any, items: any[], org: any) => {
+        const pc = org?.primary_color || '#1a3c5e';
+        const ac = org?.theme_config?.accent_color || '#f59e0b';
+        const sc = org?.theme_config?.secondary_color || '#64748b';
+        const orgName = org?.brand_name || org?.name || '';
+        const orgRfc = org?.rfc || '';
+        const orgAddress = org?.tax_domicile || '';
+        const orgPhone = org?.office_phone || org?.mobile_phone || '';
+        const orgEmail = org?.contact_email || '';
+        const logoImg = org?.logo_url
+            ? `<img src="${org.logo_url}" style="max-height:80px; max-width:120px; object-fit:contain;" />`
+            : `<div style="font-size:24px; font-weight:bold; color:${pc}">${(orgName || '').substring(0,3)}</div>`;
+        const emisorBlock = `<div style="display:flex;align-items:center;gap:12px">
+            <div style="flex-shrink:0">${logoImg}</div>
+            <div>
+                <div style="font-size:14px;font-weight:bold;color:${pc}">${orgName}</div>
+                <div style="font-size:10px;color:#555">RFC: ${orgRfc}</div>
+                ${orgAddress ? `<div style="font-size:9px;color:#777;max-width:220px">${orgAddress}</div>` : ''}
+                ${orgPhone ? `<div style="font-size:9px;color:#777">Tel: ${orgPhone}</div>` : ''}
+                ${orgEmail ? `<div style="font-size:9px;color:#777">${orgEmail}</div>` : ''}
+            </div>
+        </div>`;
+        const clientName = budget.client?.name || '';
+        const clientRfc = budget.client?.rfc || '';
+        const subtotal = items.reduce((a: number, i: any) => a + (parseFloat(i.amount) || 0), 0);
+        const iva = subtotal * 0.16;
+        const total = subtotal + iva;
+
+        return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Economica - ${budget.budget_number}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:12px;color:#333}
+.c{max-width:900px;margin:0 auto;padding:25px}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:3px solid ${pc};margin-bottom:20px}
+.hdr h1{color:${pc};font-size:18px}
+.hdr .folio{color:${ac};font-size:13px;font-weight:bold;margin-top:3px}
+.hdr .fecha{color:#666;font-size:11px;margin-top:2px}
+.info{display:flex;gap:20px;margin-bottom:15px}
+.info .box{flex:1;background:#f5f7fa;border-radius:5px;padding:12px;border-left:3px solid ${sc}}
+.info .box h3{color:${pc};font-size:10px;font-weight:bold;text-transform:uppercase;margin-bottom:5px}
+.info .box p{font-size:11px;line-height:1.5}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th{background:${pc};color:#fff;padding:8px 6px;text-align:center;border:1px solid #ccc;font-size:10px}
+td{padding:7px 6px;border:1px solid #ddd;font-size:11px}
+tr:nth-child(even){background:#f9f9f9}
+.r{text-align:right}.ctr{text-align:center}
+.totals{width:250px;margin-left:auto}
+.totals td{padding:6px 10px;font-size:12px}
+.totals .grand{background:${pc};color:#fff;font-weight:bold;font-size:13px}
+.cond{margin:15px 0;padding:12px;background:#f0f7ff;border-left:3px solid ${sc};border-radius:4px;font-size:11px;line-height:1.6}
+.firmas{display:flex;gap:30px;margin-top:35px;padding-top:15px;border-top:1px solid #ddd}
+.firma{flex:1;text-align:center}.firma .ln{border-top:1px solid #333;margin:35px 0 6px}.firma p{font-size:11px;color:#555}
+.footer{margin-top:20px;padding-top:10px;border-top:2px solid ${pc};text-align:center;font-size:10px;color:#888}
+@media print{.c{padding:10px}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}}
+</style></head><body><div class="c">
+<div class="hdr">
+  <div>${emisorBlock}</div>
+  <div style="text-align:right">
+    <div style="display:inline-block;background:${ac};color:#fff;font-size:9px;font-weight:bold;padding:2px 8px;border-radius:3px;margin-bottom:8px">PROPUESTA ECONOMICA</div>
+    <h1>PROPUESTA ECONOMICA</h1>
+    <div class="folio">No. ${budget.budget_number}</div>
+    <div class="fecha">Fecha: ${fmtDate(budget.budget_date || budget.created_at?.split('T')[0])}</div>
+  </div>
+</div>
+<div class="info">
+  <div class="box"><h3>Cliente</h3><p><strong>${clientName}</strong><br>RFC: ${clientRfc}</p></div>
+</div>
+${budget.description ? `<p style="margin-bottom:12px;font-size:12px"><strong>Descripcion:</strong> ${budget.description}</p>` : ''}
+<table>
+  <thead><tr><th style="width:30px">#</th><th>Concepto</th><th style="width:50px">Und</th><th style="width:70px">Cantidad</th><th style="width:90px">P.U.</th><th style="width:100px">Importe</th></tr></thead>
+  <tbody>
+    ${items.map((it: any, i: number) => `<tr><td class="ctr">${it.item_number}</td><td>${it.description}</td><td class="ctr">${it.unit}</td><td class="r">${parseFloat(it.quantity).toLocaleString('es-MX')}</td><td class="r">${fmtN(it.unit_price)}</td><td class="r"><strong>${fmtN(it.amount)}</strong></td></tr>`).join('')}
+  </tbody>
+</table>
+<table class="totals">
+  <tr><td class="r" style="color:#555">Subtotal:</td><td class="r"><strong>${fmtN(subtotal)}</strong></td></tr>
+  <tr><td class="r" style="color:#555">I.V.A. 16%:</td><td class="r">${fmtN(iva)}</td></tr>
+  <tr class="grand"><td class="r">TOTAL:</td><td class="r">${fmtN(total)}</td></tr>
+  ${parseFloat(budget.anticipo_amount) > 0 ? `<tr><td class="r" style="color:${ac}">Anticipo:</td><td class="r" style="color:${ac};font-weight:bold">${fmtN(budget.anticipo_amount)}</td></tr>` : ''}
+</table>
+<div class="cond">
+  <strong>Condiciones:</strong><br>
+  ${parseFloat(budget.anticipo_amount) > 0 ? `• Anticipo del ${((parseFloat(budget.anticipo_amount) / subtotal) * 100).toFixed(1)}% al inicio de obra<br>` : ''}
+  • Pagos mediante estimaciones de avance de obra<br>
+  • Precios incluyen materiales, mano de obra, herramienta y equipo
+</div>
+<div class="firmas">
+  <div class="firma"><div class="ln"></div><p><strong>Elaboro</strong></p><p>Area Tecnica</p></div>
+  <div class="firma"><div class="ln"></div><p><strong>Autorizo</strong></p><p>Direccion</p></div>
+</div>
+<div class="footer"><p>${org?.theme_config?.slogan || org?.name || ''} | ${org?.rfc || ''}</p></div>
+</div></body></html>`;
+    };
+
+    const generateEstimationHTML = (budget: any, estimation: any, estItemsData: any[], allBudgetItems: any[], org: any) => {
+        const pc = org?.primary_color || '#1a3c5e';
+        const ac = org?.theme_config?.accent_color || '#f59e0b';
+        const sc = org?.theme_config?.secondary_color || '#64748b';
+        const orgName = org?.brand_name || org?.name || '';
+        const orgRfc = org?.rfc || '';
+        const orgAddress = org?.tax_domicile || '';
+        const orgPhone = org?.office_phone || org?.mobile_phone || '';
+        const orgEmail = org?.contact_email || '';
+        const logoImg2 = org?.logo_url
+            ? `<img src="${org.logo_url}" style="max-height:80px; max-width:120px; object-fit:contain;" />`
+            : `<div style="font-size:24px; font-weight:bold; color:${pc}">${(orgName || '').substring(0,3)}</div>`;
+        const emisorBlock = `<div style="display:flex;align-items:center;gap:12px">
+            <div style="flex-shrink:0">${logoImg2}</div>
+            <div>
+                <div style="font-size:12px;font-weight:bold;color:${pc}">${orgName}</div>
+                <div style="font-size:9px;color:#555">RFC: ${orgRfc}</div>
+                ${orgAddress ? `<div style="font-size:8px;color:#777;max-width:200px">${orgAddress}</div>` : ''}
+                ${orgPhone ? `<div style="font-size:8px;color:#777">Tel: ${orgPhone}</div>` : ''}
+                ${orgEmail ? `<div style="font-size:8px;color:#777">${orgEmail}</div>` : ''}
+            </div>
+        </div>`;
+        const clientName = budget.client?.name || '';
+        const budgetSubtotal = parseFloat(budget.amount_subtotal) || 0;
+        const anticipoMonto = parseFloat(budget.anticipo_amount) || 0;
+        const pctAmort = budgetSubtotal > 0 ? anticipoMonto / budgetSubtotal : 0;
+        const sumaEst = parseFloat(estimation.amount_subtotal) || 0;
+        const amortizacion = sumaEst * pctAmort;
+        const amortPrevio = parseFloat(budget.anticipo_amortizado) || 0;
+        const amortReal = Math.min(amortizacion, Math.max(0, anticipoMonto - amortPrevio + amortizacion));
+        const subtotalNeto = sumaEst - amortReal;
+        const ivaNeto = subtotalNeto * 0.16;
+        const netoAPagar = subtotalNeto + ivaNeto;
+
+        // Merge estimation items with budget items
+        const rows = allBudgetItems.map((bi: any) => {
+            const ei = estItemsData.find((e: any) => e.work_budget_item_id === bi.id);
+            return { ...bi, vol_prev: ei?.volume_previous || 0, vol_this: ei?.volume_this_estimation || 0, vol_acc: ei?.volume_accumulated || 0, vol_rem: ei?.volume_remaining || 0, amt_this: ei?.amount_this_estimation || 0, amt_acc: ei?.amount_accumulated || 0 };
+        });
+
+        return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimacion ${estimation.estimation_number} - ${budget.budget_number}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:11px;color:#333}
+.c{max-width:1000px;margin:0 auto;padding:20px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid ${pc};margin-bottom:15px}
+.hdr h1{color:${pc};font-size:16px}
+.hdr .folio{color:${ac};font-size:12px;font-weight:bold;margin-top:2px}
+.hdr .fecha{color:#666;font-size:10px;margin-top:2px}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:11px}
+.ig .row{display:flex;justify-content:space-between;padding:4px 8px;background:#f5f7fa;border-radius:3px}
+.ig .row span:first-child{color:#555}.ig .row span:last-child{font-weight:bold}
+.ig .row.hl{background:${pc}10;border-left:3px solid ${pc}}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th{background:${pc};color:#fff;padding:6px 4px;text-align:center;border:1px solid #ccc;font-size:9px;white-space:nowrap}
+td{padding:5px 4px;border:1px solid #ddd;font-size:10px}
+tr:nth-child(even){background:#f9f9f9}
+.r{text-align:right}.ctr{text-align:center}
+.resumen{width:320px;margin-left:auto;margin-top:8px}
+.resumen td{padding:5px 8px;font-size:11px}
+.resumen .grand{background:${pc};color:#fff;font-weight:bold;font-size:12px}
+.resumen .amort{color:${ac};font-weight:bold}
+.firmas{display:flex;gap:25px;margin-top:25px;padding-top:12px;border-top:1px solid #ddd}
+.firma{flex:1;text-align:center}.firma .ln{border-top:1px solid #333;margin:30px 0 5px}.firma p{font-size:10px;color:#555}
+.footer{margin-top:15px;padding-top:8px;border-top:2px solid ${pc};text-align:center;font-size:9px;color:#888}
+@media print{.c{padding:8px}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}th{font-size:8px}td{font-size:9px}}
+</style></head><body><div class="c">
+<div class="hdr">
+  <div>${emisorBlock}</div>
+  <div style="text-align:right">
+    <div style="display:inline-block;background:${ac};color:#fff;font-size:9px;font-weight:bold;padding:2px 8px;border-radius:3px;margin-bottom:5px">ESTIMACION DE OBRA</div>
+    <h1>ESTIMACION No. ${estimation.estimation_number}</h1>
+    <div class="folio">Presupuesto: ${budget.budget_number}</div>
+    <div class="fecha">Periodo: ${fmtDate(estimation.period_from)} al ${fmtDate(estimation.period_to)}</div>
+  </div>
+</div>
+<div class="ig">
+  <div class="row hl"><span>Importe total del contrato</span><span>${fmtN(budgetSubtotal)}</span></div>
+  <div class="row"><span>Estimado a la fecha</span><span>${fmtN(estimation.accumulated_total)}</span></div>
+  <div class="row"><span>Por estimar</span><span>${fmtN(estimation.remaining)}</span></div>
+  <div class="row"><span>Cliente</span><span>${clientName}</span></div>
+  <div class="row"><span>Anticipo</span><span>${fmtN(anticipoMonto)} (${(pctAmort * 100).toFixed(2)}%)</span></div>
+  <div class="row"><span>Anticipo amortizado</span><span>${fmtN(amortReal)}</span></div>
+  <div class="row"><span>Anticipo por amortizar</span><span>${fmtN(Math.max(0, anticipoMonto - (amortPrevio)))}</span></div>
+  <div class="row"><span>Avance</span><span>${estimation.progress_percentage || 0}%</span></div>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2" style="width:25px">#</th>
+      <th rowspan="2">Concepto</th>
+      <th rowspan="2" style="width:35px">Und</th>
+      <th colspan="3" style="background:${sc}">Presupuesto</th>
+      <th colspan="2" style="background:#666">Acum. Anterior</th>
+      <th colspan="2" style="background:${ac}">Esta Estimacion</th>
+      <th colspan="2" style="background:#28a745">Acumulado</th>
+      <th colspan="2">Por Estimar</th>
+    </tr>
+    <tr>
+      <th style="width:50px;background:${sc}">Cant</th><th style="width:60px;background:${sc}">P.U.</th><th style="width:70px;background:${sc}">Importe</th>
+      <th style="width:50px;background:#666">Vol</th><th style="width:70px;background:#666">Importe</th>
+      <th style="width:50px;background:${ac}">Vol</th><th style="width:70px;background:${ac}">Importe</th>
+      <th style="width:50px;background:#28a745">Vol</th><th style="width:70px;background:#28a745">Importe</th>
+      <th style="width:50px">Vol</th><th style="width:70px">Importe</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${rows.map((r: any) => {
+        const impPres = parseFloat(r.amount) || 0;
+        const impPrev = r.vol_prev * parseFloat(r.unit_price);
+        const impRem = impPres - r.amt_acc;
+        return `<tr>
+          <td class="ctr">${r.item_number}</td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${r.description}</td>
+          <td class="ctr">${r.unit}</td>
+          <td class="r">${parseFloat(r.quantity).toLocaleString('es-MX')}</td>
+          <td class="r">${fmtN(r.unit_price)}</td>
+          <td class="r">${fmtN(impPres)}</td>
+          <td class="r">${r.vol_prev || ''}</td>
+          <td class="r">${r.vol_prev > 0 ? fmtN(impPrev) : ''}</td>
+          <td class="r" style="font-weight:bold;color:${ac}">${r.vol_this || ''}</td>
+          <td class="r" style="font-weight:bold">${r.amt_this > 0 ? fmtN(r.amt_this) : ''}</td>
+          <td class="r">${r.vol_acc || ''}</td>
+          <td class="r">${r.amt_acc > 0 ? fmtN(r.amt_acc) : ''}</td>
+          <td class="r">${(parseFloat(r.quantity) - r.vol_acc).toLocaleString('es-MX')}</td>
+          <td class="r">${fmtN(impRem > 0 ? impRem : 0)}</td>
+        </tr>`;
+    }).join('')}
+  </tbody>
+  <tfoot>
+    <tr style="font-weight:bold;background:${pc}15">
+      <td colspan="3"></td>
+      <td class="ctr" colspan="2">SUMA</td>
+      <td class="r">${fmtN(budgetSubtotal)}</td>
+      <td></td><td class="r">${fmtN(estimation.accumulated_previous)}</td>
+      <td></td><td class="r" style="color:${ac}">${fmtN(sumaEst)}</td>
+      <td></td><td class="r">${fmtN(estimation.accumulated_total)}</td>
+      <td></td><td class="r">${fmtN(estimation.remaining)}</td>
+    </tr>
+  </tfoot>
+</table>
+<table class="resumen">
+  <tr><td class="r" style="color:#555">Suma esta estimacion:</td><td class="r"><strong>${fmtN(sumaEst)}</strong></td></tr>
+  ${anticipoMonto > 0 ? `<tr class="amort"><td class="r">(-) Amortizacion anticipo:</td><td class="r">-${fmtN(amortReal)}</td></tr>` : ''}
+  <tr><td class="r" style="color:#555">Subtotal:</td><td class="r">${fmtN(subtotalNeto)}</td></tr>
+  <tr><td class="r" style="color:#555">I.V.A. 16%:</td><td class="r">${fmtN(ivaNeto)}</td></tr>
+  <tr class="grand"><td class="r">NETO A PAGAR:</td><td class="r">${fmtN(netoAPagar)}</td></tr>
+</table>
+${estimation.notes ? `<p style="margin-top:10px;font-size:11px"><strong>Observaciones:</strong> ${estimation.notes}</p>` : ''}
+<div class="firmas">
+  <div class="firma"><div class="ln"></div><p><strong>Formulo - Residente</strong></p></div>
+  <div class="firma"><div class="ln"></div><p><strong>Autorizo - Superintendente</strong></p></div>
+</div>
+<div class="footer"><p>${org?.theme_config?.slogan || org?.name || ''} | ${org?.rfc || ''}</p></div>
+</div></body></html>`;
+    };
+
+    // Generar y guardar documento HTML
+    const generateDocument = async (type: 'budget' | 'estimation', budget: any, estimation?: any) => {
+        try {
+            // Obtener org emisora
+            const { data: org } = await supabase.from('organizations').select('name, rfc, logo_url, primary_color, theme_config, brand_name, tax_domicile, contact_name, contact_email, office_phone, mobile_phone').eq('id', budget.organization_id).single();
+
+            let html = '';
+            let fileName = '';
+
+            if (type === 'budget') {
+                const { data: items } = await supabase.from('work_budget_items').select('*').eq('work_budget_id', budget.id).order('item_number');
+                html = generateBudgetHTML(budget, items || [], org);
+                fileName = `propuesta_${budget.budget_number}_${Date.now()}.html`;
+
+                // Guardar URL en presupuesto
+                const blob = new Blob([new TextEncoder().encode(html)], { type: 'text/html; charset=utf-8' });
+                await supabase.storage.from('work-budgets').upload(fileName, blob, { upsert: true, contentType: 'text/html; charset=utf-8' });
+                await supabase.from('work_budgets').update({ source_file_url: fileName }).eq('id', budget.id);
+            } else if (estimation) {
+                const { data: eItems } = await supabase.from('work_estimation_items').select('*').eq('work_estimation_id', estimation.id);
+                const { data: bItems } = await supabase.from('work_budget_items').select('*').eq('work_budget_id', budget.id).order('item_number');
+                html = generateEstimationHTML(budget, estimation, eItems || [], bItems || [], org);
+                fileName = `estimacion_${estimation.estimation_number}_${budget.budget_number}_${Date.now()}.html`;
+
+                const blob = new Blob([new TextEncoder().encode(html)], { type: 'text/html; charset=utf-8' });
+                await supabase.storage.from('work-budgets').upload(fileName, blob, { upsert: true, contentType: 'text/html; charset=utf-8' });
+                await supabase.from('work_estimations').update({ evidence_url: fileName }).eq('id', estimation.id);
+            }
+
+            // Descargar
+            const blob = new Blob([new TextEncoder().encode(html)], { type: 'text/html; charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+
+            await fetchBudgets();
+            if (selectedBudget) {
+                const updated = { ...selectedBudget };
+                if (type === 'budget') updated.source_file_url = fileName;
+                setSelectedBudget(updated);
+                await openBudgetDetail(updated);
+            }
+        } catch (err: any) {
+            alert('Error generando documento: ' + err.message);
+        }
+    };
+
+    // Abrir como Word
+    const openAsWord = async (filePath: string, bucket: string = 'work-budgets') => {
+        try {
+            const { data } = await supabase.storage.from(bucket).download(filePath);
+            if (!data) return;
+            const text = await data.text();
+            const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->${text.match(/<style[\s\S]*?<\/style>/)?.[0] || ''}</head><body>${text.match(/<body[\s\S]*?>([\s\S]*)<\/body>/)?.[1] || text}</body></html>`;
+            const blob = new Blob([new TextEncoder().encode(wordHtml)], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filePath.replace('.html', '.doc');
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err: any) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const viewDocument = async (filePath: string, bucket: string = 'work-budgets') => {
+        try {
+            const { data } = await supabase.storage.from(bucket).download(filePath);
+            if (!data) return;
+            const url = URL.createObjectURL(new Blob([data], { type: 'text/html; charset=utf-8' }));
+            window.open(url, '_blank');
+        } catch (err: any) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const printDocument = async (filePath: string, bucket: string = 'work-budgets') => {
+        try {
+            const { data } = await supabase.storage.from(bucket).download(filePath);
+            if (!data) return;
+            const html = await data.text();
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(html);
+                win.document.close();
+                win.onload = () => { win.print(); };
+            }
+        } catch (err: any) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    /* ================================================================ */
+    /*  GENERAR PROFORMA DESDE PRESUPUESTO/ESTIMACIÓN                   */
+    /* ================================================================ */
+
+    const generateProforma = async (type: 'anticipo' | 'estimacion', budget: any, estimation?: any) => {
+        if (!selectedOrg?.id) { alert('Selecciona una organización'); return; }
+        if (!confirm(type === 'anticipo'
+            ? `¿Crear proforma de anticipo por ${fmtN(budget.anticipo_amount)}?`
+            : `¿Crear proforma de Estimación #${estimation?.estimation_number}?`
+        )) return;
+
+        try {
+            // Obtener datos del cliente (del join o por query)
+            let clientName = budget.client?.name || '';
+            let clientRfc = budget.client?.rfc || '';
+            let clientAddress = '';
+            if (budget.client_org_id) {
+                const { data: clientOrg } = await supabase.from('organizations')
+                    .select('name, rfc, tax_domicile')
+                    .eq('id', budget.client_org_id).single();
+                if (clientOrg) {
+                    clientName = clientOrg.name || clientName;
+                    clientRfc = clientOrg.rfc || clientRfc;
+                    clientAddress = clientOrg.tax_domicile || '';
+                }
+            }
+
+            let description = '';
+            let subtotalProf = 0;
+            let itemsData: any[] = [];
+
+            if (type === 'anticipo') {
+                const anticipo = parseFloat(budget.anticipo_amount) || 0;
+                const pct = parseFloat(budget.amount_subtotal) > 0 ? (anticipo / parseFloat(budget.amount_subtotal) * 100).toFixed(1) : '0';
+                subtotalProf = anticipo;
+                description = `Anticipo ${pct}% - ${budget.description || budget.budget_number}`;
+                itemsData = [{
+                    sat_product_key: '84111506',
+                    item_code: `ANT-${budget.budget_number}`,
+                    quantity: 1,
+                    unit_id: 'E48',
+                    description: `Anticipo de obra (${pct}%) - ${budget.description || budget.budget_number}`,
+                    unit_price: anticipo,
+                    has_iva: true,
+                    has_ieps: false,
+                }];
+            } else if (estimation) {
+                const sumaEst = parseFloat(estimation.amount_subtotal) || 0;
+                const anticipoMonto = parseFloat(budget.anticipo_amount) || 0;
+                const budgetSub = parseFloat(budget.amount_subtotal) || 1;
+                const pctAmort = budgetSub > 0 ? anticipoMonto / budgetSub : 0;
+                const amortizacion = sumaEst * pctAmort;
+                subtotalProf = sumaEst - amortizacion;
+                description = `Estimación #${estimation.estimation_number} - ${budget.description || budget.budget_number}`;
+
+                // Cargar items de la estimación
+                const { data: eItems } = await supabase.from('work_estimation_items')
+                    .select('*, budget_item:work_budget_items(*)')
+                    .eq('work_estimation_id', estimation.id);
+
+                itemsData = (eItems || []).filter((ei: any) => ei.amount_this_estimation > 0).map((ei: any) => ({
+                    sat_product_key: '84111506',
+                    item_code: `EST${estimation.estimation_number}-${ei.budget_item?.item_number || ''}`,
+                    quantity: ei.volume_this_estimation,
+                    unit_id: ei.budget_item?.unit || 'E48',
+                    description: ei.budget_item?.description || 'Concepto de obra',
+                    unit_price: parseFloat(ei.budget_item?.unit_price) || 0,
+                    has_iva: true,
+                    has_ieps: false,
+                }));
+
+                // Agregar línea de deducción por amortización si aplica
+                if (amortizacion > 0) {
+                    itemsData.push({
+                        sat_product_key: '84111506',
+                        item_code: `AMORT-EST${estimation.estimation_number}`,
+                        quantity: 1,
+                        unit_id: 'E48',
+                        description: `(-) Amortización de anticipo (${(pctAmort * 100).toFixed(2)}%)`,
+                        unit_price: -amortizacion,
+                        has_iva: true,
+                        has_ieps: false,
+                    });
+                }
+            }
+
+            const ivaProf = subtotalProf * 0.16;
+            const totalProf = subtotalProf + ivaProf;
+
+            // Crear proforma (quotation)
+            const { data: newQuotation, error: qErr } = await supabase.from('quotations').insert({
+                organization_id: selectedOrg.id,
+                amount_subtotal: subtotalProf,
+                amount_iva: ivaProf,
+                amount_total: totalProf,
+                currency: 'MXN',
+                status: 'PENDIENTE',
+                type: 'SERVICIO',
+                description: description,
+                client_rfc: clientRfc,
+                client_name: clientName,
+                client_address: clientAddress,
+                payment_method: 'PPD',
+                payment_form: '03',
+                usage_cfdi_code: 'G03',
+                req_estimaciones: true,
+                estimacion_status: type === 'anticipo' ? 'anticipo' : `est_${estimation?.estimation_number}`,
+                request_direct_invoice: true,
+                invoice_status: 'SOLICITUD',
+            }).select().single();
+
+            if (qErr) throw qErr;
+
+            // Insertar items
+            if (itemsData.length > 0) {
+                const itemsInsert = itemsData.map((it: any) => ({
+                    quotation_id: newQuotation.id,
+                    sat_product_key: it.sat_product_key,
+                    item_code: it.item_code,
+                    quantity: it.quantity,
+                    unit_id: it.unit_id,
+                    description: it.description,
+                    unit_price: it.unit_price,
+                    has_iva: it.has_iva,
+                    has_ieps: it.has_ieps,
+                    subtotal: it.quantity * it.unit_price,
+                }));
+                const { error: iErr } = await supabase.from('quotation_items').insert(itemsInsert);
+                if (iErr) throw iErr;
+            }
+
+            // Vincular proforma con presupuesto/estimación
+            if (type === 'anticipo') {
+                await supabase.from('work_budgets').update({ anticipo_quotation_id: newQuotation.id }).eq('id', budget.id);
+            } else if (estimation) {
+                await supabase.from('work_estimations').update({ quotation_id: newQuotation.id }).eq('id', estimation.id);
+            }
+
+            // Refrescar datos
+            await fetchBudgets();
+            if (selectedBudget) await openBudgetDetail(selectedBudget);
+
+            alert(`Proforma creada: ${description}\nTotal: ${fmtN(totalProf)}`);
+            window.open(`/proformas/${newQuotation.id}`, '_blank');
+        } catch (err: any) {
+            alert('Error creando proforma: ' + err.message);
+        }
+    };
+
+    /* ================================================================ */
     /*  RENDER                                                          */
     /* ================================================================ */
 
@@ -864,6 +1382,40 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
                                     Presupuesto {selectedBudget.budget_number}
                                 </h2>
                                 <p className="text-sm text-slate-400 mt-1">{selectedBudget.description || 'Sin descripcion'}</p>
+                                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                    {parseFloat(selectedBudget.anticipo_amount) > 0 && !selectedBudget.anticipo_quotation_id && (
+                                        <button onClick={() => generateProforma('anticipo', selectedBudget)}
+                                            className="px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 text-xs font-bold flex items-center gap-1">
+                                            <Plus size={12} /> Proforma Anticipo
+                                        </button>
+                                    )}
+                                    {selectedBudget.anticipo_quotation_id && (
+                                        <a href={`/proformas/${selectedBudget.anticipo_quotation_id}`} target="_blank" rel="noreferrer"
+                                            className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-bold flex items-center gap-1">
+                                            <Eye size={12} /> Anticipo: {buildFolio(selectedBudget.anticipo_proforma)} • {fmtN(selectedBudget.anticipo_proforma?.amount_total)}
+                                        </a>
+                                    )}
+                                    <button onClick={() => generateDocument('budget', selectedBudget)}
+                                        className="px-3 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-bold flex items-center gap-1">
+                                        <FileText size={12} /> Generar Propuesta
+                                    </button>
+                                    {selectedBudget.source_file_url?.endsWith('.html') && (
+                                        <>
+                                            <button onClick={() => viewDocument(selectedBudget.source_file_url)}
+                                                className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-700 transition-colors" title="Ver documento">
+                                                <Eye size={14} />
+                                            </button>
+                                            <button onClick={() => printDocument(selectedBudget.source_file_url)}
+                                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-colors" title="Imprimir">
+                                                <Printer size={14} />
+                                            </button>
+                                            <button onClick={() => openAsWord(selectedBudget.source_file_url)}
+                                                className="p-1.5 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-700 transition-colors" title="Abrir en Word">
+                                                <FileText size={14} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                             <button
                                 onClick={() => setSelectedBudget(null)}
@@ -974,6 +1526,12 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
                                                             <p className="text-xs text-slate-400 mt-1">
                                                                 Periodo: {est.period_from || '—'} al {est.period_to || '—'}
                                                             </p>
+                                                            {est.proforma?.id && (
+                                                                <a href={`/proformas/${est.proforma.id}`} target="_blank" rel="noreferrer"
+                                                                    className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 hover:bg-amber-500/20 transition-colors">
+                                                                    <Eye size={10} /> {buildFolio(est.proforma)} • {fmtN(est.proforma.amount_total)}
+                                                                </a>
+                                                            )}
                                                         </div>
                                                         <div className="flex items-center gap-6 text-sm">
                                                             <div className="text-right">
@@ -988,6 +1546,36 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
                                                                 <p className="text-xs text-slate-400">Avance</p>
                                                                 <p className="font-bold text-emerald-400">{fmtPct(est.progress_percentage)}</p>
                                                             </div>
+                                                            <button
+                                                                onClick={() => generateProforma('estimacion', selectedBudget, est)}
+                                                                className="p-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors"
+                                                                title="Crear proforma de esta estimacion"
+                                                            >
+                                                                <Sparkles size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => generateDocument('estimation', selectedBudget, est)}
+                                                                className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-colors"
+                                                                title="Generar documento"
+                                                            >
+                                                                <Plus size={14} />
+                                                            </button>
+                                                            {est.evidence_url?.endsWith('.html') && (
+                                                                <>
+                                                                    <button onClick={() => viewDocument(est.evidence_url)}
+                                                                        className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-700 transition-colors" title="Ver documento">
+                                                                        <Eye size={14} />
+                                                                    </button>
+                                                                    <button onClick={() => printDocument(est.evidence_url)}
+                                                                        className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-colors" title="Imprimir">
+                                                                        <Printer size={14} />
+                                                                    </button>
+                                                                    <button onClick={() => openAsWord(est.evidence_url)}
+                                                                        className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-700 transition-colors" title="Abrir en Word">
+                                                                        <FileText size={14} />
+                                                                    </button>
+                                                                </>
+                                                            )}
                                                             {est.status === 'borrador' && (
                                                                 <button
                                                                     onClick={() => editEstimation(est)}
