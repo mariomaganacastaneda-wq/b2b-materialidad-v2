@@ -164,7 +164,6 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
             const colUnit = findCol(['unidad', 'und', 'u.m.']);
             const colQty = findCol(['cantidad', 'cant', 'vol']);
             const colPU = findCol(['unitario', 'p.u.', 'pu', 'precio']);
-            const colImporte = findCol(['importe', 'total', 'monto']);
 
             const partidas: any[] = [];
             const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
@@ -768,7 +767,7 @@ ${budget.description ? `<p style="margin-bottom:12px;font-size:12px"><strong>Des
 <table>
   <thead><tr><th style="width:30px">#</th><th>Concepto</th><th style="width:50px">Und</th><th style="width:70px">Cantidad</th><th style="width:90px">P.U.</th><th style="width:100px">Importe</th></tr></thead>
   <tbody>
-    ${items.map((it: any, i: number) => `<tr><td class="ctr">${it.item_number}</td><td>${it.description}</td><td class="ctr">${it.unit}</td><td class="r">${parseFloat(it.quantity).toLocaleString('es-MX')}</td><td class="r">${fmtN(it.unit_price)}</td><td class="r"><strong>${fmtN(it.amount)}</strong></td></tr>`).join('')}
+    ${items.map((it: any) => `<tr><td class="ctr">${it.item_number}</td><td>${it.description}</td><td class="ctr">${it.unit}</td><td class="r">${parseFloat(it.quantity).toLocaleString('es-MX')}</td><td class="r">${fmtN(it.unit_price)}</td><td class="r"><strong>${fmtN(it.amount)}</strong></td></tr>`).join('')}
   </tbody>
 </table>
 <table class="totals">
