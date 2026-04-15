@@ -15,7 +15,103 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 
 ### Última sesión
 
-- **Fecha**: 2026-04-09
+- **Fecha**: 2026-04-15
+- **Agente**: Claude Code (directo + n8n-builder + frontend + database)
+- **Resumen**: Módulo Estimaciones de Obra, Contratos Multi-Proforma, 3 archivos por pago, generación de cotizaciones IA (fixes), 6to toggle Estimaciones en ProformaManager.
+- **Cambios realizados**:
+
+  **Generación de Cotizaciones con IA (mejoras y fixes):**
+  - Botón "Generar con IA" en secciones Solicitud y Emisión de `QuotationRequests`
+  - 2 workflows n8n: solicitud (ID `Hr3V5fGlWzB8DZOC`) y emisión (ID `nzPdvXH1r8QW836g`)
+  - Agente OpenAI gpt-4o genera texto profesional con branding corporativo
+  - Solicitud: branding cliente, sin precios, firmante comercial
+  - Emisión: branding emisora, con precios, escaneo de solicitud previa como contexto
+  - Archivos HTML con botones Ver/Imprimir/Word
+  - fix: notificaciones no-bloqueantes (resuelto error insertBefore con `alert()`)
+
+  **Identidad Visual para Clientes:**
+  - `CompanyDetails.tsx`: identidad visual habilitada para `is_client` además de `is_issuer`
+  - `handleLogoUpload` implementado (bucket `logos`)
+  - fix: persistencia de org seleccionada en BD al cambiar de organización
+  - fix: Norma Cedeño default org → SEIDCO (corrección de org por defecto)
+
+  **Módulo Estimaciones de Obra (`WorkEstimations.tsx`):**
+  - Nueva pantalla completa en `/estimaciones-obra`
+  - 4 tablas nuevas: `work_budgets`, `work_budget_items`, `work_estimations`, `work_estimation_items`
+  - Parser Excel automático (`xlsx`) para importar presupuestos con partidas y conceptos
+  - Combo de cliente, fecha, número automático de estimación
+  - Estimaciones con captura manual de volúmenes por concepto
+  - Amortización de anticipo proporcional (fórmula obra civil):
+    `amort_anticipo = (monto_estimacion / total_obra) * anticipo`
+  - Trabajos adicionales (extras) con monto independiente
+  - Edición de borradores guardados
+  - Barras duales: Pagos (verde) y Obra (cyan) — progreso visual
+  - Generación HTML: propuesta económica y estimaciones con cabecera (logo + datos emisor)
+  - `print-color-adjust: exact` para impresión fiel con colores corporativos
+  - Generar proforma desde anticipo y desde cada estimación individual
+  - Vínculo proforma↔estimación: `proforma_folio` real en cada estimación
+  - 6to toggle "Estimaciones" en `ProformaManager`
+  - Indicador EST en `MaterialityBoard` (estructura lista, pendiente conectar datos)
+  - Documentación: `docs/sistema/17-ESTIMACIONES-OBRA.md`
+
+  **Contratos Multi-Proforma:**
+  - Nueva tabla `contract_quotations` (relación N:N entre contratos y proformas)
+  - Sección "Proformas Vinculadas" en modal de contrato (buscar y vincular/desvincular)
+  - Semáforo de materialidad hereda documentos del contrato padre hacia las proformas vinculadas
+  - Badge "VINCULADO · LEGALIZADO" visible en tabla de proformas
+  - `linkQuotation` sincroniza `contract_status` automáticamente al vincular
+  - Documentación: `docs/sistema/18-CONTRATOS-MULTI-PROFORMA.md`
+
+  **3 Archivos por Pago:**
+  - Campos nuevos en `quotation_payments`: `completo_pago_url` y `xml_pago_url`
+  - 3 uploads en `ProformaManager`: Recibo de pago, Complemento de pago PDF, XML del complemento
+  - 3 iconos en `Pagos.tsx`: subir / ver / borrar para cada tipo de archivo (verde si existe, rojo si falta)
+
+  **Eliminar Proformas:**
+  - Cualquier usuario puede eliminar proformas que no tengan documentos asociados
+  - Admin conserva permiso de eliminar cualquier proforma independientemente
+
+  **Tipos de documentos en Cotizaciones:**
+  - Leyenda visible: "S = Solicitud, E = Emitida, C = Confirmada" en pantalla de cotizaciones
+
+  **Fixes técnicos:**
+  - fix: `alert()` bloqueante reemplazado por notificaciones toast en `QuotationRequests`
+  - fix: organización seleccionada persiste en BD en cada cambio
+  - fix: error de tipo implícito `any` en TypeScript para build de Vercel
+  - fix: org por defecto de Norma Cedeño corregida a SEIDCO
+
+- **Archivos creados**:
+  - `web/src/pages/WorkEstimations.tsx`
+  - `docs/sistema/17-ESTIMACIONES-OBRA.md`
+  - `docs/sistema/18-CONTRATOS-MULTI-PROFORMA.md`
+
+- **Archivos modificados**:
+  - `web/src/App.tsx` (nueva ruta `/estimaciones-obra`, 6to toggle)
+  - `web/src/components/commercial/ProformaManager.tsx` (6to toggle Estimaciones, 3 archivos por pago)
+  - `web/src/components/commercial/MaterialityBoard.tsx` (indicador EST)
+  - `web/src/components/commercial/Pagos.tsx` (3 iconos por pago)
+  - `web/src/pages/QuotationRequests.tsx` (botones IA, fix notificaciones)
+  - `web/src/components/settings/CompanyDetails.tsx` (logo para clientes)
+  - `WORKLOG.md` (este archivo)
+
+- **Migraciones de BD aplicadas en Supabase**:
+  - `work_budgets` + `work_budget_items` (presupuestos Excel)
+  - `work_estimations` + `work_estimation_items` (estimaciones manuales)
+  - `contract_quotations` (N:N contratos-proformas)
+  - `completo_pago_url` + `xml_pago_url` en `quotation_payments`
+
+- **TypeScript**: Sin errores (build Vercel OK)
+- **Estado**: Listo para deploy
+
+- **Pendientes sugeridos próxima sesión**:
+  - Conectar indicador EST del MaterialityBoard con datos reales de `work_estimations`
+  - Filtro por cliente en pantalla de Estimaciones de Obra
+  - Vista de historial de estimaciones por obra/contrato
+
+---
+
+### Sesión anterior (2026-04-09)
+
 - **Agente**: Claude Code (directo + n8n-builder + agentes especializados)
 - **Resumen**: Generación de cotizaciones con IA + módulo OC + mejoras Materialidad + parser CFDI 4.0.
 - **Cambios realizados**:
