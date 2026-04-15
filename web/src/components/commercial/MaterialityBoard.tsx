@@ -323,21 +323,26 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                                             <tr key={q.id} className="hover:bg-cyan-500/5 transition-colors group border-b border-white/5">
                                                 <td className="p-5 overflow-hidden">
                                                     <div className="flex items-center gap-3 min-w-0">
-                                                        {isAdmin && (
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
-                                                                    const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
-                                                                    const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
-                                                                    setDeleteTarget({ id: q.id, label: `${orgPrefix}-${dateStr}-${folNum}` });
-                                                                }}
-                                                                className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
-                                                                title="Eliminar Proforma"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </button>
-                                                        )}
+                                                        {(() => {
+                                                            // Permitir eliminar si es admin O si la proforma no tiene documentos asociados
+                                                            const hasAnyDoc = hasContract || hasInvoice || hasEvidence || hasQuotation || hasOCRequest || paymentPercentage > 0;
+                                                            const canDelete = isAdmin || !hasAnyDoc;
+                                                            return canDelete ? (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const orgPrefix = q.organizations?.rfc?.match(/^[A-Z&]{3,4}/)?.[0] || 'PF';
+                                                                        const dateStr = new Date(q.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '');
+                                                                        const folNum = (q.proforma_number || 1).toString().padStart(2, '0');
+                                                                        setDeleteTarget({ id: q.id, label: `${orgPrefix}-${dateStr}-${folNum}` });
+                                                                    }}
+                                                                    className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                                    title={hasAnyDoc ? "Eliminar Proforma (Admin)" : "Eliminar Proforma (sin documentos)"}
+                                                                >
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </button>
+                                                            ) : null;
+                                                        })()}
                                                         <div className="flex flex-col min-w-0">
                                                             <span
                                                                 onClick={() => navigate(`/proformas/${q.id}`)}
@@ -468,7 +473,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
             </div>
 
             {/* Modal de eliminacion (solo admin) */}
-            {isAdmin && deleteTarget && (
+            {deleteTarget && (
                 <DeleteProformaDialog
                     quotationId={deleteTarget.id}
                     proformaLabel={deleteTarget.label}

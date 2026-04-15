@@ -67,9 +67,10 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
             const { data: rawData, error } = await supabase
                 .from('quotations')
                 .select(`
-                    id, proforma_number, contract_status, amount_total, created_at, is_contract_required,
+                    id, proforma_number, contract_status, amount_total, created_at, is_contract_required, client_name,
                     organizations!inner(id, name, rfc),
-                    contracts(*)
+                    contracts(*),
+                    contract_quotations(id, contract:contracts(id, lifecycle_status, quotation_id, requerido_url, requerido_authorized, rubricado_url, legalizado_url, requerido_comments, rubricado_comments, legalizado_comments))
                 `)
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
@@ -81,20 +82,45 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
             rawData?.forEach((q: any) => {
                 const contractList = Array.isArray(q.contracts) ? q.contracts : (q.contracts ? [q.contracts] : []);
 
+                // Contratos vinculados via contract_quotations
+                const linkedContracts = Array.isArray(q.contract_quotations) ? q.contract_quotations : [];
+                const linkedContractInfo = linkedContracts.length > 0 ? linkedContracts[0]?.contract : null;
+
                 if (contractList.length > 0) {
                     contractList.forEach((c: any) => {
                         flattenedContracts.push({
                             ...c,
                             organizations: q.organizations,
+                            linkedContractInfo,
                             quotations: {
                                 id: q.id,
                                 proforma_number: q.proforma_number,
                                 contract_status: q.contract_status,
                                 amount_total: q.amount_total,
                                 created_at: q.created_at,
-                                is_contract_required: q.is_contract_required
+                                is_contract_required: q.is_contract_required,
+                                client_name: q.client_name
                             }
                         });
+                    });
+                } else if (linkedContractInfo) {
+                    // Proforma vinculada a contrato de otra proforma (sin contrato directo)
+                    flattenedContracts.push({
+                        id: linkedContractInfo.id,
+                        quotation_id: q.id,
+                        lifecycle_status: linkedContractInfo.lifecycle_status,
+                        created_at: q.created_at,
+                        organizations: q.organizations,
+                        linkedContractInfo,
+                        quotations: {
+                            id: q.id,
+                            proforma_number: q.proforma_number,
+                            contract_status: q.contract_status,
+                            amount_total: q.amount_total,
+                            created_at: q.created_at,
+                            is_contract_required: q.is_contract_required,
+                            client_name: q.client_name
+                        }
                     });
                 } else if (q.is_contract_required || q.contract_status === 'solicitado') {
                     flattenedContracts.push({
@@ -159,15 +185,25 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         try {
             const { error } = await supabase.from('contract_quotations').insert({ contract_id: contractId, quotation_id: quotationId });
             if (error) throw error;
-            // Sincronizar contract_status en la proforma vinculada
-            const contract = contracts.find(c => c.id === contractId);
-            if (contract?.lifecycle_status) {
-                const statusMap: any = { requerido: 'solicitado', autorizado: 'firmado', rubricado: 'firmado', legalizado: 'completado' };
-                await supabase.from('quotations').update({
-                    is_contract_required: true,
-                    contract_status: statusMap[contract.lifecycle_status] || 'solicitado'
-                }).eq('id', quotationId);
+
+            // Obtener lifecycle_status real del contrato desde BD
+            const { data: contractData } = await supabase.from('contracts').select('lifecycle_status').eq('id', contractId).single();
+            const lifecycle = contractData?.lifecycle_status || 'requerido';
+            const statusMap: any = { requerido: 'solicitado', autorizado: 'firmado', rubricado: 'firmado', legalizado: 'completado' };
+            const quotationStatus = statusMap[lifecycle] || 'solicitado';
+
+            // Actualizar la proforma vinculada
+            await supabase.from('quotations').update({
+                is_contract_required: true,
+                contract_status: quotationStatus
+            }).eq('id', quotationId);
+
+            // Si la proforma tiene un contrato directo propio, sincronizar su lifecycle
+            const { data: directContract } = await supabase.from('contracts').select('id').eq('quotation_id', quotationId).maybeSingle();
+            if (directContract) {
+                await supabase.from('contracts').update({ lifecycle_status: lifecycle }).eq('id', directContract.id);
             }
+
             await loadLinkedQuotations(contractId);
             await loadAvailableQuotations(contractId);
             fetchContracts();
@@ -403,20 +439,41 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         }
     };
 
-    const openModal = (contract: any) => {
-        setSelectedContract(contract);
+    const openModal = async (contract: any) => {
+        let contractToOpen = contract;
+
+        // Si es un contrato vinculado, cargar los datos del contrato padre
+        if (contract.linkedContractInfo?.id) {
+            const { data: parentContract } = await supabase
+                .from('contracts')
+                .select('*')
+                .eq('id', contract.linkedContractInfo.id)
+                .single();
+            if (parentContract) {
+                contractToOpen = {
+                    ...parentContract,
+                    organizations: contract.organizations,
+                    quotations: contract.quotations,
+                    linkedContractInfo: contract.linkedContractInfo,
+                    isLinkedView: true, // Marca que estamos viendo desde una proforma vinculada
+                };
+            }
+        }
+
+        setSelectedContract(contractToOpen);
         setComments({
-            requerido: contract.requerido_comments || '',
-            rubricado: contract.rubricado_comments || '',
-            legalizado: contract.legalizado_comments || ''
+            requerido: contractToOpen.requerido_comments || '',
+            rubricado: contractToOpen.rubricado_comments || '',
+            legalizado: contractToOpen.legalizado_comments || ''
         });
-        setRequeridoAuthorized(contract.requerido_authorized || false);
+        setRequeridoAuthorized(contractToOpen.requerido_authorized || false);
         setFiles({ requerido: null, rubricado: null, legalizado: null });
         setShowUploadModal(true);
         // Cargar proformas vinculadas si es un contrato real (no pending)
-        if (!contract.isPending && contract.id) {
-            loadLinkedQuotations(contract.id);
-            loadAvailableQuotations(contract.id);
+        const realContractId = contractToOpen.linkedContractInfo?.id || contractToOpen.id;
+        if (!contractToOpen.isPending && realContractId && !String(realContractId).startsWith('pending-')) {
+            loadLinkedQuotations(realContractId);
+            loadAvailableQuotations(realContractId);
         }
     };
 
@@ -569,8 +626,43 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                                         })()}
                                                     </div>
                                                     <div className="text-[10px] text-slate-500 font-mono mt-0.5 uppercase tracking-tighter truncate max-w-[150px]">
-                                                        {c.organizations?.name || 'Org Desconocida'}
+                                                        {c.quotations?.client_name || c.organizations?.name || 'Org Desconocida'}
                                                     </div>
+                                                    {c.linkedContractInfo && (
+                                                        <div className="mt-0.5 flex items-center gap-1">
+                                                            <span className="inline-flex items-center gap-1 text-[8px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                                                                VINCULADO • {c.linkedContractInfo.lifecycle_status?.toUpperCase() || 'CONTRATO'}
+                                                            </span>
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    if (!confirm('¿Desvincular esta proforma del contrato?')) return;
+                                                                    try {
+                                                                        // Buscar y eliminar el registro de contract_quotations
+                                                                        await supabase.from('contract_quotations')
+                                                                            .delete()
+                                                                            .eq('contract_id', c.linkedContractInfo.id)
+                                                                            .eq('quotation_id', c.quotations?.id);
+                                                                        // Resetear contract_status de la proforma
+                                                                        await supabase.from('quotations')
+                                                                            .update({ contract_status: c.quotations?.is_contract_required ? 'solicitado' : null })
+                                                                            .eq('id', c.quotations?.id);
+                                                                        // Resetear contrato directo si existe
+                                                                        await supabase.from('contracts')
+                                                                            .update({ lifecycle_status: 'requerido' })
+                                                                            .eq('quotation_id', c.quotations?.id);
+                                                                        fetchContracts();
+                                                                    } catch (err: any) {
+                                                                        alert('Error al desvincular: ' + err.message);
+                                                                    }
+                                                                }}
+                                                                className="p-0.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                                                                title="Desvincular contrato"
+                                                            >
+                                                                <XCircle size={12} />
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
@@ -579,36 +671,41 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                                                 {c.quotations?.amount_total?.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) || '$0.00'}
                                             </div>
                                         </td>
-                                        {/* SEMAFORO: 3 circulos R, F, L */}
+                                        {/* SEMAFORO: 3 circulos R, F, L — usa contrato padre si es vinculado */}
                                         <td className="px-6 py-4">
-                                            <div className="flex gap-1.5 justify-center">
-                                                <div
-                                                    title={c.requerido_authorized ? 'Autorizado' : (c.requerido_url ? 'Documento Cargado' : 'Sin Documento')}
-                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.requerido_authorized
-                                                        ? 'bg-blue-500 cursor-pointer hover:ring-2 hover:ring-white/30'
-                                                        : c.requerido_url
-                                                            ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
-                                                            : 'bg-yellow-500 cursor-help'
-                                                        }`}
-                                                    onClick={() => c.requerido_url && handleViewFile(c.requerido_url)}
-                                                >R</div>
-                                                <div
-                                                    title={c.rubricado_url ? 'Rubricado — Click para ver' : 'Sin Rubricar'}
-                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.rubricado_url
-                                                        ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
-                                                        : 'bg-yellow-500 cursor-help'
-                                                        }`}
-                                                    onClick={() => c.rubricado_url && handleViewFile(c.rubricado_url)}
-                                                >F</div>
-                                                <div
-                                                    title={c.legalizado_url ? 'Legalizado — Click para ver' : 'Sin Legalizar'}
-                                                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${c.legalizado_url
-                                                        ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
-                                                        : 'bg-yellow-500 cursor-help'
-                                                        }`}
-                                                    onClick={() => c.legalizado_url && handleViewFile(c.legalizado_url)}
-                                                >L</div>
-                                            </div>
+                                            {(() => {
+                                                const src = c.linkedContractInfo || c;
+                                                return (
+                                                    <div className="flex gap-1.5 justify-center">
+                                                        <div
+                                                            title={src.requerido_authorized ? 'Autorizado' : (src.requerido_url ? 'Documento Cargado' : 'Sin Documento')}
+                                                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${src.requerido_authorized
+                                                                ? 'bg-blue-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                                : src.requerido_url
+                                                                    ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                                    : 'bg-yellow-500 cursor-help'
+                                                                }`}
+                                                            onClick={() => src.requerido_url && handleViewFile(src.requerido_url)}
+                                                        >R</div>
+                                                        <div
+                                                            title={src.rubricado_url ? 'Rubricado — Click para ver' : 'Sin Rubricar'}
+                                                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${src.rubricado_url
+                                                                ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                                : 'bg-yellow-500 cursor-help'
+                                                                }`}
+                                                            onClick={() => src.rubricado_url && handleViewFile(src.rubricado_url)}
+                                                        >F</div>
+                                                        <div
+                                                            title={src.legalizado_url ? 'Legalizado — Click para ver' : 'Sin Legalizar'}
+                                                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${src.legalizado_url
+                                                                ? 'bg-emerald-500 cursor-pointer hover:ring-2 hover:ring-white/30'
+                                                                : 'bg-yellow-500 cursor-help'
+                                                                }`}
+                                                            onClick={() => src.legalizado_url && handleViewFile(src.legalizado_url)}
+                                                        >L</div>
+                                                    </div>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${getStatusColor(lifecycle)}`}>
