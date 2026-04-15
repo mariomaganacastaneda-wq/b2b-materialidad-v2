@@ -823,6 +823,14 @@ export function App() {
                     <div style={{ color: impersonatedUser ? '#ef4444' : '#64748b', fontSize: '12px', fontWeight: impersonatedUser ? 'bold' : 'normal' }}>
                       {impersonatedUser ? `Suplantando a: ${impersonatedUser.full_name}` : (selectedOrg?.name || 'Administrador')}
                     </div>
+                    {userProfile?.view_mode === 'mine' && (
+                      <div
+                        onClick={() => navigate('/settings?tab=mi_perfil')}
+                        style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '12px', fontSize: '9px', fontWeight: 'bold', color: '#f59e0b', marginTop: '2px' }}
+                      >
+                        Solo mis operaciones
+                      </div>
+                    )}
                   </div>
                 </div>
                 <UserButton
@@ -960,23 +968,23 @@ export function App() {
                 <Route path="/" element={<DashboardPage userProfile={userProfile} />} />
                 <Route path="/materialidad" element={<MaterialityBoard selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/materialidad/:id" element={<MaterialityBoard selectedOrg={selectedOrg} userProfile={userProfile} />} />
-                <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} />} />
-                <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} />} />
+                <Route path="/cotizaciones" element={<QuotationRequests selectedOrg={selectedOrg} userProfile={userProfile} />} />
+                <Route path="/cotizaciones/:id" element={<QuotationRequests selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/importacion" element={<FileImport currentUser={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/ordenes-compra" element={<PurchaseOrderRequests selectedOrg={selectedOrg} />} />
-                <Route path="/estimaciones" element={<WorkEstimations selectedOrg={selectedOrg} />} />
-                <Route path="/estimaciones/:budgetId" element={<WorkEstimations selectedOrg={selectedOrg} />} />
+                <Route path="/estimaciones" element={<WorkEstimations selectedOrg={selectedOrg} userProfile={userProfile} />} />
+                <Route path="/estimaciones/:budgetId" element={<WorkEstimations selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
                 <Route path="/facturas" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
-                <Route path="/pagos" element={<Pagos selectedOrg={selectedOrg} />} />
+                <Route path="/pagos" element={<Pagos selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/evidencia" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/evidencia/:id" element={<Evidence userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/catalogos-sat" element={<SATCatalogsPage />} />
                 <Route path="/bancos" element={<BankAccountsPage selectedOrg={selectedOrg} />} />
-                <Route path="/contratos" element={<Contracts selectedOrg={selectedOrg} />} />
-                <Route path="/contratos/:id" element={<Contracts selectedOrg={selectedOrg} />} />
+                <Route path="/contratos" element={<Contracts selectedOrg={selectedOrg} userProfile={userProfile} />} />
+                <Route path="/contratos/:id" element={<Contracts selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/reportes" element={<PlaceholderPage title="Generador de Reportes" />} />
                 <Route path="/settings" element={<SettingsPage orgs={orgs} setOrgs={setOrgs} selectedOrg={selectedOrg} setSelectedOrg={setSelectedOrg} supabase={supabase} currentUser={userProfile} userPermissions={userPermissions} userRolePermissions={userRolePermissions} setImpersonatedUser={setImpersonatedUser} realUserProfile={realUserProfile} defaultOrgId={userProfile?.default_org_id} onSetDefaultOrg={handleSetDefaultOrg} />} />
                 <Route path="/security" element={<SecurityCenter supabase={supabase} clerkUser={clerkUser} getToken={getToken} impersonatedUser={impersonatedUser} />} />

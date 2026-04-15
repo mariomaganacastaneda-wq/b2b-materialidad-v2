@@ -21,6 +21,7 @@ import { TextGlitch } from '../components/ui/TextGlitch';
 import paymentFormsData from '../lib/payment_forms.json';
 
 interface PagosProps {
+    userProfile?: any;
     selectedOrg: any;
 }
 
@@ -56,7 +57,7 @@ const buildFolio = (q: any, orgRfc?: string) => {
     return `${orgPrefix}-${dateStr}-${folNum}`;
 };
 
-const Pagos = ({ selectedOrg }: PagosProps) => {
+const Pagos = ({ selectedOrg, userProfile }: PagosProps) => {
     const navigate = useNavigate();
     const [payments, setPayments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -79,18 +80,25 @@ const Pagos = ({ selectedOrg }: PagosProps) => {
         if (!selectedOrg?.id) return;
         try {
             setLoading(true);
-            const { data, error: fetchError } = await supabase
+            let pQuery = supabase
                 .from('quotation_payments')
                 .select(`
                     *,
-                    quotations(id, proforma_number, client_name, amount_total, created_at, organizations(rfc)),
+                    quotations(id, proforma_number, client_name, amount_total, created_at, created_by, organizations(rfc)),
                     org_bank_accounts(bank_name, account_number, currency)
                 `)
                 .eq('organization_id', selectedOrg.id)
                 .order('payment_date', { ascending: false });
 
+            const { data, error: fetchError } = await pQuery;
             if (fetchError) throw fetchError;
-            setPayments(data || []);
+
+            // Filtrar por usuario si view_mode = 'mine' (pagos de mis proformas)
+            let filtered = data || [];
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                filtered = filtered.filter((p: any) => p.quotations?.created_by === userProfile.id);
+            }
+            setPayments(filtered);
         } catch (err: any) {
             setError(err.message);
         } finally {

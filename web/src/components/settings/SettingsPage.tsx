@@ -634,6 +634,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Vista de operaciones - configurada por el administrador */}
+                            {currentUser?.view_mode === 'mine' && (
+                                <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(245,158,11,0.08)', borderRadius: '12px', border: '1px solid rgba(245,158,11,0.2)' }}>
+                                    <p style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold' }}>
+                                        Tu administrador configuró tu vista como "Solo mis operaciones".
+                                        Solo puedes ver las operaciones que tú has creado.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </GlowCard>

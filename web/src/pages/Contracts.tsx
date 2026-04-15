@@ -23,9 +23,10 @@ type TabFilter = 'TODOS' | 'REQUERIDO' | 'AUTORIZADO' | 'RUBRICADO' | 'LEGALIZAD
 
 interface ContractsProps {
     selectedOrg: any;
+    userProfile?: any;
 }
 
-const Contracts = ({ selectedOrg }: ContractsProps) => {
+const Contracts = ({ selectedOrg, userProfile }: ContractsProps) => {
     const { id: quotationId } = useParams();
     const navigate = useNavigate();
     const [contracts, setContracts] = useState<any[]>([]);
@@ -64,7 +65,7 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
         if (!selectedOrg?.id) return;
         try {
             setLoading(true);
-            const { data: rawData, error } = await supabase
+            let cQuery = supabase
                 .from('quotations')
                 .select(`
                     id, proforma_number, contract_status, amount_total, created_at, is_contract_required, client_name,
@@ -75,6 +76,11 @@ const Contracts = ({ selectedOrg }: ContractsProps) => {
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
 
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                cQuery = cQuery.eq('created_by', userProfile.id);
+            }
+
+            const { data: rawData, error } = await cQuery;
             if (error) throw error;
 
             const flattenedContracts: any[] = [];

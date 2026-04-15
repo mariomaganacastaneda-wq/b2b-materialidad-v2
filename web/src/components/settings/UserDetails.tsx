@@ -54,7 +54,8 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
                 role: localUser.role,
                 is_active: localUser.is_active,
                 phone_whatsapp: localUser.phone_whatsapp,
-                telegram_chat_id: localUser.telegram_chat_id
+                telegram_chat_id: localUser.telegram_chat_id,
+                view_mode: localUser.view_mode || 'all'
             });
         }
     };
@@ -147,6 +148,43 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
                         </select>
                         {!isAdmin && <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Solo administradores pueden cambiar roles.</p>}
                     </div>
+
+                    {/* Vista de Operaciones (solo admin puede configurar) */}
+                    {isAdmin && (
+                        <div className="input-group">
+                            <label>Vista de Operaciones</label>
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                                {[
+                                    { value: 'all', label: 'Todas las operaciones', desc: 'Ve todo de la organización', color: '#06b6d4' },
+                                    { value: 'mine', label: 'Solo sus operaciones', desc: 'Ve solo lo que ha creado', color: '#f59e0b' },
+                                ].map(opt => {
+                                    const selected = (localUser?.view_mode || 'all') === opt.value;
+                                    return (
+                                        <div key={opt.value}
+                                            onClick={() => handleChange('view_mode', opt.value)}
+                                            style={{
+                                                flex: 1, cursor: 'pointer', padding: '12px', borderRadius: '10px',
+                                                border: `2px solid ${selected ? opt.color : '#334155'}`,
+                                                background: selected ? `${opt.color}15` : 'transparent',
+                                                transition: 'all 0.2s'
+                                            }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{
+                                                    width: '16px', height: '16px', borderRadius: '50%',
+                                                    border: `2px solid ${selected ? opt.color : '#475569'}`,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                }}>
+                                                    {selected && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: opt.color }} />}
+                                                </div>
+                                                <span style={{ fontSize: '12px', fontWeight: 'bold', color: selected ? 'white' : '#94a3b8' }}>{opt.label}</span>
+                                            </div>
+                                            <p style={{ fontSize: '10px', color: '#64748b', marginTop: '4px', marginLeft: '24px' }}>{opt.desc}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Información de Contacto (Perfil Integrado) */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid #334155' }}>

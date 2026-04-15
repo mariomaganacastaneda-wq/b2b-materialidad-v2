@@ -26,9 +26,10 @@ type StageKey = 'solicitud' | 'revision_emisor' | 'revision_cliente';
 
 interface QuotationRequestsProps {
     selectedOrg: any;
+    userProfile?: any;
 }
 
-const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
+const QuotationRequests = ({ selectedOrg, userProfile }: QuotationRequestsProps) => {
     const { id: quotationId } = useParams();
     const navigate = useNavigate();
     const [quotes, setQuotes] = useState<any[]>([]);
@@ -397,6 +398,9 @@ const QuotationRequests = ({ selectedOrg }: QuotationRequestsProps) => {
 
             if (selectedOrg?.id) {
                 query = query.eq('organization_id', selectedOrg.id);
+            }
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                query = query.eq('created_by', userProfile.id);
             }
 
             const { data, error: fetchError } = await query;

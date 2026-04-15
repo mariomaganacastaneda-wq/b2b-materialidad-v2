@@ -115,7 +115,7 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
         try {
             setLoading(true);
             // Query with joins to check materiality status
-            const { data, error } = await supabase
+            let query = supabase
                 .from('quotations')
                 .select(`
                     *,
@@ -138,6 +138,13 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                 `)
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
+
+            // Filtrar por usuario si view_mode = 'mine'
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                query = query.eq('created_by', userProfile.id);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
             setQuotations(data || []);

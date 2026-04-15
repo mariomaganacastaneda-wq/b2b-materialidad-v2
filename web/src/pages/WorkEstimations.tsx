@@ -14,6 +14,7 @@ const Icon = ({ name, className = "" }: { name: string; className?: string }) =>
 
 interface WorkEstimationsProps {
     selectedOrg: any;
+    userProfile?: any;
 }
 
 /* ------------------------------------------------------------------ */
@@ -60,7 +61,7 @@ const statusLabel = (status: string | null) => {
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
-const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
+const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg, userProfile }) => {
     /* ---------- state ---------- */
     const [budgets, setBudgets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
