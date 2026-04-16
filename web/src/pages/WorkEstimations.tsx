@@ -61,7 +61,7 @@ const statusLabel = (status: string | null) => {
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
-const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg, userProfile }) => {
+const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
     /* ---------- state ---------- */
     const [budgets, setBudgets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);

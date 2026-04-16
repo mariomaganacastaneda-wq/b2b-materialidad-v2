@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
@@ -331,6 +331,7 @@ const DashboardPage = ({ userProfile }: { userProfile: any }) => {
 
 export function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [orgs, setOrgs] = useState<any[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
