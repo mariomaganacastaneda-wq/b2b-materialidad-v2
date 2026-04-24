@@ -1,6 +1,8 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+const fmtMoney = (n: number) => new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0);
+
 interface ProformaData {
     clientName: string;
     clientRFC: string;
@@ -145,7 +147,7 @@ export const generateProformaPDF = async (data: ProformaData) => {
 
         doc.setFontSize(10);
         const yAfterClientName = 75 + (clientNameWrap.length * 5);
-        doc.text(`RFC: ${data.clientRFC}  |  CP: ${data.clientCP || 'N/A'}`, margin, yAfterClientName);
+        doc.text(`RFC: ${data.clientRFC}${data.clientCP ? '  |  CP: ' + data.clientCP : ''}`, margin, yAfterClientName);
         doc.text(`Régimen Fiscal: ${data.clientRegime}`, margin, yAfterClientName + 6);
         doc.text(`Uso CFDI: ${data.usage || 'G03'}`, margin, yAfterClientName + 12);
         doc.text(data.clientAddress, margin, yAfterClientName + 18, { maxWidth: 100 });
@@ -184,8 +186,8 @@ export const generateProformaPDF = async (data: ProformaData) => {
             item.description,
             item.quantity,
             item.unit,
-            `$${item.unitPrice.toLocaleString()}`,
-            `$${(item.quantity * item.unitPrice).toLocaleString()}`
+            `$${fmtMoney(item.unitPrice)}`,
+            `$${fmtMoney(item.quantity * item.unitPrice)}`
         ]);
 
         autoTable(doc, {
@@ -215,12 +217,12 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.setTextColor('#64748b');
         doc.text('Subtotal:', totalsX, finalY + 10);
         doc.setTextColor('#1e293b');
-        doc.text(`$${data.subtotal.toLocaleString()}`, pageWidth - margin, finalY + 10, { align: 'right' });
+        doc.text(`$${fmtMoney(data.subtotal)}`, pageWidth - margin, finalY + 10, { align: 'right' });
 
         doc.setTextColor('#64748b');
         doc.text('IVA (16%):', totalsX, finalY + 17);
         doc.setTextColor('#1e293b');
-        doc.text(`$${data.iva.toLocaleString()}`, pageWidth - margin, finalY + 17, { align: 'right' });
+        doc.text(`$${fmtMoney(data.iva)}`, pageWidth - margin, finalY + 17, { align: 'right' });
 
         let currentY = finalY + 17;
         if (data.ieps > 0) {
@@ -228,7 +230,7 @@ export const generateProformaPDF = async (data: ProformaData) => {
             doc.setTextColor('#64748b');
             doc.text('IEPS (8%):', totalsX, currentY);
             doc.setTextColor('#1e293b');
-            doc.text(`$${data.ieps.toLocaleString()}`, pageWidth - margin, currentY, { align: 'right' });
+            doc.text(`$${fmtMoney(data.ieps)}`, pageWidth - margin, currentY, { align: 'right' });
         }
 
         doc.setDrawColor(accentColor);
@@ -239,7 +241,7 @@ export const generateProformaPDF = async (data: ProformaData) => {
         doc.setFontSize(14);
         doc.setTextColor(accentColor);
         doc.text('TOTAL:', totalsX, currentY + 13);
-        doc.text(`$${data.total.toLocaleString()} ${data.currency}`, pageWidth - margin, currentY + 13, { align: 'right' });
+        doc.text(`$${fmtMoney(data.total)}`, pageWidth - margin, currentY + 13, { align: 'right' });
 
         // --- NOTAS / OBSERVACIONES ---
         let notesY = finalY + 10;

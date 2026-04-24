@@ -1164,6 +1164,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProf
     const [payments, setPayments] = useState<any[]>([]);
     const [bankAccounts, setBankAccounts] = useState<any[]>([]);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [hideNotesInPDF, setHideNotesInPDF] = useState(false);
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
     const [paymentFile, setPaymentFile] = useState<File | null>(null);
@@ -1436,6 +1437,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProf
 
             generateProformaPDF({
                 ...formData,
+                notes: hideNotesInPDF ? '' : formData.notes,
                 clientRegime: regimeLabel,
                 usage: usageLabel,
                 paymentMethod: paymentMethodLabel,
@@ -2218,10 +2220,21 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProf
 
                                 {/* Notas y Observaciones - Span Completo en la base */}
                                 <div className="col-span-3 pt-2 mt-1 border-t border-slate-100/50">
-                                    <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-widest flex items-center gap-1.5">
-                                        <Icon name="notes" className="text-xs" />
-                                        Notas y Observaciones de la Proforma
-                                    </label>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                            <Icon name="notes" className="text-xs" />
+                                            Notas y Observaciones de la Proforma
+                                        </label>
+                                        <label className="flex items-center gap-1.5 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={hideNotesInPDF}
+                                                onChange={e => setHideNotesInPDF(e.target.checked)}
+                                                className="w-3.5 h-3.5 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+                                            />
+                                            <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider">Ocultar en PDF</span>
+                                        </label>
+                                    </div>
                                     <textarea
                                         className="w-full border-slate-100 rounded-lg text-[10px] p-2 focus:ring-[#0891b2] focus:border-[#0891b2] transition-all min-h-[80px] bg-slate-50/50"
                                         placeholder="Notas adicionales o instrucciones especiales para este documento..."
