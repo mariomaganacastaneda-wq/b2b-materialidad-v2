@@ -1713,6 +1713,15 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProf
 
             if (iError) throw iError;
 
+            // 3. Si se apagó el toggle de contrato, eliminar contrato pendiente
+            if (!formData.is_contract_required && quotationId) {
+                await supabase
+                    .from('contracts')
+                    .delete()
+                    .eq('quotation_id', quotationId)
+                    .in('lifecycle_status', ['requerido', 'solicitado']);
+            }
+
             // 3. Automated Sub-record Request Logic (Invoices, Contracts, Evidence)
             try {
                 // Factura (Invoice)
