@@ -36,7 +36,7 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
         if (!selectedOrg?.id) return;
         try {
             setLoading(true);
-            const { data: rawData, error: fetchError } = await supabase
+            let iQuery = supabase
                 .from('quotations')
                 .select(`
                     id, proforma_number, created_at, amount_total, request_direct_invoice, invoice_status, organization_id,
@@ -46,6 +46,11 @@ const Invoices = ({ userProfile, selectedOrg }: InvoicesProps) => {
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
 
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                iQuery = iQuery.eq('created_by', userProfile.id);
+            }
+
+            const { data: rawData, error: fetchError } = await iQuery;
             if (fetchError) throw fetchError;
 
             const flattenedInvoices: any[] = [];

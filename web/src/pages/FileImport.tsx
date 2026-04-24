@@ -205,7 +205,7 @@ export const FileImport: React.FC<FileImportProps> = ({ selectedOrg, currentUser
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('purchase_orders')
                 .select(`
           *,
@@ -216,6 +216,11 @@ export const FileImport: React.FC<FileImportProps> = ({ selectedOrg, currentUser
                 .or(`client_org_id.eq.${selectedOrg.id},issuer_org_id.eq.${selectedOrg.id}`)
                 .order('created_at', { ascending: false });
 
+            if (currentUser?.view_mode === 'mine' && currentUser?.id) {
+                query = query.eq('created_by', currentUser.id);
+            }
+
+            const { data, error } = await query;
             if (error) throw error;
             setOrders(data || []);
         } catch (err) {
@@ -462,6 +467,7 @@ export const FileImport: React.FC<FileImportProps> = ({ selectedOrg, currentUser
                 tax_total: (quotation.amount_iva || 0) + (quotation.amount_ieps || 0),
                 grand_total: quotation.amount_total || 0,
                 status: 'PENDING_REVIEW',
+                created_by: currentUser?.id || null,
                 source_file_url: sourceFileUrl,
                 raw_ocr_data: n8nData,
                 validation_messages: validation_messages || [],

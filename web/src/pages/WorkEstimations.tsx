@@ -106,11 +106,17 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
         }
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            let wQuery = supabase
                 .from('work_budgets')
                 .select('*, work_estimations(amount_total, status), client:organizations!client_org_id(name, rfc), anticipo_proforma:quotations!anticipo_quotation_id(id, proforma_number, created_at, amount_total, organizations(rfc))')
                 .eq('organization_id', selectedOrg.id)
                 .order('created_at', { ascending: false });
+
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                wQuery = wQuery.eq('created_by', userProfile.id);
+            }
+
+            const { data, error } = await wQuery;
             if (error) throw error;
             setBudgets(data || []);
         } catch (err) {
@@ -560,6 +566,7 @@ const WorkEstimations: React.FC<WorkEstimationsProps> = ({ selectedOrg }) => {
                 .from('work_budgets')
                 .insert({
                     organization_id: selectedOrg.id,
+                    created_by: userProfile?.id || null,
                     client_org_id: newBudgetClient || null,
                     budget_number: newBudgetNumber.trim(),
                     budget_date: newBudgetDate || new Date().toISOString().split('T')[0],

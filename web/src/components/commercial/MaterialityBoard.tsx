@@ -140,7 +140,9 @@ const MaterialityBoard = ({ selectedOrg, userProfile }: { selectedOrg: any, user
                 .order('created_at', { ascending: false });
 
             // Filtrar por usuario si view_mode = 'mine'
+            console.log('[MATERIALIDAD] view_mode:', userProfile?.view_mode, '| userId:', userProfile?.id, '| full_name:', userProfile?.full_name);
             if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                console.log('[MATERIALIDAD] Aplicando filtro: solo operaciones de', userProfile.id);
                 query = query.eq('created_by', userProfile.id);
             }
 

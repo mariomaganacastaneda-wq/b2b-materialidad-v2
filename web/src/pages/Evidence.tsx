@@ -179,15 +179,21 @@ const Evidence = ({ userProfile, selectedOrg }: EvidenceProps) => {
             setLoading(true);
 
             // All FOTO evidence with nested join to get proforma_number
-            const { data: evData, error: evErr } = await supabase
+            let evQuery = supabase
                 .from('evidence')
-                .select('*, evidence_metadata(*), invoices(id, quotation_id, quotations(proforma_number, created_at, organizations(rfc)))')
+                .select('*, evidence_metadata(*), invoices(id, quotation_id, quotations(proforma_number, created_at, created_by, organizations(rfc)))')
                 .eq('organization_id', selectedOrg.id)
                 .eq('type', 'FOTO')
                 .order('created_at', { ascending: false });
 
+            const { data: evData, error: evErr } = await evQuery;
             if (evErr) throw evErr;
-            setEvidenceItems(evData || []);
+
+            let filteredEv = evData || [];
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                filteredEv = filteredEv.filter((e: any) => e.invoices?.quotations?.created_by === userProfile.id || e.created_by === userProfile.id);
+            }
+            setEvidenceItems(filteredEv);
 
             // Pending quotations that need evidence
             const { data: pendData, error: pendErr } = await supabase
