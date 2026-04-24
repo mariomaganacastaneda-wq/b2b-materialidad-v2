@@ -191,17 +191,38 @@ const Evidence = ({ userProfile, selectedOrg }: EvidenceProps) => {
 
             let filteredEv = evData || [];
             if (userProfile?.view_mode === 'mine' && userProfile?.id) {
-                filteredEv = filteredEv.filter((e: any) => e.invoices?.quotations?.created_by === userProfile.id || e.created_by === userProfile.id);
+                // Obtener IDs de proformas del usuario
+                const { data: myQuotations } = await supabase
+                    .from('quotations')
+                    .select('id')
+                    .eq('organization_id', selectedOrg.id)
+                    .eq('created_by', userProfile.id);
+                const myQuotationIds = new Set((myQuotations || []).map((q: any) => q.id));
+
+                filteredEv = filteredEv.filter((e: any) => {
+                    // Verificar por cadena invoice → quotation
+                    const quotationId = e.invoices?.quotation_id;
+                    if (quotationId && myQuotationIds.has(quotationId)) return true;
+                    // Verificar por created_by directo de la evidencia
+                    if (e.created_by === userProfile.id) return true;
+                    return false;
+                });
             }
             setEvidenceItems(filteredEv);
 
             // Pending quotations that need evidence
-            const { data: pendData, error: pendErr } = await supabase
+            let pendQuery = supabase
                 .from('quotations')
                 .select('id, proforma_number, created_at, evidence_status, req_evidence, organizations(rfc), invoices(id), contracts(id)')
                 .eq('organization_id', selectedOrg.id)
                 .or('req_evidence.eq.true,evidence_status.eq.solicitada')
                 .order('created_at', { ascending: false });
+
+            if (userProfile?.view_mode === 'mine' && userProfile?.id) {
+                pendQuery = pendQuery.eq('created_by', userProfile.id);
+            }
+
+            const { data: pendData, error: pendErr } = await pendQuery;
 
             if (pendErr) throw pendErr;
 
