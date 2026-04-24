@@ -1005,9 +1005,10 @@ const AutoResizeTextarea = ({ value, onChange, className, placeholder, rows = 1 
 
 interface ProformaManagerProps {
     selectedOrg: any;
+    userProfile?: any;
 }
 
-const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
+const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProfile }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [regimes, setRegimes] = useState<any[]>([]);
@@ -1626,7 +1627,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg }) => {
                 status: 'PENDIENTE',
                 type: 'SERVICIO',
                 description: formData.description || `Proforma para ${formData.clientName}`,
-                created_by: user?.id || null,
+                created_by: userProfile?.id || user?.id || null,
                 is_licitation: formData.is_licitation || false,
                 is_contract_required: formData.is_contract_required,
                 request_direct_invoice: formData.request_direct_invoice || false,

@@ -1138,6 +1138,7 @@ ${estimation.notes ? `<p style="margin-top:10px;font-size:11px"><strong>Observac
             // Crear proforma (quotation)
             const { data: newQuotation, error: qErr } = await supabase.from('quotations').insert({
                 organization_id: selectedOrg.id,
+                created_by: userProfile?.id || null,
                 amount_subtotal: subtotalProf,
                 amount_iva: ivaProf,
                 amount_total: totalProf,

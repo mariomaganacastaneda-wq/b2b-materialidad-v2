@@ -975,8 +975,8 @@ export function App() {
                 <Route path="/ordenes-compra" element={<PurchaseOrderRequests selectedOrg={selectedOrg} />} />
                 <Route path="/estimaciones" element={<WorkEstimations selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/estimaciones/:budgetId" element={<WorkEstimations selectedOrg={selectedOrg} userProfile={userProfile} />} />
-                <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} />} />
-                <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} />} />
+                <Route path="/proformas/:id" element={<ProformaManager selectedOrg={selectedOrg} userProfile={userProfile} />} />
+                <Route path="/proformas/nueva" element={<ProformaManager selectedOrg={selectedOrg} userProfile={userProfile} />} />
                 <Route path="/facturas" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/facturas/:id" element={<Invoices userProfile={userProfile} selectedOrg={selectedOrg} />} />
                 <Route path="/pagos" element={<Pagos selectedOrg={selectedOrg} userProfile={userProfile} />} />
