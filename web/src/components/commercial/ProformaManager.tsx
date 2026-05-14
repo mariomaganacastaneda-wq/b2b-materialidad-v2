@@ -1138,7 +1138,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ selectedOrg, userProf
                         currency: poData.currency || prev.currency,
                         paymentMethod: poData.payment_method?.match(/^(PUE|PPD)/)?.[1] || prev.paymentMethod,
                         paymentForm: poData.payment_form?.match(/^(\d{2})/)?.[1] || prev.paymentForm,
-                        usage: poData.usage_cfdi_code || prev.usage,
+                        usage: poData.usage_cfdi_code?.match(/^([A-Z]\d{2})/)?.[1] || prev.usage,
                         notes: poData.notes || `Generado a partir de OC: ${poData.po_number || ''}`,
                         description: poData.description || prev.description,
                         is_licitation: poData.is_licitation || prev.is_licitation,
