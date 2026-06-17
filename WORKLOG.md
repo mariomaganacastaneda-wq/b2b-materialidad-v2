@@ -15,7 +15,63 @@ Ambos sistemas DEBEN leer este archivo al inicio de cada sesión y actualizarlo 
 
 ### Última sesión
 
-- **Fecha**: 2026-04-15
+- **Fecha**: 2026-06-17 (b)
+- **Agente**: Claude Opus 4.8
+- **Resumen**: **Poda de alta señal del `CLAUDE.md`** (move-not-delete, sin perder funcionalidad). **81 → 43 líneas (−37%, ~2,100 → ~1,327 tokens/sesión).**
+  - Único recorte: condensé las enumeraciones de 21 agentes Antigravity + 27 skills → puntero a los catálogos del kit (el harness ya las inyecta cada sesión). Los 5 agentes custom locales se conservan.
+  - **Intactas** (verificado por grep): reglas git CRÍTICAS (`nunca git add .`, validar `vite build` antes de push), datos fiscales, `.graphifyignore` maximalista, pin Supabase `ywovtkubsanalddsdedi`, n8n MCP. Sin commit (pendiente visto bueno).
+
+### Sesión 2026-06-17 (a) — principios Karpathy
+
+- **Agente**: Claude Opus 4.8
+- **Resumen**: **Instalación de los 4 principios de trabajo del agente ("método Karpathy CLAUDE.md")** tras análisis con NotebookLM de 3 videos. **Solo edición de `CLAUDE.md`; sin cambios de código.**
+  - Sección nueva "Principios de trabajo del agente": pensar antes de codear, priorizar simplicidad, cambios quirúrgicos, ejecución orientada a la meta. **Nota B2B**: "cambios quirúrgicos" aplica a git (paths explícitos, nunca `git add .`); "pensar antes" incluye validar build local antes de push a `main`.
+  - **Veredicto del análisis**: SÍ adoptar (alto encaje en repo público con reglas git críticas; riesgo muy bajo). El "10x" es marketing; ganancia real = calidad de código y menos errores.
+  - Informe completo: `fostek_trima_v2/reportes_cios/2026-06-17_analisis_karpathy_claudemd_aplicabilidad.html` (proyecto Trima). Cuaderno NotebookLM "[Análisis] Karpathy CLAUDE.md".
+
+### Sesión 2026-05-05
+
+- **Fecha**: 2026-05-05 18:30
+- **Agente**: Claude Opus 4.7
+- **Resumen**: **Migración del proyecto al kit `sistema_Graphify`** + modernización MCP n8n a HTTP oficial.
+
+  ### Cambios estructurales aplicados
+  - **`.agent/`** ahora es **junction** → `_Sistema/sistema_Graphify/canonical/.agent/` (21 agentes + 42 skills + 11 workflows + rules + scripts del kit canónico).
+  - **`.claude/skills/`** ahora es **junction** → canonical (27 skills metodológicas).
+  - **5 agentes custom preservados** en `.claude/agents/` (no junctions): `n8n-builder`, `docs-sync`, `oc-tester`, `oc-workflow-optimizer`, `proforma-deleter`.
+  - **`.agent_overlay/mcp_config.json`** preservado (legacy Antigravity con `context7` + `shadcn`).
+  - **`.agent_pre_unified/`** backup local pre-migración (eliminar tras 1-2 días de validación).
+  - Backup completo en `c:/Proyectos/Memoria/_Sistema/sistema_Graphify/backups/2026-05-05_b2b_pre_migracion/`.
+
+  ### Configuración MCP modernizada
+  - **n8n**: paquete comunidad `n8n-mcp@latest` REEMPLAZADO por MCP HTTP oficial `instance-level` (`type: http`, `mcp-server/http`, Bearer Token con `aud:mcp-server-api`).
+  - **notebooklm**: path corregido al kit canonical (antes apuntaba a `Notebooklm_promts/` DEAD).
+  - **supabase**: agregado (project-ref `ywovtkubsanalddsdedi`).
+  - **github-mcp-server**: agregado (consistencia con Fostek).
+  - **obsidian**: conservado.
+  - 5 MCPs activos en `.mcp.json` (gitignored).
+
+  ### Documentación nueva del proyecto
+  - **`AGENTS.md`** creado (estándar 2026, espejo de CLAUDE.md para Codex/Cursor/Copilot).
+  - **`CLAUDE.md`** reescrito: tabla heredada de B2B "anti-patrón" (14 agentes ficticios `@frontend`, `@database`, etc.) corregida → 5 customs reales + 21 Antigravity vía junction + 27 skills metodológicas. Reglas de Git CRÍTICAS añadidas (proyecto público + auto-deploy Vercel).
+
+  ### Seguridad reforzada
+  - **`.gitignore`** extendido: `.agent/`, `.claude/skills/`, `.agent_pre_unified/`, `.agent_overlay/`, `.mcp.json.bak*`, `graphify-out/`, `mcp_excalidraw/`, `clerk-mcp/`.
+  - **API Keys tradicionales n8n revocadas** por usuario (incluye JWT que estaba expuesto en historial git público de `b2b-materialidad-v2`).
+  - **Sistema central de tokens**: `c:/Proyectos/Memoria/_Sistema/.secrets/.env` master con script `load-secrets.ps1`.
+
+  ### Pendiente
+  - **Decisión sobre construir grafo Graphify** del proyecto. B2B contiene CFDIs + Constancias de Situación Fiscal de clientes. Antes de `graphify extract`: definir `.graphifyignore` específico que excluya `Archivos_pruebas/`, `*.xml`, PDFs CSF, `web/build_output*.txt`. Decidir backend (Kimi recomendado por costo).
+  - **Cambios pre-migración no commiteados** (NO son nuestros): 11 archivos `D` en `.claude/agents/` (templates eliminados), 2 CFDIs `D`, 8 archivos `??` (CONTPAQi, EdifactMx, fany.png, impresiones/, logos/). Decisión del usuario qué hacer con ellos.
+
+  ### Atribución
+  - Procedimiento aplicado: `_Sistema/sistema_Graphify/MIGRAR.md` (verificado en Fostek 2026-05-05).
+  - Patrón MCP n8n: `_Sistema/sistema_Graphify/canonical/graphify-config/MCP_N8N_INTEGRACION.md`.
+  - Pre-commit checklist: `_Sistema/sistema_Graphify/canonical/graphify-config/PRE_COMMIT_CHECKLIST.md`.
+  - TASK-011 en workspace compartido cerrada como completada.
+
+### Sesión anterior (2026-04-15)
+
 - **Agente**: Claude Code (directo + n8n-builder + frontend + database)
 - **Resumen**: Módulo Estimaciones de Obra, Contratos Multi-Proforma, 3 archivos por pago, generación de cotizaciones IA (fixes), 6to toggle Estimaciones en ProformaManager.
 - **Cambios realizados**:
