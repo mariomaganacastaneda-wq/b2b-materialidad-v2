@@ -343,6 +343,7 @@ export function App() {
   const [impersonatedUser, setImpersonatedUser] = useState<any>(null);
   const [realUserProfile, setRealUserProfile] = useState<any>(null);
   const [sessionReady, setSessionReady] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   // Exponer para diagnóstico desde consola y botones de emergencia
   useEffect(() => {
@@ -513,11 +514,13 @@ export function App() {
           if (orgError.status !== 401) {
             // @ts-ignore
             window.__SUPABASE_ERROR_MSG = orgError.message;
+            setDbError(orgError.message || 'Sin conexión con la base de datos');
           }
         } else {
           // Limpiar mensaje de error si logramos cargar algo
           // @ts-ignore
           window.__SUPABASE_ERROR_MSG = null;
+          setDbError(null);
         }
 
         // 4. Cargar Permisos específicos
@@ -753,6 +756,21 @@ export function App() {
 
       <SignedIn>
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#020617', color: 'white', fontFamily: '"Inter", sans-serif' }}>
+          {dbError && (
+            <div style={{
+              backgroundColor: '#b45309',
+              color: 'white',
+              padding: '10px 20px',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              zIndex: 1000
+            }}>
+              ⚠️ Sin conexión con la base de datos. El menú y los datos aparecen incompletos; no es un problema de tu usuario ni de tus permisos. Avisa a soporte y vuelve a intentar en unos minutos.
+              <span style={{ display: 'block', fontWeight: 'normal', fontSize: '11px', opacity: 0.85, marginTop: '2px' }}>Detalle técnico: {dbError}</span>
+            </div>
+          )}
+
           {impersonatedUser && (
             <div style={{
               backgroundColor: '#991b1b',
